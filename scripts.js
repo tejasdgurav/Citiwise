@@ -7,7 +7,11 @@ fetch('data.json')
     formData = data;
     populateFormFields();
   })
-  .catch(error => console.error('Error loading JSON data:', error));
+  .catch(error => {
+    console.error('Error loading JSON data:', error);
+    toggleLoadingIndicator(false); // Hide loading indicator even if there's an error
+    alert('There was an error loading the form data. Please refresh the page and try again.');
+  });
 
 function populateFormFields() {
   // Populate ULB Type
@@ -27,6 +31,11 @@ function populateFormFields() {
 
   // Set up event listeners
   setupEventListeners();
+
+  // Hide loading indicator
+  toggleLoadingIndicator(false);
+  
+  console.log('Form fields populated'); // Add this for debugging
 }
 
 function populateSelect(selectId, options) {
@@ -167,11 +176,18 @@ function validateForm() {
 // Helper function to show/hide loading indicator
 function toggleLoadingIndicator(show) {
   const loadingIndicator = document.querySelector('.loading-indicator');
-  if (show) {
-    loadingIndicator.style.display = 'flex';
-  } else {
-    loadingIndicator.style.display = 'none';
+  if (loadingIndicator) {
+    loadingIndicator.style.display = show ? 'flex' : 'none';
   }
+  
+  // Enable or disable the form
+  const form = document.getElementById('udcprForm');
+  if (form) {
+    form.style.pointerEvents = show ? 'none' : 'auto';
+    form.style.opacity = show ? '0.5' : '1';
+  }
+  
+  console.log('Loading indicator toggled:', show); // Add this for debugging
 }
 
 // Call this function when the page loads
