@@ -18,12 +18,12 @@
                 
                 <div class="form-group">
                     <label for="applicantName">Applicant Name</label>
-                    <input type="text" id="applicantName" name="applicantName" required>
+                    <input type="text" id="applicantName" name="applicant_name" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="contactNo">Contact No</label>
-                    <input type="tel" id="contactNo" name="contactNo" required>
+                    <input type="tel" id="contactNo" name="contact_no" required>
                 </div>
                 
                 <div class="form-group">
@@ -37,37 +37,37 @@
                 
                 <div class="form-group">
                     <label for="projectName">Project Name</label>
-                    <input type="text" id="projectName" name="projectName" required>
+                    <input type="text" id="projectName" name="project_name" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="siteAddress">Site Address</label>
-                    <textarea id="siteAddress" name="siteAddress" required></textarea>
+                    <textarea id="siteAddress" name="site_address" required></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label for="dpRpPart">DP/RP Part Plan</label>
-                    <input type="file" id="dpRpPart" name="dpRpPart" accept=".pdf,.jpg,.jpeg,.png">
+                    <input type="file" id="dpRpPart" name="dp_rp_part_plan" accept=".pdf,.jpg,.jpeg,.png">
                 </div>
                 
                 <div class="form-group">
                     <label for="googleImage">Google Image</label>
-                    <input type="file" id="googleImage" name="googleImage" accept=".jpg,.jpeg,.png">
+                    <input type="file" id="googleImage" name="google_image" accept=".jpg,.jpeg,.png">
                 </div>
                 
                 <div class="form-group">
                     <label for="ulbType">ULB Type</label>
-                    <select id="ulbType" name="ulbType" required></select>
+                    <select id="ulbType" name="ulb_type" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="ulb">ULB/RP/Special Authority</label>
-                    <select id="ulb" name="ulb" required></select>
+                    <select id="ulb" name="ulb_rp_special_authority" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="specialScheme">Special Scheme</label>
-                    <select id="specialScheme" name="specialScheme">
+                    <select id="specialScheme" name="special_scheme">
                         <option value="">Select a scheme</option>
                         <option value="pmay">Pradhan Mantri Awas Yojna</option>
                         <option value="ahs">Affordable Housing Scheme</option>
@@ -88,7 +88,7 @@
                 
                 <div class="form-group">
                     <label for="developmentType">Type of Development</label>
-                    <select id="developmentType" name="developmentType" required>
+                    <select id="developmentType" name="type_of_development" required>
                         <option value="">Select type</option>
                         <option value="lig">LIG</option>
                         <option value="rowHouse">Row House</option>
@@ -102,14 +102,14 @@
                 <div class="form-group">
                     <label>Incentive FSI</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="incentiveFsi" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="incentiveFsi" value="No" required> No</label>
+                        <label><input type="radio" name="incentive_fsi" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="incentive_fsi" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div id="incentiveFsiDetails" class="form-group hidden">
                     <label for="incentiveFsiRating">Incentive FSI Rating</label>
-                    <select id="incentiveFsiRating" name="incentiveFsiRating">
+                    <select id="incentiveFsiRating" name="incentive_fsi_rating">
                         <option value="">Select rating</option>
                         <option value="griha3">GRIHA 3 Star</option>
                         <option value="igbcSilver">IGBC Silver</option>
@@ -125,7 +125,7 @@
                 
                 <div class="form-group">
                     <label for="proposalType">Type of Proposal</label>
-                    <select id="proposalType" name="proposalType" required>
+                    <select id="proposalType" name="type_of_proposal" required>
                         <option value="">Select type</option>
                         <option value="residential">Residential</option>
                         <option value="commercial">Commercial</option>
@@ -140,17 +140,17 @@
                 <div class="form-group">
                     <label>Is the site hilly and has gradients more than 1:5?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="isHilly" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="isHilly" value="No" required> No</label>
+                        <label><input type="radio" name="hilly_site" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="hilly_site" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Flood Affected Area</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="floodAffectedArea" value="No" required> No</label>
-                        <label><input type="radio" name="floodAffectedArea" value="Red" required> Red</label>
-                        <label><input type="radio" name="floodAffectedArea" value="Blue" required> Blue</label>
+                        <label><input type="radio" name="flood_affected_area" value="No" required> No</label>
+                        <label><input type="radio" name="flood_affected_area" value="Red" required> Red</label>
+                        <label><input type="radio" name="flood_affected_area" value="Blue" required> Blue</label>
                     </div>
                 </div>
                 
@@ -166,14 +166,14 @@
                 <div class="form-group">
                     <label>Electrical Line</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="electricalLine" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="electricalLine" value="No" required> No</label>
+                        <label><input type="radio" name="electrical_line" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="electrical_line" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div id="electricLineDetails" class="form-group hidden">
                     <label for="electricLineVoltage">Electric Line Voltage</label>
-                    <select id="electricLineVoltage" name="electricLineVoltage">
+                    <select id="electricLineVoltage" name="electrical_line_voltage">
                         <option value="">Select voltage</option>
                         <option value="lowMedium">Low and medium</option>
                         <option value="high0-33000">High Voltage Line - 0 - 33000</option>
@@ -196,12 +196,12 @@
                 
                 <div class="form-group">
                     <label for="roadDetails">Road Details in Meter (as on DP)</label>
-                    <input type="number" id="roadDetails" name="roadDetails" min="0" step="0.01" required>
+                    <input type="number" id="roadDetails" name="road_details_meter" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="plotType">Type of Plot/Layout</label>
-                    <select id="plotType" name="plotType" required>
+                    <select id="plotType" name="plot_layout_type" required>
                         <option value="">Select type</option>
                         <option value="sanctionLayout">Sanction Layout/Sub Layout</option>
                         <option value="gunthewari">Gunthewari</option>
@@ -217,26 +217,26 @@
                     <label>Reservation Area Affected</label>
                     <div class="radio-group">
                         <label><input type="radio" name="reservationAreaAffected" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="reservationAreaAffected" value="No" required> No</label>
+                        <label><input type="radio" name="reservation_area_affected" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div id="reservationAreaAffectedDetails" class="form-group hidden">
                     <label for="reservationAreaAffectedSqm">Reservation Area Affected (Sq.M.)</label>
-                    <input type="number" id="reservationAreaAffectedSqm" name="reservationAreaAffectedSqm" min="0" step="0.01">
+                    <input type="number" id="reservationAreaAffectedSqm" name="reservation_area_sqm" min="0" step="0.01">
                 </div>
                 
                 <div class="form-group">
                     <label>Is the plot land affected by CRZ?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="crzAffected" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="crzAffected" value="No" required> No</label>
+                        <label><input type="radio" name="crz_status" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="crz_status" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div id="crzAffectedDetails" class="form-group hidden">
                     <label for="crzArea">CRZ Area</label>
-                    <select id="crzArea" name="crzArea">
+                    <select id="crzArea" name="crz_location">
                         <option value="">Select area</option>
                         <option value="ratnagiri">Ratnagiri</option>
                         <option value="murudJanjira">Murud-Janjira Municipal Council</option>
@@ -256,7 +256,7 @@
                 
                 <div class="form-group">
                     <label for="plotIdType">Plot Identification Type</label>
-                    <select id="plotIdType" name="plotIdType" required>
+                    <select id="plotIdType" name="survey_type" required>
                         <option value="">Select type</option>
                         <option value="tikkaNumber">Tikka Number</option>
                         <option value="citySurveyNo">City Survey No.</option>
@@ -268,63 +268,63 @@
                 
                 <div class="form-group">
                     <label for="plotIdNumber">Plot Identification Number</label>
-                    <input type="text" id="plotIdNumber" name="plotIdNumber" required>
+                    <input type="text" id="plotIdNumber" name="survey_number" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="villageName">Village/Mouje Name</label>
-                    <input type="text" id="villageName" name="villageName" required>
+                    <input type="text" id="villageName" name="village_name" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="plotAreaSite">Area of plot as per site (Sq.M.)</label>
-                    <input type="number" id="plotAreaSite" name="plotAreaSite" min="0" step="0.01" required>
+                    <input type="number" id="plotAreaSite" name="area_plot_site_sqm" min="0" step="0.01" required>
                 </div>
                 
                <div class="form-group">
                     <label for="plotAreaOwnership">Area of plot as per ownership document (Sq.M.)</label>
-                    <input type="number" id="plotAreaOwnership" name="plotAreaOwnership" min="0" step="0.01" required>
+                    <input type="number" id="plotAreaOwnership" name="area_plot_ownership_sqm" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="plotAreaMeasurement">Area of plot as per measurement sheet (Sq.M.)</label>
-                    <input type="number" id="plotAreaMeasurement" name="plotAreaMeasurement" min="0" step="0.01" required>
+                    <input type="number" id="plotAreaMeasurement" name="area_plot_measurement_sqm" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="proRataFsi">Pro Rata FSI</label>
-                    <input type="number" id="proRataFsi" name="proRataFsi" min="0" step="0.01" required>
+                    <input type="number" id="proRataFsi" name="pro_rata_fsi" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Class of Land</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="landClass" value="Class1" required> Class 1</label>
-                        <label><input type="radio" name="landClass" value="Class2" required> Class 2</label>
+                        <label><input type="radio" name="class_of_land" value="Class1" required> Class 1</label>
+                        <label><input type="radio" name="class_of_land  " value="Class2" required> Class 2</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Is the DP/RP road affected/TDR?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="dpRpRoadAffected" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="dpRpRoadAffected" value="No" required> No</label>
+                        <label><input type="radio" name="dp_rp_road_affected" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="dp_rp_road_affected" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div id="dpRpRoadAffectedDetails" class="form-group hidden">
                     <label for="dpRpRoadAffectedArea">DP/RP road affected (Sq.M.)</label>
-                    <input type="number" id="dpRpRoadAffectedArea" name="dpRpRoadAffectedArea" min="0" step="0.01">
+                    <input type="number" id="dpRpRoadAffectedArea" name="dp_rp_road_area_sqm" min="0" step="0.01">
                 </div>
                 
                 <div class="form-group">
                     <label for="citySpecificArea">City Specific Area</label>
-                    <select id="citySpecificArea" name="citySpecificArea" required></select>
+                    <select id="citySpecificArea" name="city_specific_area" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="buildingHeight">Height of Building</label>
-                    <select id="buildingHeight" name="buildingHeight" required>
+                    <select id="buildingHeight" name="building_height" required>
                         <option value="">Select height</option>
                         <option value="below15">Below 15 meter</option>
                         <option value="15-24">15-24 meter</option>
@@ -335,32 +335,32 @@
                 <div class="form-group">
                     <label>Is it a redevelopment proposal?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="isRedevelopment" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="isRedevelopment" value="No" required> No</label>
+                        <label><input type="radio" name="redevelopment_proposal" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="redevelopment_proposal" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="plotWidth">Plot width (in meter)</label>
-                    <input type="number" id="plotWidth" name="plotWidth" min="0" step="0.01" required>
+                    <input type="number" id="plotWidth" name="plot_width" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Is your land in TOD?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="isInTOD" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="isInTOD" value="No" required> No</label>
+                        <label><input type="radio" name="tod" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="tod" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="buildingType">Building type</label>
-                    <select id="buildingType" name="buildingType" required></select>
+                    <select id="buildingType" name="building_type" required></select>
                 </div>
                 
                 <div class="form-group">
                     <label for="buildingSubtype">Building subtypes</label>
-                    <select id="buildingSubtype" name="buildingSubtype" required></select>
+                    <select id="buildingSubtype" name="building_subtype" required></select>
                 </div>
             </fieldset>
             
@@ -396,7 +396,7 @@
                 
                 <div class="form-group">
                     <label for="leftBoundary">Left</label>
-                    <select id="leftBoundary" name="leftBoundary" required>
+                    <select id="leftBoundary" name="road_details_left" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
                         <option value="OtherProperty">Other Property</option>
