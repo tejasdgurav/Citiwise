@@ -199,26 +199,47 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('udcprForm');
   
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    console.log('Form submitted');
-    
-    const formData = new FormData(form);
-    
-    fetch(form.action, {
-      method: 'POST',
-      mode: 'no-cors', // Add this line
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Success:', data);
-      alert('Form submitted successfully!');
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      alert('An error occurred. Please try again.');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      console.log('Form submitted');
+      
+      const formData = new FormData(form);
+      
+      // Show loading indicator
+      toggleLoadingIndicator(true);
+      
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text(); // Change this from response.json() to response.text()
+      })
+      .then(data => {
+        console.log('Success:', data);
+        try {
+          const jsonData = JSON.parse(data);
+          alert('Form submitted successfully!');
+        } catch (error) {
+          console.error('Error parsing JSON:', error);
+          alert('Form submitted, but there was an issue processing the response. Please check with the administrator.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+      })
+      .finally(() => {
+        // Hide loading indicator
+        toggleLoadingIndicator(false);
+      });
     });
-  });
+  } else {
+    console.error('Form element not found');
+  }
 });
