@@ -192,6 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     fetch(form.action, {
       method: 'POST',
+      mode: 'no-cors', // Add this line
       body: formData
     })
     .then(response => response.json())
