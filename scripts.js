@@ -179,3 +179,29 @@ document.addEventListener('DOMContentLoaded', function() {
   toggleLoadingIndicator(true);
   // The loading indicator will be hidden once the JSON data is loaded and the form is populated
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('udcprForm');
+  
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    console.log('Form submitted');
+    
+    const formData = new FormData(form);
+    
+    fetch(form.action, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+      alert('Form submitted successfully!');
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      alert('An error occurred. Please try again.');
+    });
+  });
+});
