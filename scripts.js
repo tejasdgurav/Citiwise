@@ -27,14 +27,7 @@ async function loadData() {
         buildingSubtypes = data.building_subtype || {};
         ulbData = data; // Store all data for later use
         
-        console.log("Global variables populated:");
-        console.log("Zones:", zones.length);
-        console.log("Uses:", uses.length);
-        console.log("City Specific Areas:", citySpecificAreas.length);
-        console.log("Building Types:", buildingTypes.length);
-        console.log("Building Subtypes:", Object.keys(buildingSubtypes).length);
-        console.log("ULB Types:", (data.ulb_type || []).length);
-        console.log("ULB/RP/Special Authorities:", (data.ulb_rp_special_authority || []).length);
+        console.log("Global variables populated");
         
         // Populate dropdowns
         populateDropdown('ulb_type', data.ulb_type || []);
@@ -79,49 +72,46 @@ function addEventListeners() {
     
     // ULB Type change event
     const ulbTypeSelect = document.getElementById('ulb_type');
-    if (!ulbTypeSelect) {
-        console.error("ULB Type select element not found");
-        return;
+    if (ulbTypeSelect) {
+        ulbTypeSelect.addEventListener('change', function(e) {
+            console.log("ULB Type changed:", e.target.value);
+            
+            const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+            if (!ulbRpSpecialAuthority) {
+                console.error("ULB/RP/Special Authority select element not found");
+                return;
+            }
+            
+            const selectedUlbTypeId = e.target.value;
+            if (!ulbData.ulb_rp_special_authority) {
+                console.error("ulb_rp_special_authority data not found in ulbData");
+                return;
+            }
+            
+            // Clear existing options
+            ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+            
+            if (selectedUlbTypeId) {
+                const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
+                console.log("Filtered authorities:", filteredAuthorities);
+                
+                filteredAuthorities.forEach(auth => {
+                    const option = document.createElement('option');
+                    option.value = auth.id;
+                    option.textContent = auth.name;
+                    ulbRpSpecialAuthority.appendChild(option);
+                });
+                
+                // Enable the dropdown
+                ulbRpSpecialAuthority.disabled = false;
+            } else {
+                // If no ULB Type is selected, disable the dropdown
+                ulbRpSpecialAuthority.disabled = true;
+            }
+            
+            console.log("ULB/RP/Special Authority options updated");
+        });
     }
-    
-    ulbTypeSelect.addEventListener('change', function(e) {
-        console.log("ULB Type changed:", e.target.value);
-        
-        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-        if (!ulbRpSpecialAuthority) {
-            console.error("ULB/RP/Special Authority select element not found");
-            return;
-        }
-        
-        const selectedUlbTypeId = e.target.value;
-        if (!ulbData.ulb_rp_special_authority) {
-            console.error("ulb_rp_special_authority data not found in ulbData");
-            return;
-        }
-        
-        // Clear existing options
-        ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
-        
-        if (selectedUlbTypeId) {
-            const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
-            console.log("Filtered authorities:", filteredAuthorities);
-            
-            filteredAuthorities.forEach(auth => {
-                const option = document.createElement('option');
-                option.value = auth.id;
-                option.textContent = auth.name;
-                ulbRpSpecialAuthority.appendChild(option);
-            });
-            
-            // Enable the dropdown
-            ulbRpSpecialAuthority.disabled = false;
-        } else {
-            // If no ULB Type is selected, disable the dropdown
-            ulbRpSpecialAuthority.disabled = true;
-        }
-        
-        console.log("ULB/RP/Special Authority options updated");
-    });
 
     // Incentive FSI change event
     document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
@@ -154,7 +144,7 @@ function addEventListeners() {
     });
 
     // CRZ change event
-    document.querySelectorAll('input[name="crz"]').forEach(radio => {
+    document.querySelectorAll('input[name="crz_status"]').forEach(radio => {
         radio.addEventListener('change', function(e) {
             const crzLocation = document.getElementById('crz_location');
             if (crzLocation) {
@@ -230,6 +220,7 @@ async function handleSubmit(e) {
     }
     
     // Collect form data
+    formData = {};
     const formElements = e.target.elements;
     for (let element of formElements) {
         if (element.name) {
@@ -245,6 +236,8 @@ async function handleSubmit(e) {
         }
     }
     
+    console.log("Form data being sent:", formData);
+    
     // Validate form data
     if (!validateForm()) {
         // Hide loading indicator
@@ -256,15 +249,20 @@ async function handleSubmit(e) {
     
     // Send data to Google Sheets
     try {
-        await sendToGoogleSheets(formData);
-        alert('Form submitted successfully!');
-        e.target.reset();
-        
-        // Reset ULB/RP/Special Authority dropdown
-        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-        if (ulbRpSpecialAuthority) {
-            ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
-            ulbRpSpecialAuthority.disabled = true;
+        const result = await sendToGoogleSheets(formData);
+        console.log("Response from Google Sheets:", result);
+        if (result.result === 'success') {
+            alert('Form submitted successfully!');
+            e.target.reset();
+            
+            // Reset ULB/RP/Special Authority dropdown
+            const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+            if (ulbRpSpecialAuthority) {
+                ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+                ulbRpSpecialAuthority.disabled = true;
+            }
+        } else {
+            throw new Error(result.error || 'Unknown error occurred');
         }
     } catch (error) {
         console.error('Error submitting form:', error);
@@ -279,8 +277,6 @@ async function handleSubmit(e) {
 
 // Validate form data
 function validateForm() {
-    // Add your validation logic here
-    // For now, we'll just check if required fields are filled
     const requiredFields = document.querySelectorAll('[required]');
     for (let field of requiredFields) {
         if (!field.value) {
@@ -293,7 +289,7 @@ function validateForm() {
 
 // Send data to Google Sheets
 async function sendToGoogleSheets(data) {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbynupzlWSifTvfii8Sz74T09_GpXNJ6upgkdTvpv4iAPcAcbBnj3eosUf2_rWOBtSh5/exec'; // Replace with your actual script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwzY_0lOpUNd9zJQDKXMjgvtLBNgS0e4neiOq5HfTE4E84zNZF1v66e1y5LPPFjIS4f/exec'; // Replace with your actual web app URL
     const response = await fetch(scriptURL, {
         method: 'POST',
         body: JSON.stringify(data),
@@ -315,5 +311,4 @@ document.addEventListener('DOMContentLoaded', () => {
     loadData();
 });
 
-// Add this line at the end of the file to check if the script is loaded
 console.log("scripts.js file loaded");
