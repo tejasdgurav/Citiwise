@@ -21,6 +21,7 @@ async function loadData() {
         
         // Populate dropdowns
         populateDropdown('ulb_type', data.ulb_type);
+        populateDropdown('ulb_rp_special_authority', data.ulb_rp_special_authority);
         populateDropdown('zone', zones);
         populateDropdown('uses', uses);
         populateDropdown('city_specific_area', citySpecificAreas);
