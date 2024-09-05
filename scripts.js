@@ -33,14 +33,21 @@ async function loadData() {
         console.log("City Specific Areas:", citySpecificAreas.length);
         console.log("Building Types:", buildingTypes.length);
         console.log("Building Subtypes:", Object.keys(buildingSubtypes).length);
+        console.log("ULB Types:", (data.ulb_type || []).length);
+        console.log("ULB/RP/Special Authorities:", (data.ulb_rp_special_authority || []).length);
         
         // Populate dropdowns
         populateDropdown('ulb_type', data.ulb_type || []);
-        populateDropdown('ulb_rp_special_authority', data.ulb_rp_special_authority || []);
         populateDropdown('zone', zones);
         populateDropdown('uses', uses);
         populateDropdown('city_specific_area', citySpecificAreas);
         populateDropdown('building_type', buildingTypes);
+        
+        // Disable ULB/RP/Special Authority dropdown initially
+        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+        if (ulbRpSpecialAuthority) {
+            ulbRpSpecialAuthority.disabled = true;
+        }
         
         // Add event listeners
         addEventListeners();
@@ -105,9 +112,12 @@ function addEventListeners() {
                 option.textContent = auth.name;
                 ulbRpSpecialAuthority.appendChild(option);
             });
+            
+            // Enable the dropdown
+            ulbRpSpecialAuthority.disabled = false;
         } else {
-            // If no ULB Type is selected, show all options
-            populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || []);
+            // If no ULB Type is selected, disable the dropdown
+            ulbRpSpecialAuthority.disabled = true;
         }
         
         console.log("ULB/RP/Special Authority options updated");
@@ -249,6 +259,13 @@ async function handleSubmit(e) {
         await sendToGoogleSheets(formData);
         alert('Form submitted successfully!');
         e.target.reset();
+        
+        // Reset ULB/RP/Special Authority dropdown
+        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+        if (ulbRpSpecialAuthority) {
+            ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+            ulbRpSpecialAuthority.disabled = true;
+        }
     } catch (error) {
         console.error('Error submitting form:', error);
         alert('An error occurred while submitting the form. Please try again.');
