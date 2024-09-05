@@ -275,6 +275,7 @@ async function handleSubmit(e) {
     }
 }
 
+
 // Validate form data
 function validateForm() {
     const requiredFields = document.querySelectorAll('[required]');
@@ -289,20 +290,31 @@ function validateForm() {
 
 // Send data to Google Sheets
 async function sendToGoogleSheets(data) {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyHixBWVdDfI6B5Vs4gEZF8HLme7M1rIyLjQnDJaitLCDV5nNOo_bRKmM-A3OaGaPtY/exec'; // Replace with your actual web app URL
-    const response = await fetch(scriptURL, {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: {
-            'Content-Type': 'application/json'
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwghPqMi_NeK66vejwOTSKkpEiUtsc6k54s0p7e-px7RaDdp6ZGtyShbUsemJtksiPT/exec'; // Replace with your actual web app URL
+    try {
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'omit',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            redirect: 'follow',
+            body: JSON.stringify(data)
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    });
-    
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
+        
+        const result = await response.json();
+        console.log('Success:', result);
+        return result;
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
     }
-    
-    return response.json();
 }
 
 // Initialize the form
