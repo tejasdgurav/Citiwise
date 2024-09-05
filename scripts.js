@@ -83,7 +83,6 @@ function setupEventListeners() {
   });
 
   // Incentive FSI radio button change event
-  document.addEventListener('DOMContentLoaded', function() {
   const incentiveFsiRadios = document.querySelectorAll('input[name="incentive_fsi"]');
   incentiveFsiRadios.forEach(radio => {
     radio.addEventListener('change', function() {
