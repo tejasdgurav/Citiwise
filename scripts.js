@@ -5,6 +5,7 @@ let uses = [];
 let citySpecificAreas = [];
 let buildingTypes = [];
 let buildingSubtypes = {};
+let ulbData = {}; // Store all ULB data
 
 // Load data from JSON
 async function loadData() {
@@ -18,10 +19,10 @@ async function loadData() {
         citySpecificAreas = data.city_specific_area;
         buildingTypes = data.building_type;
         buildingSubtypes = data.building_subtype;
+        ulbData = data; // Store all data for later use
         
         // Populate dropdowns
         populateDropdown('ulb_type', data.ulb_type);
-        populateDropdown('ulb_rp_special_authority', data.ulb_rp_special_authority);
         populateDropdown('zone', zones);
         populateDropdown('uses', uses);
         populateDropdown('city_specific_area', citySpecificAreas);
@@ -55,7 +56,7 @@ function addEventListeners() {
         ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
         
         const selectedUlbTypeId = e.target.value;
-        const filteredAuthorities = data.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
+        const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
         
         filteredAuthorities.forEach(auth => {
             const option = document.createElement('option');
