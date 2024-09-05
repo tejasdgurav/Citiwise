@@ -86,7 +86,7 @@ function setupEventListeners() {
   const incentiveFsiRadios = document.querySelectorAll('input[name="incentive_fsi"]');
   incentiveFsiRadios.forEach(radio => {
     radio.addEventListener('change', function() {
-      const incentiveFsiDetails = document.getElementById('incentiveFsiDetails');
+      const incentiveFsiDetails = document.getElementById('incentive_fsi_rating');
       incentiveFsiDetails.classList.toggle('hidden', this.value === 'No');
     });
   });
