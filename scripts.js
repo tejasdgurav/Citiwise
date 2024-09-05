@@ -86,8 +86,8 @@ function setupEventListeners() {
   const incentiveFsiRadios = document.querySelectorAll('input[name="incentive_fsi"]');
   incentiveFsiRadios.forEach(radio => {
     radio.addEventListener('change', function() {
-      const incentiveFsiDetails = document.getElementById('incentive_fsi_rating');
-      incentiveFsiDetails.classList.toggle('hidden', this.value === 'No');
+      const incentive_fsi_rating = document.getElementById('incentive_fsi_rating');
+      incentive_fsi_rating.classList.toggle('hidden', this.value === 'No');
     });
   });
 
@@ -95,8 +95,8 @@ function setupEventListeners() {
   const electricalLineRadios = document.querySelectorAll('input[name="electrical_line"]');
   electricalLineRadios.forEach(radio => {
     radio.addEventListener('change', function() {
-      const electricLineDetails = document.getElementById('electrical_line_voltage');
-      electricLineDetails.classList.toggle('hidden', this.value === 'No');
+      const electrical_line_voltage = document.getElementById('electrical_line_voltage');
+      electrical_line_voltage.classList.toggle('hidden', this.value === 'No');
     });
   });
 
