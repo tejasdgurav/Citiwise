@@ -92,10 +92,10 @@ function setupEventListeners() {
   });
 
   // Electrical Line radio button change event
-  const electricalLineRadios = document.querySelectorAll('input[name="electricalLine"]');
+  const electricalLineRadios = document.querySelectorAll('input[name="electrical_line"]');
   electricalLineRadios.forEach(radio => {
     radio.addEventListener('change', function() {
-      const electricLineDetails = document.getElementById('electricLineDetails');
+      const electricLineDetails = document.getElementById('electrical_line_voltage');
       electricLineDetails.classList.toggle('hidden', this.value === 'No');
     });
   });
