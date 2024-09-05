@@ -11,7 +11,7 @@ let ulbData = {}; // Store all ULB data
 async function loadData() {
     try {
         console.log("Fetching data from data.json");
-        const response = await fetch('data.json');
+        const response = await fetch('/Citiwise/data.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
