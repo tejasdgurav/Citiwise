@@ -17,13 +17,13 @@
                 <legend>Applicant Information</legend>
                 
                 <div class="form-group">
-                    <label for="applicantName">Applicant Name</label>
-                    <input type="text" id="applicantName" name="applicant_name" required>
+                    <label for="applicant_name">Applicant Name</label>
+                    <input type="text" id="applicant_name" name="applicant_name" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="contactNo">Contact No</label>
-                    <input type="tel" id="contactNo" name="contact_no" required>
+                    <label for="contact_no">Contact No</label>
+                    <input type="tel" id="contact_no" name="contact_no" required>
                 </div>
                 
                 <div class="form-group">
@@ -36,38 +36,38 @@
                 <legend>Project Information</legend>
                 
                 <div class="form-group">
-                    <label for="projectName">Project Name</label>
-                    <input type="text" id="projectName" name="project_name" required>
+                    <label for="project_name">Project Name</label>
+                    <input type="text" id="project_name" name="project_name" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="siteAddress">Site Address</label>
-                    <textarea id="siteAddress" name="site_address" required></textarea>
+                    <label for="site_address">Site Address</label>
+                    <textarea id="site_address" name="site_address" required></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="dpRpPart">DP/RP Part Plan</label>
-                    <input type="file" id="dpRpPart" name="dp_rp_part_plan" accept=".pdf,.jpg,.jpeg,.png">
+                    <label for="dp_rp_part_plan">DP/RP Part Plan</label>
+                    <input type="file" id="dp_rp_part_plan" name="dp_rp_part_plan" accept=".pdf,.jpg,.jpeg,.png">
                 </div>
                 
                 <div class="form-group">
-                    <label for="googleImage">Google Image</label>
-                    <input type="file" id="googleImage" name="google_image" accept=".jpg,.jpeg,.png">
+                    <label for="google_image">Google Image</label>
+                    <input type="file" id="google_image" name="google_image" accept=".jpg,.jpeg,.png">
                 </div>
                 
                 <div class="form-group">
-                    <label for="ulbType">ULB Type</label>
-                    <select id="ulbType" name="ulb_type" required></select>
+                    <label for="ulb_type">ULB Type</label>
+                    <select id="ulb_type" name="ulb_type" required></select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="ulb">ULB/RP/Special Authority</label>
-                    <select id="ulb" name="ulb_rp_special_authority" required></select>
+                    <label for="ulb_rp_special_authority">ULB/RP/Special Authority</label>
+                    <select id="ulb_rp_special_authority" name="ulb_rp_special_authority" required></select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="specialScheme">Special Scheme</label>
-                    <select id="specialScheme" name="special_scheme">
+                    <label for="special_scheme">Special Scheme</label>
+                    <select id="special_scheme" name="special_scheme">
                         <option value="">Select a scheme</option>
                         <option value="pmay">Pradhan Mantri Awas Yojna</option>
                         <option value="ahs">Affordable Housing Scheme</option>
@@ -87,8 +87,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="developmentType">Type of Development</label>
-                    <select id="developmentType" name="type_of_development" required>
+                    <label for="type_of_development">Type of Development</label>
+                    <select id="type_of_development" name="type_of_development" required>
                         <option value="">Select type</option>
                         <option value="lig">LIG</option>
                         <option value="rowHouse">Row House</option>
@@ -124,8 +124,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="proposalType">Type of Proposal</label>
-                    <select id="proposalType" name="type_of_proposal" required>
+                    <label for="type_of_proposal">Type of Proposal</label>
+                    <select id="type_of_proposal" name="type_of_proposal" required>
                         <option value="">Select type</option>
                         <option value="residential">Residential</option>
                         <option value="commercial">Commercial</option>
@@ -195,13 +195,13 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="roadDetails">Road Details in Meter (as on DP)</label>
-                    <input type="number" id="roadDetails" name="road_details_meter" min="0" step="0.01" required>
+                    <label for="road_details_meter">Road Details in Meter (as on DP)</label>
+                    <input type="number" id="road_details_meter" name="road_details_meter" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="plotType">Type of Plot/Layout</label>
-                    <select id="plotType" name="plot_layout_type" required>
+                    <label for="plot_layout_type">Type of Plot/Layout</label>
+                    <select id="plot_layout_type" name="plot_layout_type" required>
                         <option value="">Select type</option>
                         <option value="sanctionLayout">Sanction Layout/Sub Layout</option>
                         <option value="gunthewari">Gunthewari</option>
@@ -216,14 +216,14 @@
                 <div class="form-group">
                     <label>Reservation Area Affected</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="reservationAreaAffected" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="reservation_area_affected" value="Yes" required> Yes</label>
                         <label><input type="radio" name="reservation_area_affected" value="No" required> No</label>
                     </div>
                 </div>
                 
-                <div id="reservationAreaAffectedDetails" class="form-group hidden">
-                    <label for="reservationAreaAffectedSqm">Reservation Area Affected (Sq.M.)</label>
-                    <input type="number" id="reservationAreaAffectedSqm" name="reservation_area_sqm" min="0" step="0.01">
+                <div id="reservation_area_sqm" class="form-group hidden">
+                    <label for="reservation_area_sqm">Reservation Area Affected (Sq.M.)</label>
+                    <input type="number" id="reservation_area_sqm" name="reservation_area_sqm" min="0" step="0.01">
                 </div>
                 
                 <div class="form-group">
@@ -234,9 +234,9 @@
                     </div>
                 </div>
                 
-                <div id="crzAffectedDetails" class="form-group hidden">
-                    <label for="crzArea">CRZ Area</label>
-                    <select id="crzArea" name="crz_location">
+                <div id="crz_location" class="form-group hidden">
+                    <label for="crz_location">CRZ Area</label>
+                    <select id="crz_location" name="crz_location">
                         <option value="">Select area</option>
                         <option value="ratnagiri">Ratnagiri</option>
                         <option value="murudJanjira">Murud-Janjira Municipal Council</option>
@@ -255,8 +255,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="plotIdType">Plot Identification Type</label>
-                    <select id="plotIdType" name="survey_type" required>
+                    <label for="survey_type">Plot Identification Type</label>
+                    <select id="survey_type" name="survey_type" required>
                         <option value="">Select type</option>
                         <option value="tikkaNumber">Tikka Number</option>
                         <option value="citySurveyNo">City Survey No.</option>
@@ -267,40 +267,40 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="plotIdNumber">Plot Identification Number</label>
-                    <input type="text" id="plotIdNumber" name="survey_number" required>
+                    <label for="survey_number">Plot Identification Number</label>
+                    <input type="text" id="survey_number" name="survey_number" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="villageName">Village/Mouje Name</label>
-                    <input type="text" id="villageName" name="village_name" required>
+                    <label for="village_name">Village/Mouje Name</label>
+                    <input type="text" id="village_name" name="village_name" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="plotAreaSite">Area of plot as per site (Sq.M.)</label>
-                    <input type="number" id="plotAreaSite" name="area_plot_site_sqm" min="0" step="0.01" required>
+                    <label for="area_plot_site_sqm">Area of plot as per site (Sq.M.)</label>
+                    <input type="number" id="area_plot_site_sqm" name="area_plot_site_sqm" min="0" step="0.01" required>
                 </div>
                 
                <div class="form-group">
-                    <label for="plotAreaOwnership">Area of plot as per ownership document (Sq.M.)</label>
-                    <input type="number" id="plotAreaOwnership" name="area_plot_ownership_sqm" min="0" step="0.01" required>
+                    <label for="area_plot_ownership_sqm">Area of plot as per ownership document (Sq.M.)</label>
+                    <input type="number" id="area_plot_ownership_sqm" name="area_plot_ownership_sqm" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="plotAreaMeasurement">Area of plot as per measurement sheet (Sq.M.)</label>
-                    <input type="number" id="plotAreaMeasurement" name="area_plot_measurement_sqm" min="0" step="0.01" required>
+                    <label for="area_plot_measurement_sqm">Area of plot as per measurement sheet (Sq.M.)</label>
+                    <input type="number" id="area_plot_measurement_sqm" name="area_plot_measurement_sqm" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="proRataFsi">Pro Rata FSI</label>
-                    <input type="number" id="proRataFsi" name="pro_rata_fsi" min="0" step="0.01" required>
+                    <label for="pro_rata_fsi">Pro Rata FSI</label>
+                    <input type="number" id="pro_rata_fsi" name="pro_rata_fsi" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Class of Land</label>
                     <div class="radio-group">
                         <label><input type="radio" name="class_of_land" value="Class1" required> Class 1</label>
-                        <label><input type="radio" name="class_of_land  " value="Class2" required> Class 2</label>
+                        <label><input type="radio" name="class_of_land" value="Class2" required> Class 2</label>
                     </div>
                 </div>
                 
@@ -312,19 +312,19 @@
                     </div>
                 </div>
                 
-                <div id="dpRpRoadAffectedDetails" class="form-group hidden">
-                    <label for="dpRpRoadAffectedArea">DP/RP road affected (Sq.M.)</label>
-                    <input type="number" id="dpRpRoadAffectedArea" name="dp_rp_road_area_sqm" min="0" step="0.01">
+                <div id="dp_rp_road_area_sqm" class="form-group hidden">
+                    <label for="dp_rp_road_area_sqm">DP/RP road affected (Sq.M.)</label>
+                    <input type="number" id="dp_rp_road_area_sqm" name="dp_rp_road_area_sqm" min="0" step="0.01">
                 </div>
                 
                 <div class="form-group">
-                    <label for="citySpecificArea">City Specific Area</label>
-                    <select id="citySpecificArea" name="city_specific_area" required></select>
+                    <label for="city_specific_area">City Specific Area</label>
+                    <select id="city_specific_area" name="city_specific_area" required></select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="buildingHeight">Height of Building</label>
-                    <select id="buildingHeight" name="building_height" required>
+                    <label for="building_height">Height of Building</label>
+                    <select id="building_height" name="building_height" required>
                         <option value="">Select height</option>
                         <option value="below15">Below 15 meter</option>
                         <option value="15-24">15-24 meter</option>
@@ -341,8 +341,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="plotWidth">Plot width (in meter)</label>
-                    <input type="number" id="plotWidth" name="plot_width" min="0" step="0.01" required>
+                    <label for="plot_width">Plot width (in meter)</label>
+                    <input type="number" id="plot_width" name="plot_width" min="0" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
@@ -354,13 +354,13 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="buildingType">Building type</label>
-                    <select id="buildingType" name="building_type" required></select>
+                    <label for="building_type">Building type</label>
+                    <select id="building_type" name="building_type" required></select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="buildingSubtype">Building subtypes</label>
-                    <select id="buildingSubtype" name="building_subtype" required></select>
+                    <label for="building_subtype">Building subtypes</label>
+                    <select id="building_subtype" name="building_subtype" required></select>
                 </div>
             </fieldset>
             
@@ -368,12 +368,11 @@
                 <legend>Plot Boundaries</legend>
                 
                 <div class="form-group">
-                    <label for="frontBoundary">Front</label>
-                    <select id="frontBoundary" name="frontBoundary" required>
+                    <label for="front_boundary">Front</label>
+                    <select id="front_boundary" name="front_boundary" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
                         <option value="OtherProperty">Other Property</option>
-                        <option value="Layout">Layout</option>
                         <option value="OpenSpace">Open Space</option>
                     </select>
                     <div id="front-road-details" class="road-details" style="display:none;">
