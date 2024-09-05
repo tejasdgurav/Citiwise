@@ -290,27 +290,21 @@ function validateForm() {
 
 // Send data to Google Sheets
 async function sendToGoogleSheets(data) {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyRyOdxmj3M5NKQT9LtcxufVyvVKakUxJKyYBC_9qL5BUqoXeJi7Lh83zP_Smmayc4L/exec'; // Replace with your actual web app URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwXDQnVM9IhsUPk_CWRaEtoukol0tJy6eZ07x-PAxKnoJSQI6LMsp4Arhhv3zzAlv4A/exec'; // Replace with your actual web app URL
     try {
-        const response = await fetch(scriptURL, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'omit',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            redirect: 'follow',
-            body: JSON.stringify(data)
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const formData = new URLSearchParams();
+        for (const key in data) {
+            formData.append(key, data[key]);
         }
         
-        const result = await response.json();
-        console.log('Success:', result);
-        return result;
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors', // This is important
+            body: formData
+        });
+        
+        console.log('Success:', response);
+        return { result: 'success' };
     } catch (error) {
         console.error('Error:', error);
         throw error;
