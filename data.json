@@ -1,5 +1,5 @@
 {
-    "ulbTypes": [
+    "ulb_type": [
         { "id": 1, "name": "Municipal Corporation" },
         { "id": 2, "name": "Municipal Council" },
         { "id": 3, "name": "Nagar Panchayat" },
@@ -9,7 +9,7 @@
         { "id": 7, "name": "Special Planning Authority" }
     ],
 
-    "ulbs": [
+    "ulb_rp_special_authority": [
         { "id": 1, "name": "Kolhapur Municipal Corporation", "typeId": 1 },
         { "id": 2, "name": "Nashik Municipal Corporation", "typeId": 1 },
         { "id": 3, "name": "Mumbai Municipal Corporation", "typeId": 1 },
@@ -255,7 +255,7 @@
         { "id": 243, "name": "Mukhed Municipal Council", "typeId": 2 }
     ],
 
-    "zones": [
+    "zone": [
         { "id": 1, "name": "Purely Residential Zone(R1)", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
         { "id": 2, "name": "Residential Zone(R2)" },
         { "id": 3, "name": "Residential Zone with Shop line. (R-2)" },
@@ -317,7 +317,7 @@
         { "id": 15, "name": "Bus shelters, Taxi-Rickshaw stands, trolley bus shelters, Railway Station, Metro station, BRT stand, cycle stand and like uses" }
     ],
     
-    "citySpecificAreas": [
+    "city_specific_area": [
         { "id": 1, "name": "Area 1" },
         { "id": 2, "name": "Area 2" },
         { "id": 3, "name": "Area 3" },
@@ -325,14 +325,14 @@
         { "id": 5, "name": "Area 5" }
     ],
     
-    "buildingTypes": [
+    "building_type": [
         { "id": 1, "name": "Residential" },
         { "id": 2, "name": "Commercial" },
         { "id": 3, "name": "Industrial" },
         { "id": 4, "name": "Mixed Use" }
     ],
     
-    "buildingSubtypes": {
+    "building_subtype": {
         "1": [
             { "id": 1, "name": "Apartment" },
             { "id": 2, "name": "Villa" },

@@ -1,245 +1,217 @@
-// Load JSON data
+// Global variables
 let formData = {};
+let zones = [];
+let uses = [];
+let citySpecificAreas = [];
+let buildingTypes = [];
+let buildingSubtypes = {};
 
-fetch('data.json')
-  .then(response => response.json())
-  .then(data => {
-    formData = data;
-    populateFormFields();
-  })
-  .catch(error => {
-    console.error('Error loading JSON data:', error);
-    toggleLoadingIndicator(false); // Hide loading indicator even if there's an error
-    alert('There was an error loading the form data. Please refresh the page and try again.');
-  });
-
-function populateFormFields() {
-  // Populate ULB Type
-  populateSelect('ulbType', formData.ulbTypes);
-
-  // Populate Zones
-  populateSelect('zone', formData.zones);
-
-  // Populate Uses
-  populateSelect('uses', formData.uses);
-
-  // Populate City Specific Area
-  populateSelect('citySpecificArea', formData.citySpecificAreas);
-
-  // Populate Building Type
-  populateSelect('buildingType', formData.buildingTypes);
-
-  // Set up event listeners
-  setupEventListeners();
-
-  // Hide loading indicator
-  toggleLoadingIndicator(false);
-  
-  console.log('Form fields populated'); // Add this for debugging
-}
-
-function populateSelect(selectId, options) {
-  const select = document.getElementById(selectId);
-  select.innerHTML = '<option value="">Select an option</option>';
-  options.forEach(option => {
-    const optionElement = document.createElement('option');
-    optionElement.value = option.id;
-    optionElement.textContent = option.name;
-    select.appendChild(optionElement);
-  });
-}
-
-function setupEventListeners() {
-  // ULB Type change event
-  document.getElementById('ulbType').addEventListener('change', function() {
-    const ulbSelect = document.getElementById('ulb');
-    ulbSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority</option>';
-    
-    const selectedUlbTypeId = this.value;
-    const filteredUlbs = formData.ulbs.filter(ulb => ulb.typeId == selectedUlbTypeId);
-    
-    filteredUlbs.forEach(ulb => {
-      const option = document.createElement('option');
-      option.value = ulb.id;
-      option.textContent = ulb.name;
-      ulbSelect.appendChild(option);
-    });
-  });
-
-  // Building Type change event
-  document.getElementById('buildingType').addEventListener('change', function() {
-    const subtypeSelect = document.getElementById('buildingSubtype');
-    subtypeSelect.innerHTML = '<option value="">Select a subtype</option>';
-    
-    const selectedBuildingTypeId = this.value;
-    const subtypes = formData.buildingSubtypes[selectedBuildingTypeId] || [];
-    
-    subtypes.forEach(subtype => {
-      const option = document.createElement('option');
-      option.value = subtype.id;
-      option.textContent = subtype.name;
-      subtypeSelect.appendChild(option);
-    });
-  });
-
-  // Incentive FSI radio button change event
-  const incentiveFsiRadios = document.querySelectorAll('input[name="incentive_fsi"]');
-  incentiveFsiRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      const incentiveFsiDetails = document.getElementById('incentive_fsi_rating');
-      incentiveFsiDetails.classList.toggle('hidden', this.value === 'No');
-    });
-  });
-
-  // Electrical Line radio button change event
-  const electricalLineRadios = document.querySelectorAll('input[name="electrical_line"]');
-  electricalLineRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      const electrical_line_voltage = document.getElementById('electrical_line_voltage');
-      electrical_line_voltage.classList.toggle('hidden', this.value === 'No');
-    });
-  });
-
-  // Reservation Area Affected radio button change event
-  const reservationAreaRadios = document.querySelectorAll('input[name="reservationAreaAffected"]');
-  reservationAreaRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      const reservationAreaDetails = document.getElementById('reservationAreaAffectedDetails');
-      reservationAreaDetails.classList.toggle('hidden', this.value === 'No');
-    });
-  });
-
-  // CRZ Affected radio button change event
-  const crzAffectedRadios = document.querySelectorAll('input[name="crzAffected"]');
-  crzAffectedRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      const crzAffectedDetails = document.getElementById('crzAffectedDetails');
-      crzAffectedDetails.classList.toggle('hidden', this.value === 'No');
-    });
-  });
-
-  // DP/RP Road Affected radio button change event
-  const dpRpRoadAffectedRadios = document.querySelectorAll('input[name="dpRpRoadAffected"]');
-  dpRpRoadAffectedRadios.forEach(radio => {
-    radio.addEventListener('change', function() {
-      const dpRpRoadAffectedDetails = document.getElementById('dpRpRoadAffectedDetails');
-      dpRpRoadAffectedDetails.classList.toggle('hidden', this.value === 'No');
-    });
-  });
-
-  // Plot Boundaries change events
-  const boundaryTypes = ['front', 'left', 'right', 'rear'];
-  boundaryTypes.forEach(type => {
-    const select = document.getElementById(`${type}Boundary`);
-    const roadDetails = document.getElementById(`${type}-road-details`);
-    
-    select.addEventListener('change', function() {
-      roadDetails.style.display = this.value === 'Road' ? 'block' : 'none';
-    });
-  });
-}
-
-// Form submission handler
-document.querySelector('form').addEventListener('submit', function(e) {
-  e.preventDefault();
-  
-  // Perform form validation here
-  if (validateForm()) {
-    // If form is valid, you can submit the data or perform further actions
-    console.log('Form submitted successfully');
-    // You can add an AJAX call here to submit the form data to a server
-  } else {
-    console.log('Form validation failed');
-  }
-});
-
-function validateForm() {
-  // Add your form validation logic here
-  // Return true if the form is valid, false otherwise
-  // This is a basic example, you should add more comprehensive validation
-  
-  const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
-  let isValid = true;
-
-  requiredFields.forEach(field => {
-    if (!field.value.trim()) {
-      isValid = false;
-      field.classList.add('invalid');
-    } else {
-      field.classList.remove('invalid');
+// Load data from JSON
+async function loadData() {
+    try {
+        const response = await fetch('data.json');
+        const data = await response.json();
+        
+        // Populate global variables
+        zones = data.zone;
+        uses = data.uses;
+        citySpecificAreas = data.city_specific_area;
+        buildingTypes = data.building_type;
+        buildingSubtypes = data.building_subtype;
+        
+        // Populate dropdowns
+        populateDropdown('ulb_type', data.ulb_type);
+        populateDropdown('zone', zones);
+        populateDropdown('uses', uses);
+        populateDropdown('city_specific_area', citySpecificAreas);
+        populateDropdown('building_type', buildingTypes);
+        
+        // Add event listeners
+        addEventListeners();
+    } catch (error) {
+        console.error('Error loading data:', error);
     }
-  });
-
-  return isValid;
 }
 
-// Helper function to show/hide loading indicator
-function toggleLoadingIndicator(show) {
-  const loadingIndicator = document.querySelector('.loading-indicator');
-  if (loadingIndicator) {
-    loadingIndicator.style.display = show ? 'flex' : 'none';
-  }
-  
-  // Enable or disable the form
-  const form = document.getElementById('udcprForm');
-  if (form) {
-    form.style.pointerEvents = show ? 'none' : 'auto';
-    form.style.opacity = show ? '0.5' : '1';
-  }
-  
-  console.log('Loading indicator toggled:', show); // Add this for debugging
-}
-
-// Call this function when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-  toggleLoadingIndicator(true);
-  // The loading indicator will be hidden once the JSON data is loaded and the form is populated
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('udcprForm');
-  
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      console.log('Form submitted');
-      
-      const formData = new FormData(form);
-      
-      // Show loading indicator
-      toggleLoadingIndicator(true);
-      
-      fetch(form.action, {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.text(); // Change this from response.json() to response.text()
-      })
-      .then(data => {
-        console.log('Success:', data);
-        try {
-          const jsonData = JSON.parse(data);
-          alert('Form submitted successfully!');
-        } catch (error) {
-          console.error('Error parsing JSON:', error);
-          alert('Form submitted, but there was an issue processing the response. Please check with the administrator.');
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        alert('An error occurred. Please try again.');
-      })
-      .finally(() => {
-        // Hide loading indicator
-        toggleLoadingIndicator(false);
-      });
+// Populate dropdown function
+function populateDropdown(id, options) {
+    const select = document.getElementById(id);
+    if (!select) return; // Skip if element doesn't exist
+    select.innerHTML = '<option value="">Select an option</option>';
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.id;
+        optionElement.textContent = option.name;
+        select.appendChild(optionElement);
     });
-  } else {
-    console.error('Form element not found');
-  }
-});
+}
+
+// Add event listeners
+function addEventListeners() {
+    // ULB Type change event
+    document.getElementById('ulb_type').addEventListener('change', function(e) {
+        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+        ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+        
+        const selectedUlbTypeId = e.target.value;
+        const filteredAuthorities = data.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
+        
+        filteredAuthorities.forEach(auth => {
+            const option = document.createElement('option');
+            option.value = auth.id;
+            option.textContent = auth.name;
+            ulbRpSpecialAuthority.appendChild(option);
+        });
+    });
+
+    // Incentive FSI change event
+    document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
+            incentiveFsiRating.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+        });
+    });
+
+    // Electrical Line change event
+    document.querySelectorAll('input[name="electrical_line"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const electricalLineVoltage = document.getElementById('electrical_line_voltage');
+            electricalLineVoltage.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+        });
+    });
+
+    // Reservation Area Affected change event
+    document.querySelectorAll('input[name="reservation_area_affected"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const reservationAreaSqm = document.getElementById('reservation_area_sqm');
+            reservationAreaSqm.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+        });
+    });
+
+    // CRZ change event
+    document.querySelectorAll('input[name="crz"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const crzLocation = document.getElementById('crz_location');
+            crzLocation.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+        });
+    });
+
+    // DP/RP road affected change event
+    document.querySelectorAll('input[name="dp_rp_road_affected"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const dpRpRoadAreaSqm = document.getElementById('dp_rp_road_area_sqm');
+            dpRpRoadAreaSqm.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+        });
+    });
+
+    // Building type change event
+    document.getElementById('building_type').addEventListener('change', function(e) {
+        const buildingSubtype = document.getElementById('building_subtype');
+        buildingSubtype.innerHTML = '<option value="">Select an option</option>';
+        
+        const selectedBuildingTypeId = e.target.value;
+        const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
+        
+        subtypes.forEach(subtype => {
+            const option = document.createElement('option');
+            option.value = subtype.id;
+            option.textContent = subtype.name;
+            buildingSubtype.appendChild(option);
+        });
+    });
+
+    // Plot boundaries change events
+    ['front', 'left', 'right', 'rear'].forEach(boundary => {
+        const boundarySelect = document.getElementById(`${boundary}_boundary`);
+        if (boundarySelect) {
+            boundarySelect.addEventListener('change', function(e) {
+                const roadDetails = document.getElementById(`${boundary}-road-details`);
+                if (roadDetails) {
+                    roadDetails.style.display = e.target.value === 'Road' ? 'block' : 'none';
+                }
+            });
+        }
+    });
+
+    // Form submission event
+    document.getElementById('project-input-form').addEventListener('submit', handleSubmit);
+}
+
+// Handle form submission
+async function handleSubmit(e) {
+    e.preventDefault();
+    
+    // Show loading indicator
+    document.querySelector('.loading-indicator').style.display = 'flex';
+    
+    // Collect form data
+    const formElements = e.target.elements;
+    for (let element of formElements) {
+        if (element.name) {
+            if (element.type === 'radio') {
+                if (element.checked) {
+                    formData[element.name] = element.value;
+                }
+            } else if (element.type === 'file') {
+                formData[element.name] = element.files[0] ? element.files[0].name : '';
+            } else {
+                formData[element.name] = element.value;
+            }
+        }
+    }
+    
+    // Validate form data
+    if (!validateForm()) {
+        // Hide loading indicator
+        document.querySelector('.loading-indicator').style.display = 'none';
+        return;
+    }
+    
+    // Send data to Google Sheets
+    try {
+        await sendToGoogleSheets(formData);
+        alert('Form submitted successfully!');
+        e.target.reset();
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('An error occurred while submitting the form. Please try again.');
+    }
+    
+    // Hide loading indicator
+    document.querySelector('.loading-indicator').style.display = 'none';
+}
+
+// Validate form data
+function validateForm() {
+    // Add your validation logic here
+    // For now, we'll just check if required fields are filled
+    const requiredFields = document.querySelectorAll('[required]');
+    for (let field of requiredFields) {
+        if (!field.value) {
+            alert(`Please fill out the ${field.name} field.`);
+            return false;
+        }
+    }
+    return true;
+}
+
+// Send data to Google Sheets
+async function sendToGoogleSheets(data) {
+    const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your actual script URL
+    const response = await fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    
+    return response.json();
+}
+
+// Initialize the form
+document.addEventListener('DOMContentLoaded', loadData);

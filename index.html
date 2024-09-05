@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    
-    <div class="container">
-    <div class="loading-indicator" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); justify-content: center; align-items: center; z-index: 9999;">Loading...</div>
-        <h1>Project Input Form</h1>
+    <div class="loading-indicator" style="display: none;">Loading...</div>
 
-        <form id="udcprForm" action="https://script.google.com/macros/s/AKfycbwduXA0Qf4sJUbiTKHbBOsy-ieZWEHqdYWy-_eZKDWpMDAsvfY4TX4SPwEFKKer1pXf/exec" method="POST">
+    <div class="container">
+        <h1>Project Input Form</h1>
+        
+        <form id="project-input-form">
             <fieldset>
                 <legend>Applicant Information</legend>
                 
@@ -31,7 +31,7 @@
                     <input type="email" id="email" name="email" required>
                 </div>
             </fieldset>
-            
+
             <fieldset>
                 <legend>Project Information</legend>
                 
@@ -47,34 +47,38 @@
                 
                 <div class="form-group">
                     <label for="dp_rp_part_plan">DP/RP Part Plan</label>
-                    <input type="file" id="dp_rp_part_plan" name="dp_rp_part_plan" accept=".pdf,.jpg,.jpeg,.png">
+                    <input type="file" id="dp_rp_part_plan" name="dp_rp_part_plan" accept="image/*,application/pdf">
                 </div>
                 
                 <div class="form-group">
                     <label for="google_image">Google Image</label>
-                    <input type="file" id="google_image" name="google_image" accept=".jpg,.jpeg,.png">
+                    <input type="file" id="google_image" name="google_image" accept="image/*">
                 </div>
                 
                 <div class="form-group">
                     <label for="ulb_type">ULB Type</label>
-                    <select id="ulb_type" name="ulb_type" required></select>
+                    <select id="ulb_type" name="ulb_type" required>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="ulb_rp_special_authority">ULB/RP/Special Authority</label>
-                    <select id="ulb_rp_special_authority" name="ulb_rp_special_authority" required></select>
+                    <select id="ulb_rp_special_authority" name="ulb_rp_special_authority" required>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="special_scheme">Special Scheme</label>
                     <select id="special_scheme" name="special_scheme">
                         <option value="">Select a scheme</option>
-                        <option value="pmay">Pradhan Mantri Awas Yojna</option>
-                        <option value="ahs">Affordable Housing Scheme</option>
-                        <option value="iitt">Integrated Information Technology Township</option>
-                        <option value="ilp">Integrated Logistic Park</option>
-                        <option value="ths">Tourism and Hospitality Services</option>
-                        <option value="itadmp">Industrial Township under Aerospace and Defence Manufacturing Policy</option>
+                        <option value="Pradhan Mantri Awas Yojna">Pradhan Mantri Awas Yojna</option>
+                        <option value="Affordable Housing Scheme">Affordable Housing Scheme</option>
+                        <option value="Integrated Information Technology Township">Integrated Information Technology Township</option>
+                        <option value="Integrated Logistic Park">Integrated Logistic Park</option>
+                        <option value="Tourism and Hospitality Services">Tourism and Hospitality Services</option>
+                        <option value="Industrial Township under Aerospace and Defence Manufacturing Policy">Industrial Township under Aerospace and Defence Manufacturing Policy</option>
                     </select>
                 </div>
                 
@@ -90,12 +94,12 @@
                     <label for="type_of_development">Type of Development</label>
                     <select id="type_of_development" name="type_of_development" required>
                         <option value="">Select type</option>
-                        <option value="lig">LIG</option>
-                        <option value="rowHouse">Row House</option>
-                        <option value="semiDetached">Semi Detached</option>
-                        <option value="detached">Detached</option>
-                        <option value="groupHousing">Group Housing</option>
-                        <option value="plot">Independent Plot</option>
+                        <option value="LIG">LIG</option>
+                        <option value="Row House">Row House</option>
+                        <option value="Semi Detached">Semi Detached</option>
+                        <option value="Detached">Detached</option>
+                        <option value="Group Housing">Group Housing</option>
+                        <option value="Independent Plot">Independent Plot</option>
                     </select>
                 </div>
                 
@@ -107,19 +111,19 @@
                     </div>
                 </div>
                 
-                <div id="incentive_fsi_rating" class="form-group hidden">
-                    <label for="incentive_fsi_rating">Incentive FSI Rating</label>
-                    <select id="incentive_fsi_rating" name="incentive_fsi_rating">
+                <div class="form-group hidden" id="incentive_fsi_rating">
+                    <label for="incentive_fsi_rating_select">Incentive FSI Rating</label>
+                    <select id="incentive_fsi_rating_select" name="incentive_fsi_rating">
                         <option value="">Select rating</option>
-                        <option value="griha3">GRIHA 3 Star</option>
-                        <option value="igbcSilver">IGBC Silver</option>
-                        <option value="leedSilver">LEED Silver</option>
-                        <option value="griha4">GRIHA 4 Star</option>
-                        <option value="igbcGold">IGBC Gold</option>
-                        <option value="leedGold">LEED Gold</option>
-                        <option value="griha5">GRIHA 5 Star</option>
-                        <option value="igbcPlatinum">IGBC Platinum</option>
-                        <option value="leedPlatinum">LEED Platinum</option>
+                        <option value="GRIHA 3 Star">GRIHA 3 Star</option>
+                        <option value="IGBC Silver">IGBC Silver</option>
+                        <option value="LEED Silver">LEED Silver</option>
+                        <option value="GRIHA 4 Star">GRIHA 4 Star</option>
+                        <option value="IGBC Gold">IGBC Gold</option>
+                        <option value="LEED Gold">LEED Gold</option>
+                        <option value="GRIHA 5 Star">GRIHA 5 Star</option>
+                        <option value="IGBC Platinum">IGBC Platinum</option>
+                        <option value="LEED Platinum">LEED Platinum</option>
                     </select>
                 </div>
                 
@@ -127,40 +131,39 @@
                     <label for="type_of_proposal">Type of Proposal</label>
                     <select id="type_of_proposal" name="type_of_proposal" required>
                         <option value="">Select type</option>
-                        <option value="residential">Residential</option>
-                        <option value="commercial">Commercial</option>
-                        <option value="industrial">Industrial</option>
-                        <option value="mixed">Mixed</option>
-                        <option value="educational">Educational</option>
-                        <option value="groupHousing">Group Housing</option>
-                        <option value="institutional">Institutional</option>
+                        <option value="Residential">Residential</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Industrial">Industrial</option>
+                        <option value="Mixed">Mixed</option>
+                        <option value="Educational">Educational</option>
+                        <option value="Group Housing">Group Housing</option>
+                        <option value="Institutional">Institutional</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label>Is the site hilly and has gradients more than 1:5?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="hilly_site" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="hilly_site" value="No" required> No</label>
+                        <label><input type="radio" name="is_hilly" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="is_hilly" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Flood Affected Area</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="flood_affected_area" value="No" required> No</label>
-                        <label><input type="radio" name="flood_affected_area" value="Red" required> Red</label>
-                        <label><input type="radio" name="flood_affected_area" value="Blue" required> Blue</label>
+                        <label><input type="radio" name="flood_affected" value="No" required> No</label>
+                        <label><input type="radio" name="flood_affected" value="Red" required> Red</label>
+                        <label><input type="radio" name="flood_affected" value="Blue" required> Blue</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="location">Location</label>
-                    <select id="location" name="location" required>
-                        <option value="">Select location</option>
-                        <option value="congested">Congested/Gavthan/Core Area</option>
-                        <option value="nonCongested">Non Congested</option>
-                    </select>
+                    <label>Location</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="location" value="Congested/Gavthan/Core Area" required> Congested/Gavthan/Core Area</label>
+                        <label><input type="radio" name="location" value="Non Congested" required> Non Congested</label>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -171,45 +174,45 @@
                     </div>
                 </div>
                 
-                <div id="electrical_line_voltage" class="form-group hidden">
-                    <label for="electrical_line_voltage">Electric Line Voltage</label>
-                    <select id="electrical_line_voltage" name="electrical_line_voltage">
+                <div class="form-group hidden" id="electrical_line_voltage">
+                    <label for="electrical_line_voltage_select">Electric Line Voltage</label>
+                    <select id="electrical_line_voltage_select" name="electrical_line_voltage">
                         <option value="">Select voltage</option>
-                        <option value="lowMedium">Low and medium</option>
-                        <option value="high0-33000">High Voltage Line - 0 - 33000</option>
-                        <option value="extra33001-66000">Extra High Voltage Line - 33001 - 66000</option>
-                        <option value="extra66001-99000">Extra High Voltage Line - 66001- 99000</option>
-                        <option value="extra99001-132000">Extra High Voltage Line - 99001 - 132000</option>
-                        <option value="extra132001-165000">Extra High Voltage Line - 132001 - 165000</option>
-                        <option value="extra165001-198000">Extra High Voltage Line - 165001 - 198000</option>
-                        <option value="extra198001-231000">Extra High Voltage Line - 198001 - 231000</option>
-                        <option value="extra231001-264000">Extra High Voltage Line - 231001 - 264000</option>
-                        <option value="extra264001-297000">Extra High Voltage Line - 264001 - 297000</option>
-                        <option value="extra297001-330000">Extra High Voltage Line - 297001 - 330000</option>
-                        <option value="extra330001-363000">Extra High Voltage Line - 330001 - 363000</option>
-                        <option value="extra363001-396000">Extra High Voltage Line - 363001 - 396000</option>
-                        <option value="extra396001-429000">Extra High Voltage Line - 396001 - 429000</option>
-                        <option value="extra429001-462000">Extra High Voltage Line - 429001 - 462000</option>
-                        <option value="extra462001-495000">Extra High Voltage Line - 462001 - 495000</option>
+                        <option value="Low and medium">Low and medium</option>
+                        <option value="High Voltage Line - 0 - 33000">High Voltage Line - 0 - 33000</option>
+                        <option value="Extra High Voltage Line - 33001 - 66000">Extra High Voltage Line - 33001 - 66000</option>
+                        <option value="Extra High Voltage Line - 66001- 99000">Extra High Voltage Line - 66001- 99000</option>
+                        <option value="Extra High Voltage Line - 99001 - 132000">Extra High Voltage Line - 99001 - 132000</option>
+                        <option value="Extra High Voltage Line - 132001 - 165000">Extra High Voltage Line - 132001 - 165000</option>
+                        <option value="Extra High Voltage Line - 165001 - 198000">Extra High Voltage Line - 165001 - 198000</option>
+                        <option value="Extra High Voltage Line - 198001 - 231000">Extra High Voltage Line - 198001 - 231000</option>
+                        <option value="Extra High Voltage Line - 231001 - 264000">Extra High Voltage Line - 231001 - 264000</option>
+                        <option value="Extra High Voltage Line - 264001 - 297000">Extra High Voltage Line - 264001 - 297000</option>
+                        <option value="Extra High Voltage Line - 297001 - 330000">Extra High Voltage Line - 297001 - 330000</option>
+                        <option value="Extra High Voltage Line - 330001 - 363000">Extra High Voltage Line - 330001 - 363000</option>
+                        <option value="Extra High Voltage Line - 363001 - 396000">Extra High Voltage Line - 363001 - 396000</option>
+                        <option value="Extra High Voltage Line - 396001 - 429000">Extra High Voltage Line - 396001 - 429000</option>
+                        <option value="Extra High Voltage Line - 429001 - 462000">Extra High Voltage Line - 429001 - 462000</option>
+                        <option value="Extra High Voltage Line - 462001 - 495000">Extra High Voltage Line - 462001 - 495000</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="road_details_meter">Road Details in Meter (as on DP)</label>
-                    <input type="number" id="road_details_meter" name="road_details_meter" min="0" step="0.01" required>
+                    <label for="road_details">Road Details in Meter (as on DP)</label>
+                    <input type="number" id="road_details" name="road_details" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="plot_layout_type">Type of Plot/Layout</label>
-                    <select id="plot_layout_type" name="plot_layout_type" required>
+                    <label for="type_of_plot">Type of Plot/Layout</label>
+                    <select id="type_of_plot" name="type_of_plot" required>
                         <option value="">Select type</option>
-                        <option value="sanctionLayout">Sanction Layout/Sub Layout</option>
-                        <option value="gunthewari">Gunthewari</option>
-                        <option value="compoundingStructure">Compounding Structure</option>
-                        <option value="nonSanctionedLayout">Non-Sanctioned Layout</option>
-                        <option value="rawLand">Raw Land</option>
-                        <option value="areaUnderCTS">Area under CTS No. (K prat/Mojni Sheet)</option>
-                        <option value="cidcoApprovedLayout">CIDCO Approved Layout</option>
+                        <option value="Sanction Layout/Sub Layout">Sanction Layout/Sub Layout</option>
+                        <option value="Gunthewari">Gunthewari</option>
+                        <option value="Compounding Structure">Compounding Structure</option>
+                        <option value="Non-Sanctioned Layout">Non-Sanctioned Layout</option>
+                        <option value="Raw Land">Raw Land</option>
+                        <option value="Area under CTS No. (K prat/Mojni Sheet)">Area under CTS No. (K prat/Mojni Sheet)</option>
+                        <option value="CIDCO Approved Layout">CIDCO Approved Layout</option>
                     </select>
                 </div>
                 
@@ -221,54 +224,58 @@
                     </div>
                 </div>
                 
-                <div id="reservation_area_sqm" class="form-group hidden">
-                    <label for="reservation_area_sqm">Reservation Area Affected (Sq.M.)</label>
-                    <input type="number" id="reservation_area_sqm" name="reservation_area_sqm" min="0" step="0.01">
+                <div class="form-group hidden" id="reservation_area_sqm">
+                    <label for="reservation_area_sqm_input">Reservation Area Affected (Sq.M.)</label>
+                    <input type="number" id="reservation_area_sqm_input" name="reservation_area_sqm" step="0.01">
                 </div>
                 
                 <div class="form-group">
                     <label>Is the plot land affected by CRZ?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="crz_status" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="crz_status" value="No" required> No</label>
+                        <label><input type="radio" name="crz" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="crz" value="No" required> No</label>
                     </div>
                 </div>
                 
-                <div id="crz_location" class="form-group hidden">
-                    <label for="crz_location">CRZ Area</label>
-                    <select id="crz_location" name="crz_location">
+                <div class="form-group hidden" id="crz_location">
+                    <label for="crz_location_select">CRZ Area</label>
+                    <select id="crz_location_select" name="crz_location">
                         <option value="">Select area</option>
-                        <option value="ratnagiri">Ratnagiri</option>
-                        <option value="murudJanjira">Murud-Janjira Municipal Council</option>
-                        <option value="thane">Thane</option>
+                        <option value="Ratnagiri">Ratnagiri</option>
+                        <option value="Murud-Janjira Municipal Council">Murud-Janjira Municipal Council</option>
+                        <option value="Thane">Thane</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="zone">Zone</label>
-                    <select id="zone" name="zone" required></select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="uses">Uses</label>
-                    <select id="uses" name="uses" required></select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="survey_type">Plot Identification Type</label>
-                    <select id="survey_type" name="survey_type" required>
-                        <option value="">Select type</option>
-                        <option value="tikkaNumber">Tikka Number</option>
-                        <option value="citySurveyNo">City Survey No.</option>
-                        <option value="surveyNo">Survey No.</option>
-                        <option value="khasraNo">Khasra No.</option>
-                        <option value="gutNo">Gut No.</option>
+                    <select id="zone" name="zone" required>
+                        <!-- Options will be populated by JavaScript -->
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="survey_number">Plot Identification Number</label>
-                    <input type="text" id="survey_number" name="survey_number" required>
+                    <label for="uses">Uses</label>
+                    <select id="uses" name="uses" required>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+<div class="form-group">
+                    <label for="plot_identification_type">Plot Identification Type</label>
+                    <select id="plot_identification_type" name="plot_identification_type" required>
+                        <option value="">Select type</option>
+                        <option value="Tikka Number">Tikka Number</option>
+                        <option value="City Survey No.">City Survey No.</option>
+                        <option value="Survey No.">Survey No.</option>
+                        <option value="Khasra No.">Khasra No.</option>
+                        <option value="Gut No.">Gut No.</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="plot_identification_number">Plot Identification Number</label>
+                    <input type="text" id="plot_identification_number" name="plot_identification_number" required>
                 </div>
                 
                 <div class="form-group">
@@ -277,30 +284,30 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="area_plot_site_sqm">Area of plot as per site (Sq.M.)</label>
-                    <input type="number" id="area_plot_site_sqm" name="area_plot_site_sqm" min="0" step="0.01" required>
-                </div>
-                
-               <div class="form-group">
-                    <label for="area_plot_ownership_sqm">Area of plot as per ownership document (Sq.M.)</label>
-                    <input type="number" id="area_plot_ownership_sqm" name="area_plot_ownership_sqm" min="0" step="0.01" required>
+                    <label for="area_of_plot_site">Area of plot as per site (Sq.M.)</label>
+                    <input type="number" id="area_of_plot_site" name="area_of_plot_site" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="area_plot_measurement_sqm">Area of plot as per measurement sheet (Sq.M.)</label>
-                    <input type="number" id="area_plot_measurement_sqm" name="area_plot_measurement_sqm" min="0" step="0.01" required>
+                    <label for="area_of_plot_document">Area of plot as per ownership document (Sq.M.)</label>
+                    <input type="number" id="area_of_plot_document" name="area_of_plot_document" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="area_of_plot_measurement">Area of plot as per measurement sheet (Sq.M.)</label>
+                    <input type="number" id="area_of_plot_measurement" name="area_of_plot_measurement" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="pro_rata_fsi">Pro Rata FSI</label>
-                    <input type="number" id="pro_rata_fsi" name="pro_rata_fsi" min="0" step="0.01" required>
+                    <input type="number" id="pro_rata_fsi" name="pro_rata_fsi" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Class of Land</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="class_of_land" value="Class1" required> Class 1</label>
-                        <label><input type="radio" name="class_of_land" value="Class2" required> Class 2</label>
+                        <label><input type="radio" name="class_of_land" value="Class 1" required> Class 1</label>
+                        <label><input type="radio" name="class_of_land" value="Class 2" required> Class 2</label>
                     </div>
                 </div>
                 
@@ -312,58 +319,64 @@
                     </div>
                 </div>
                 
-                <div id="dp_rp_road_area_sqm" class="form-group hidden">
-                    <label for="dp_rp_road_area_sqm">DP/RP road affected (Sq.M.)</label>
-                    <input type="number" id="dp_rp_road_area_sqm" name="dp_rp_road_area_sqm" min="0" step="0.01">
+                <div class="form-group hidden" id="dp_rp_road_area_sqm">
+                    <label for="dp_rp_road_area_sqm_input">DP/RP road affected (Sq.M.)</label>
+                    <input type="number" id="dp_rp_road_area_sqm_input" name="dp_rp_road_area_sqm" step="0.01">
                 </div>
                 
                 <div class="form-group">
                     <label for="city_specific_area">City Specific Area</label>
-                    <select id="city_specific_area" name="city_specific_area" required></select>
+                    <select id="city_specific_area" name="city_specific_area" required>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="building_height">Height of Building</label>
-                    <select id="building_height" name="building_height" required>
+                    <label for="height_of_building">Height of Building</label>
+                    <select id="height_of_building" name="height_of_building" required>
                         <option value="">Select height</option>
-                        <option value="below15">Below 15 meter</option>
-                        <option value="15-24">15-24 meter</option>
-                        <option value="above24">Above 24 meter</option>
+                        <option value="Below 15 meter">Below 15 meter</option>
+                        <option value="15-24 meter">15-24 meter</option>
+                        <option value="Above 24 meter">Above 24 meter</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
                     <label>Is it a redevelopment proposal?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="redevelopment_proposal" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="redevelopment_proposal" value="No" required> No</label>
+                        <label><input type="radio" name="is_redevelopment" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="is_redevelopment" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="plot_width">Plot width (in meter)</label>
-                    <input type="number" id="plot_width" name="plot_width" min="0" step="0.01" required>
+                    <input type="number" id="plot_width" name="plot_width" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
                     <label>Is your land in TOD?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="tod" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="tod" value="No" required> No</label>
+                        <label><input type="radio" name="is_tod" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="is_tod" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="building_type">Building type</label>
-                    <select id="building_type" name="building_type" required></select>
+                    <select id="building_type" name="building_type" required>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
                 </div>
                 
                 <div class="form-group">
                     <label for="building_subtype">Building subtypes</label>
-                    <select id="building_subtype" name="building_subtype" required></select>
+                    <select id="building_subtype" name="building_subtype" required>
+                        <!-- Options will be populated by JavaScript based on building type selection -->
+                    </select>
                 </div>
             </fieldset>
-            
+
             <fieldset>
                 <legend>Plot Boundaries</legend>
                 
@@ -372,113 +385,112 @@
                     <select id="front_boundary" name="front_boundary" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
-                        <option value="OtherProperty">Other Property</option>
-                        <option value="OpenSpace">Open Space</option>
+                        <option value="Other Property">Other Property</option>
+                        <option value="Open Space">Open Space</option>
                     </select>
                     <div id="front-road-details" class="road-details" style="display:none;">
-                        <label for="frontRoadType">Road Type:</label>
-                        <select id="frontRoadType" name="frontRoadType">
+                        <label for="front_road_type">Road Type:</label>
+                        <select id="front_road_type" name="front_road_type">
                             <option value="">Select Road Type</option>
-                            <option value="DPRoad">DP Road</option>
-                            <option value="OtherGeneralRoad">Other General Road</option>
-                            <option value="ExpressWay">Express Way</option>
-                            <option value="NationalHighway">National Highway - NH</option>
-                            <option value="StateHighway">State Highway - SH</option>
-                            <option value="MajorDistrictRoad">Major District Road - MDR</option>
-                            <option value="OtherDistrictRoad">Other District Road</option>
-                            <option value="VillageRoad">15m Village Road</option>
+                            <option value="DP Road">DP Road</option>
+                            <option value="Other General Road">Other General Road</option>
+                            <option value="Express Way">Express Way</option>
+                            <option value="National Highway - NH">National Highway - NH</option>
+                            <option value="State Highway - SH">State Highway - SH</option>
+                            <option value="Major District Road - MDR">Major District Road - MDR</option>
+                            <option value="Other District Road">Other District Road</option>
+                            <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="frontRoadWidth">Road Width (in meters):</label>
-                        <input type="number" id="frontRoadWidth" name="frontRoadWidth" min="0" step="0.01">
+                        <label for="front_road_width">Road Width (in meters):</label>
+                        <input type="number" id="front_road_width" name="front_road_width" step="0.01">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="leftBoundary">Left</label>
-                    <select id="leftBoundary" name="road_details_left" required>
+                    <label for="left_boundary">Left</label>
+                    <select id="left_boundary" name="left_boundary" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
-                        <option value="OtherProperty">Other Property</option>
-                        <option value="Layout">Layout</option>
-                        <option value="OpenSpace">Open Space</option>
+                        <option value="Other Property">Other Property</option>
+                        <option value="Layout Open Space">Layout Open Space</option>
                     </select>
                     <div id="left-road-details" class="road-details" style="display:none;">
-                        <label for="leftRoadType">Road Type:</label>
-                        <select id="leftRoadType" name="leftRoadType">
+                        <label for="left_road_type">Road Type:</label>
+                        <select id="left_road_type" name="left_road_type">
                             <option value="">Select Road Type</option>
-                            <option value="DPRoad">DP Road</option>
-                            <option value="OtherGeneralRoad">Other General Road</option>
-                            <option value="ExpressWay">Express Way</option>
-                            <option value="NationalHighway">National Highway - NH</option>
-                            <option value="StateHighway">State Highway - SH</option>
-                            <option value="MajorDistrictRoad">Major District Road - MDR</option>
-                            <option value="OtherDistrictRoad">Other District Road</option>
-                            <option value="VillageRoad">15m Village Road</option>
+                            <option value="DP Road">DP Road</option>
+                            <option value="Other General Road">Other General Road</option>
+                            <option value="Express Way">Express Way</option>
+                            <option value="National Highway - NH">National Highway - NH</option>
+                            <option value="State Highway - SH">State Highway - SH</option>
+                            <option value="Major District Road - MDR">Major District Road - MDR</option>
+                            <option value="Other District Road">Other District Road</option>
+                            <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="leftRoadWidth">Road Width (in meters):</label>
-                        <input type="number" id="leftRoadWidth" name="leftRoadWidth" min="0" step="0.01">
+                        <label for="left_road_width">Road Width (in meters):</label>
+                        <input type="number" id="left_road_width" name="left_road_width" step="0.01">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="rightBoundary">Right</label>
-                    <select id="rightBoundary" name="rightBoundary" required>
+                    <label for="right_boundary">Right</label>
+                    <select id="right_boundary" name="right_boundary" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
-                        <option value="OtherProperty">Other Property</option>
-                        <option value="Layout">Layout</option>
-                        <option value="OpenSpace">Open Space</option>
+                        <option value="Other Property">Other Property</option>
+                        <option value="Layout Open Space">Layout Open Space</option>
                     </select>
                     <div id="right-road-details" class="road-details" style="display:none;">
-                        <label for="rightRoadType">Road Type:</label>
-                        <select id="rightRoadType" name="rightRoadType">
+                        <label for="right_road_type">Road Type:</label>
+                        <select id="right_road_type" name="right_road_type">
                             <option value="">Select Road Type</option>
-                            <option value="DPRoad">DP Road</option>
-                            <option value="OtherGeneralRoad">Other General Road</option>
-                            <option value="ExpressWay">Express Way</option>
-                            <option value="NationalHighway">National Highway - NH</option>
-                            <option value="StateHighway">State Highway - SH</option>
-                            <option value="MajorDistrictRoad">Major District Road - MDR</option>
-                            <option value="OtherDistrictRoad">Other District Road</option>
-                            <option value="VillageRoad">15m Village Road</option>
+                            <option value="DP Road">DP Road</option>
+                            <option value="Other General Road">Other General Road</option>
+                            <option value="Express Way">Express Way</option>
+                            <option value="National Highway - NH">National Highway - NH</option>
+                            <option value="State Highway - SH">State Highway - SH</option>
+                            <option value="Major District Road - MDR">Major District Road - MDR</option>
+                            <option value="Other District Road">Other District Road</option>
+                            <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="rightRoadWidth">Road Width (in meters):</label>
-                        <input type="number" id="rightRoadWidth" name="rightRoadWidth" min="0" step="0.01">
+                        <label for="right_road_width">Road Width (in meters):</label>
+                        <input type="number" id="right_road_width" name="right_road_width" step="0.01">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="rearBoundary">Rear</label>
-                    <select id="rearBoundary" name="rearBoundary" required>
+                    <label for="rear_boundary">Rear</label>
+                    <select id="rear_boundary" name="rear_boundary" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
-                        <option value="OtherProperty">Other Property</option>
-                        <option value="Layout">Layout</option>
-                        <option value="OpenSpace">Open Space</option>
+                        <option value="Other Property">Other Property</option>
+                        <option value="Layout Open Space">Layout Open Space</option>
                     </select>
                     <div id="rear-road-details" class="road-details" style="display:none;">
-                        <label for="rearRoadType">Road Type:</label>
-                        <select id="rearRoadType" name="rearRoadType">
+                        <label for="rear_road_type">Road Type:</label>
+                        <select id="rear_road_type" name="rear_road_type">
                             <option value="">Select Road Type</option>
-                            <option value="DPRoad">DP Road</option>
-                            <option value="OtherGeneralRoad">Other General Road</option>
-                            <option value="ExpressWay">Express Way</option>
-                            <option value="NationalHighway">National Highway - NH</option>
-                            <option value="StateHighway">State Highway - SH</option>
-                            <option value="MajorDistrictRoad">Major District Road - MDR</option>
-                            <option value="OtherDistrictRoad">Other District Road</option>
-                            <option value="VillageRoad">15m Village Road</option>
+                            <option value="DP Road">DP Road</option>
+                            <option value="Other General Road">Other General Road</option>
+                            <option value="Express Way">Express Way</option>
+                            <option value="National Highway - NH">National Highway - NH</option>
+                            <option value="State Highway - SH">State Highway - SH</option>
+                            <option value="Major District Road - MDR">Major District Road - MDR</option>
+                            <option value="Other District Road">Other District Road</option>
+                            <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="rearRoadWidth">Road Width (in meters):</label>
-                        <input type="number" id="rearRoadWidth" name="rearRoadWidth" min="0" step="0.01">
+                        <label for="rear_road_width">Road Width (in meters):</label>
+                        <input type="number" id="rear_road_width" name="rear_road_width" step="0.01">
                     </div>
                 </div>
             </fieldset>
-            
-            <input type="submit" value="Submit">
+
+            <div class="form-group">
+                <input type="submit" value="Submit">
+            </div>
         </form>
     </div>
-    
+
     <script src="scripts.js"></script>
 </body>
 </html>
