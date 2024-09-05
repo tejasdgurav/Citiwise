@@ -293,7 +293,7 @@ function validateForm() {
 
 // Send data to Google Sheets
 async function sendToGoogleSheets(data) {
-    const scriptURL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // Replace with your actual script URL
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynupzlWSifTvfii8Sz74T09_GpXNJ6upgkdTvpv4iAPcAcbBnj3eosUf2_rWOBtSh5/exec'; // Replace with your actual script URL
     const response = await fetch(scriptURL, {
         method: 'POST',
         body: JSON.stringify(data),
