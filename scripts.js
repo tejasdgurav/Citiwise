@@ -264,7 +264,7 @@ async function handleSubmit(e) {
   
   // Send data to Google Apps Script Web App
   try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbwgON_CHpYylvYE5emJPGmugcLmcJNvhoGl1-wyaa51n_BBsHaiWWrnwe-cHqMpfNbF/exec', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwfup-ebs513BBa_GBFNbLJXweBX8rJUCNfPL2duM7eMEDmFIOz1y9lDl7UpVI7Lkvc/exec', {
       method: 'POST',
       mode: 'no-cors',
       headers: {
