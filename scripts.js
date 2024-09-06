@@ -205,16 +205,18 @@ function addEventListeners() {
 
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        const boundarySelect = document.getElementById(`${boundary}_boundary`);
+        const boundarySelect = document.getElementById(`${boundary}_boundary_type`);
         if (boundarySelect) {
             boundarySelect.addEventListener('change', function(e) {
-                const roadDetails = document.getElementById(`${boundary}-road-details`);
+                const roadDetails = document.getElementById(`road_details_${boundary}`);
                 if (roadDetails) {
                     roadDetails.style.display = e.target.value === 'Road' ? 'block' : 'none';
                 }
             });
         }
     });
+
+
 
     // Form submission event
     const form = document.getElementById('project-input-form');
