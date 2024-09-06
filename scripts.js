@@ -252,17 +252,15 @@ async function handleSubmit(e) {
   
   // Send data to Google Apps Script Web App
   try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbwHorSTHlu0XCyi72O8lMgqwUAz8eUKQ1na4TVRwuibUAGLx5e5Uy6sasPgrr5WN2YF/exec', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwgON_CHpYylvYE5emJPGmugcLmcJNvhoGl1-wyaa51n_BBsHaiWWrnwe-cHqMpfNbF/exec', {
       method: 'POST',
-      mode: 'no-cors', // Change this to 'no-cors'
+      mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(formData)
     });
     
-    // Since we're using 'no-cors', we can't access the response content
-    // So we'll assume it's successful if we reach this point
     console.log("Form submitted successfully");
     alert('Form submitted successfully!');
     form.reset();
@@ -283,6 +281,8 @@ async function handleSubmit(e) {
     loadingIndicator.style.display = 'none';
   }
 }
+
+// ... (rest of the code remains the same)
 
 
 function validateForm(form) {
