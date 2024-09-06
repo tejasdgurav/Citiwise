@@ -220,23 +220,10 @@ async function handleSubmit(e) {
     }
     
     // Collect form data
-    formData = {};
-    const formElements = e.target.elements;
-    for (let element of formElements) {
-        if (element.name) {
-            if (element.type === 'radio') {
-                if (element.checked) {
-                    formData[element.name] = element.value;
-                }
-            } else if (element.type === 'file') {
-                formData[element.name] = element.files[0] ? element.files[0].name : '';
-            } else {
-                formData[element.name] = element.value;
-            }
-        }
-    }
+    const form = e.target;
+    const formData = new FormData(form);
     
-    console.log("Form data being sent:", formData);
+    console.log("Form data being sent:", Object.fromEntries(formData));
     
     // Validate form data
     if (!validateForm()) {
@@ -253,7 +240,7 @@ async function handleSubmit(e) {
         console.log("Response from Google Sheets:", result);
         if (result.result === 'success') {
             alert('Form submitted successfully!');
-            e.target.reset();
+            form.reset();
             
             // Reset ULB/RP/Special Authority dropdown
             const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
@@ -275,6 +262,23 @@ async function handleSubmit(e) {
     }
 }
 
+// Send data to Google Sheets
+async function sendToGoogleSheets(formData) {
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbyZd0r8Kd0EvEvjHRKZUSe9FePDfTG8ScVljawx3D23dh_t2_VBaplTAVvCDS7YkAoo/exec';
+    try {
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        });
+        console.log('Response:', response);
+        return { result: 'success' };
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
+}
+
 
 // Validate form data
 function validateForm() {
@@ -286,24 +290,6 @@ function validateForm() {
         }
     }
     return true;
-}
-
-// Send data to Google Sheets
-async function sendToGoogleSheets(data) {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxV9FCXTJNFUAD0S3UpSDH3rBRPaYblB4KmutYSjD21zVfKbDsfNMqMi1PBrq7fRwdM/exec';
-    try {
-        const formData = new URLSearchParams(data);
-        const response = await fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
-        });
-        console.log('Full response:', response);
-        return { result: 'success' };
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
-    }
 }
 
 // Initialize the form
