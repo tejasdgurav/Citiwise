@@ -230,27 +230,28 @@ function addEventListeners() {
 
     // Building type change event
     const buildingTypeSelect = document.getElementById('building_type');
-    if (buildingTypeSelect) {
+    const buildingSubtypeSelect = document.getElementById('building_subtype');
+    if (buildingTypeSelect && buildingSubtypeSelect) {
         buildingTypeSelect.addEventListener('change', function(e) {
-            const buildingSubtype = document.getElementById('building_subtype');
-            if (!buildingSubtype) {
-                console.error("Building subtype select element not found");
-                return;
-            }
-            
-            buildingSubtype.innerHTML = '<option value="">Select an option</option>';
+            buildingSubtypeSelect.innerHTML = '<option value="">Select an option</option>';
+            buildingSubtypeSelect.disabled = true;
             
             const selectedBuildingTypeId = e.target.value;
-            const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
-            
-            subtypes.forEach(subtype => {
-                const option = document.createElement('option');
-                option.value = subtype.id;
-                option.textContent = subtype.name;
-                buildingSubtype.appendChild(option);
-            });
+            if (selectedBuildingTypeId) {
+                const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
+                
+                subtypes.forEach(subtype => {
+                    const option = document.createElement('option');
+                    option.value = subtype.id;
+                    option.textContent = subtype.name;
+                    buildingSubtypeSelect.appendChild(option);
+                });
+                
+                buildingSubtypeSelect.disabled = false;
+            }
         });
     }
+
 
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
