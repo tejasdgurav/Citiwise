@@ -7,7 +7,6 @@ let buildingTypes = [];
 let buildingSubtypes = {};
 let ulbData = {}; // Store all ULB data
 
-
 // Add this function at the beginning of your script
 function getFormData(form) {
   const formData = new FormData(form);
@@ -48,7 +47,6 @@ async function loadData() {
         // Populate dropdowns
         populateDropdown('ulb_type', data.ulb_type || []);
         populateDropdown('zone', zones);
-        populateDropdown('uses', uses);
         populateDropdown('city_specific_area', citySpecificAreas);
         populateDropdown('building_type', buildingTypes);
         
@@ -56,6 +54,12 @@ async function loadData() {
         const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
         if (ulbRpSpecialAuthority) {
             ulbRpSpecialAuthority.disabled = true;
+        }
+        
+        // Disable Uses dropdown initially
+        const usesDropdown = document.getElementById('uses');
+        if (usesDropdown) {
+            usesDropdown.disabled = true;
         }
         
         // Add event listeners
@@ -126,6 +130,51 @@ function addEventListeners() {
             }
             
             console.log("ULB/RP/Special Authority options updated");
+        });
+    }
+
+    // Zone change event
+    const zoneSelect = document.getElementById('zone');
+    if (zoneSelect) {
+        zoneSelect.addEventListener('change', function(e) {
+            console.log("Zone changed:", e.target.value);
+            
+            const usesDropdown = document.getElementById('uses');
+            if (!usesDropdown) {
+                console.error("Uses select element not found");
+                return;
+            }
+            
+            const selectedZoneId = e.target.value;
+            
+            // Clear existing options
+            usesDropdown.innerHTML = '<option value="">Select an option</option>';
+            
+            if (selectedZoneId) {
+                const selectedZone = zones.find(zone => zone.id == selectedZoneId);
+                if (selectedZone && selectedZone.allowedUses) {
+                    const filteredUses = uses.filter(use => selectedZone.allowedUses.includes(use.id));
+                    console.log("Filtered uses:", filteredUses);
+                    
+                    filteredUses.forEach(use => {
+                        const option = document.createElement('option');
+                        option.value = use.id;
+                        option.textContent = use.name;
+                        usesDropdown.appendChild(option);
+                    });
+                    
+                    // Enable the dropdown
+                    usesDropdown.disabled = false;
+                } else {
+                    console.error("Selected zone or allowed uses not found");
+                    usesDropdown.disabled = true;
+                }
+            } else {
+                // If no Zone is selected, disable the dropdown
+                usesDropdown.disabled = true;
+            }
+            
+            console.log("Uses options updated");
         });
     }
 
@@ -203,7 +252,6 @@ function addEventListeners() {
         });
     }
 
-
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
     const boundarySelect = document.getElementById(`${boundary}_boundary_type`);
@@ -225,8 +273,6 @@ function addEventListeners() {
         });
     }
     });
-
-
 
     // Form submission event
     const form = document.getElementById('project-input-form');
@@ -283,6 +329,13 @@ async function handleSubmit(e) {
       ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
       ulbRpSpecialAuthority.disabled = true;
     }
+
+    // Reset Uses dropdown
+    const usesDropdown = document.getElementById('uses');
+    if (usesDropdown) {
+      usesDropdown.innerHTML = '<option value="">Select an option</option>';
+      usesDropdown.disabled = true;
+    }
   } catch (error) {
     console.error('Error submitting form:', error);
     alert('An error occurred while submitting the form. Please try again.');
@@ -293,7 +346,6 @@ async function handleSubmit(e) {
     loadingIndicator.style.display = 'none';
   }
 }
-
 
 function validateForm(form) {
   const requiredFields = form.querySelectorAll('[required]');
