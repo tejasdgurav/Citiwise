@@ -203,14 +203,24 @@ function addEventListeners() {
         });
     }
 
+
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
         const boundarySelect = document.getElementById(`${boundary}_boundary_type`);
         if (boundarySelect) {
-            boundarySelect.addEventListener('change', function(e) {
+            boundarySelect.addEventListener('change', (e) => {
                 const roadDetails = document.getElementById(`road_details_${boundary}`);
-                if (roadDetails) {
-                    roadDetails.style.display = e.target.value === 'Road' ? 'block' : 'none';
+                const roadTypeSelect = document.getElementById(`road_details_${boundary}`);
+                const roadWidthInput = document.getElementById(`road_details_${boundary}_meters`);
+            
+                if (e.target.value === 'Road') {
+                    roadDetails.style.display = 'block';
+                    roadTypeSelect.style.display = 'block';
+                    roadWidthInput.style.display = 'block';
+                } else {
+                    roadDetails.style.display = 'none';
+                    roadTypeSelect.style.display = 'none';
+                    roadWidthInput.style.display = 'none';
                 }
             });
         }
