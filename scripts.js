@@ -252,33 +252,26 @@ async function handleSubmit(e) {
   
   // Send data to Google Apps Script Web App
   try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbyZTSQaU7u4G8_SvK0gwz-hjpr_TAUquld_TznrK9fmdE_Pxtw9y1eWqyHqDi0Bk89t/exec', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwHorSTHlu0XCyi72O8lMgqwUAz8eUKQ1na4TVRwuibUAGLx5e5Uy6sasPgrr5WN2YF/exec', {
       method: 'POST',
-      mode: 'cors',
+      mode: 'no-cors', // Change this to 'no-cors'
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(formData)
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // Since we're using 'no-cors', we can't access the response content
+    // So we'll assume it's successful if we reach this point
+    console.log("Form submitted successfully");
+    alert('Form submitted successfully!');
+    form.reset();
     
-    const result = await response.json();
-    console.log("Response from Google Apps Script:", result);
-    if (result.result === 'success') {
-      alert('Form submitted successfully!');
-      form.reset();
-      
-      // Reset ULB/RP/Special Authority dropdown
-      const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-      if (ulbRpSpecialAuthority) {
-        ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
-        ulbRpSpecialAuthority.disabled = true;
-      }
-    } else {
-      throw new Error(result.message || 'Unknown error occurred');
+    // Reset ULB/RP/Special Authority dropdown
+    const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+    if (ulbRpSpecialAuthority) {
+      ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+      ulbRpSpecialAuthority.disabled = true;
     }
   } catch (error) {
     console.error('Error submitting form:', error);
