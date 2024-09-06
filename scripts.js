@@ -250,10 +250,23 @@ async function handleSubmit(e) {
     return;
   }
   
-  // Send data to Google Sheets
+  // Send data to Google Apps Script Web App
   try {
-    const result = await sendToGoogleSheets(formData);
-    console.log("Response from Google Sheets:", result);
+    const response = await fetch('https://script.google.com/macros/s/AKfycbyzeHcAscxb7l9LC7s48w7v2bJVDyvGB836QMZ7a4T4vKa6M4tA3IyIXKDXKJpKV1cT/exec', {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log("Response from Google Apps Script:", result);
     if (result.result === 'success') {
       alert('Form submitted successfully!');
       form.reset();
@@ -278,30 +291,6 @@ async function handleSubmit(e) {
   }
 }
 
-// Replace the existing sendToGoogleSheets function with this
-async function sendToGoogleSheets(data) {
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbw1IJDCgMBOBTqXmRlDDMMPYJgJSh6SUYHeyKo6Yjt_Z8aMjTKF33aUOKkXvSyiP056/exec';
-  try {
-    const response = await fetch(scriptURL, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
-}
 
 function validateForm(form) {
   const requiredFields = form.querySelectorAll('[required]');
