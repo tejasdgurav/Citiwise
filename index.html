@@ -145,17 +145,17 @@
                 <div class="form-group">
                     <label>Is the site hilly and has gradients more than 1:5?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="is_hilly" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="is_hilly" value="No" required> No</label>
+                        <label><input type="radio" name="hilly_site" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="hilly_site" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group">
                     <label>Flood Affected Area</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="flood_affected" value="No" required> No</label>
-                        <label><input type="radio" name="flood_affected" value="Red" required> Red</label>
-                        <label><input type="radio" name="flood_affected" value="Blue" required> Blue</label>
+                        <label><input type="radio" name="flood_affected_area" value="No" required> No</label>
+                        <label><input type="radio" name="flood_affected_area" value="Red" required> Red</label>
+                        <label><input type="radio" name="flood_affected_area" value="Blue" required> Blue</label>
                     </div>
                 </div>
                 
@@ -200,12 +200,12 @@
                 
                 <div class="form-group">
                     <label for="road_details">Road Details in Meter (as on DP)</label>
-                    <input type="number" id="road_details" name="road_details" step="0.01" required>
+                    <input type="number" id="road_details_meter" name="road_details_meter" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="type_of_plot">Type of Plot/Layout</label>
-                    <select id="type_of_plot" name="type_of_plot" required>
+                    <label for="plot_layout_type">Type of Plot/Layout</label>
+                    <select id="plot_layout_type" name="plot_layout_type" required>
                         <option value="">Select type</option>
                         <option value="Sanction Layout/Sub Layout">Sanction Layout/Sub Layout</option>
                         <option value="Gunthewari">Gunthewari</option>
@@ -226,21 +226,21 @@
                 </div>
                 
                 <div class="form-group hidden" id="reservation_area_sqm">
-                    <label for="reservation_area_sqm_input">Reservation Area Affected (Sq.M.)</label>
-                    <input type="number" id="reservation_area_sqm_input" name="reservation_area_sqm" step="0.01">
+                    <label for="reservation_area_sqm">Reservation Area Affected (Sq.M.)</label>
+                    <input type="number" id="reservation_area_sqm" name="reservation_area_sqm" step="0.01">
                 </div>
                 
                 <div class="form-group">
                     <label>Is the plot land affected by CRZ?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="crz" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="crz" value="No" required> No</label>
+                        <label><input type="radio" name="crz_status" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="crz_status" value="No" required> No</label>
                     </div>
                 </div>
                 
                 <div class="form-group hidden" id="crz_location">
-                    <label for="crz_location_select">CRZ Area</label>
-                    <select id="crz_location_select" name="crz_location">
+                    <label for="crz_location">CRZ Area</label>
+                    <select id="crz_location" name="crz_location">
                         <option value="">Select area</option>
                         <option value="Ratnagiri">Ratnagiri</option>
                         <option value="Murud-Janjira Municipal Council">Murud-Janjira Municipal Council</option>
