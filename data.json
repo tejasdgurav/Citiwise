@@ -257,10 +257,10 @@
 
     "zone": [
         { "id": 1, "name": "Purely Residential Zone(R1)", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
-        { "id": 2, "name": "Residential Zone(R2)" },
-        { "id": 3, "name": "Residential Zone with Shop line. (R-2)" },
-        { "id": 4, "name": "General Residential Zone." },
-        { "id": 5, "name": "Residential Zone - R-2, R-3." },
+        { "id": 2, "name": "Residential Zone(R2)", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 3, "name": "Residential Zone with Shop line. (R-2)", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 4, "name": "General Residential Zone.", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 5, "name": "Residential Zone - R-2, R-3.", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
         { "id": 6, "name": "Residential Zone - R-4 with payment of premium." },
         { "id": 7, "name": "Urbanisable Zone." },
         { "id": 8, "name": "Special Residential Zone." },
