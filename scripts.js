@@ -83,7 +83,7 @@ function initializeDependentDropdowns() {
     dependentDropdowns.forEach(id => {
         const dropdown = document.getElementById(id);
         if (dropdown) {
-            dropdown.innerHTML = '<option value="">Select an option</option>';
+            dropdown.innerHTML = ''; // Remove all options, including "Select an option"
             dropdown.disabled = true;
         }
     });
@@ -200,9 +200,15 @@ function handleUlbTypeChange(selectedUlbTypeId) {
     }
     
     // Clear existing options
-    ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+    ulbRpSpecialAuthority.innerHTML = '';
     
     if (selectedUlbTypeId) {
+        // Add "Select an option" only when a ULB Type is selected
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "Select an option";
+        ulbRpSpecialAuthority.appendChild(defaultOption);
+
         const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
         console.log("Filtered authorities:", filteredAuthorities);
         
@@ -234,9 +240,15 @@ function handleZoneChange(selectedZoneId) {
     }
     
     // Clear existing options
-    usesDropdown.innerHTML = '<option value="">Select an option</option>';
+    usesDropdown.innerHTML = '';
     
     if (selectedZoneId) {
+        // Add "Select an option" only when a Zone is selected
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "Select an option";
+        usesDropdown.appendChild(defaultOption);
+
         const selectedZone = zones.find(zone => zone.id == selectedZoneId);
         if (selectedZone && selectedZone.allowedUses) {
             const filteredUses = uses.filter(use => selectedZone.allowedUses.includes(use.id));
@@ -274,9 +286,15 @@ function handleBuildingTypeChange(selectedBuildingTypeId) {
     }
     
     // Clear existing options
-    buildingSubtypeDropdown.innerHTML = '<option value="">Select an option</option>';
+    buildingSubtypeDropdown.innerHTML = '';
     
     if (selectedBuildingTypeId) {
+        // Add "Select an option" only when a building type is selected
+        const defaultOption = document.createElement('option');
+        defaultOption.value = "";
+        defaultOption.textContent = "Select an option";
+        buildingSubtypeDropdown.appendChild(defaultOption);
+
         const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
         console.log("Building subtypes:", subtypes);
         
