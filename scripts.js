@@ -7,6 +7,22 @@ let buildingTypes = [];
 let buildingSubtypes = {};
 let ulbData = {}; // Store all ULB data
 
+
+// Add this function at the beginning of your script
+function getFormData(form) {
+  const formData = new FormData(form);
+  const data = {};
+  for (let [key, value] of formData.entries()) {
+    if (value instanceof File) {
+      // For file inputs, just store the file name
+      data[key] = value.name;
+    } else {
+      data[key] = value;
+    }
+  }
+  return data;
+}
+
 // Load data from JSON
 async function loadData() {
     try {
@@ -211,85 +227,92 @@ function addEventListeners() {
 
 // Handle form submission
 async function handleSubmit(e) {
-    e.preventDefault();
-    
-    // Show loading indicator
-    const loadingIndicator = document.querySelector('.loading-indicator');
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'flex';
-    }
-    
-    // Collect form data
-    const form = e.target;
-    const formData = new FormData(form);
-    
-    console.log("Form data being sent:", Object.fromEntries(formData));
-    
-    // Validate form data
-    if (!validateForm()) {
-        // Hide loading indicator
-        if (loadingIndicator) {
-            loadingIndicator.style.display = 'none';
-        }
-        return;
-    }
-    
-    // Send data to Google Sheets
-    try {
-        const result = await sendToGoogleSheets(formData);
-        console.log("Response from Google Sheets:", result);
-        if (result.result === 'success') {
-            alert('Form submitted successfully!');
-            form.reset();
-            
-            // Reset ULB/RP/Special Authority dropdown
-            const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-            if (ulbRpSpecialAuthority) {
-                ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
-                ulbRpSpecialAuthority.disabled = true;
-            }
-        } else {
-            throw new Error(result.error || 'Unknown error occurred');
-        }
-    } catch (error) {
-        console.error('Error submitting form:', error);
-        alert('An error occurred while submitting the form. Please try again.');
-    }
-    
+  e.preventDefault();
+  
+  // Show loading indicator
+  const loadingIndicator = document.querySelector('.loading-indicator');
+  if (loadingIndicator) {
+    loadingIndicator.style.display = 'flex';
+  }
+  
+  // Collect form data
+  const form = e.target;
+  const formData = getFormData(form);
+  
+  console.log("Form data being sent:", formData);
+  
+  // Validate form data
+  if (!validateForm(form)) {
     // Hide loading indicator
     if (loadingIndicator) {
-        loadingIndicator.style.display = 'none';
+      loadingIndicator.style.display = 'none';
     }
+    return;
+  }
+  
+  // Send data to Google Sheets
+  try {
+    const result = await sendToGoogleSheets(formData);
+    console.log("Response from Google Sheets:", result);
+    if (result.result === 'success') {
+      alert('Form submitted successfully!');
+      form.reset();
+      
+      // Reset ULB/RP/Special Authority dropdown
+      const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+      if (ulbRpSpecialAuthority) {
+        ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+        ulbRpSpecialAuthority.disabled = true;
+      }
+    } else {
+      throw new Error(result.message || 'Unknown error occurred');
+    }
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    alert('An error occurred while submitting the form. Please try again.');
+  }
+  
+  // Hide loading indicator
+  if (loadingIndicator) {
+    loadingIndicator.style.display = 'none';
+  }
 }
 
-// Send data to Google Sheets
-async function sendToGoogleSheets(formData) {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyZd0r8Kd0EvEvjHRKZUSe9FePDfTG8ScVljawx3D23dh_t2_VBaplTAVvCDS7YkAoo/exec';
-    try {
-        const response = await fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
-        });
-        console.log('Response:', response);
-        return { result: 'success' };
-    } catch (error) {
-        console.error('Error:', error);
-        throw error;
+// Replace the existing sendToGoogleSheets function with this
+async function sendToGoogleSheets(data) {
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwR3riCx87uOgjeomMRtRuskt89W_kDiLoeYZ_07Ae4JVbSsaBR-u7PiqcFTUZo17k_/exec';
+  try {
+    const response = await fetch(scriptURL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
 }
 
-
-// Validate form data
-function validateForm() {
-    const requiredFields = document.querySelectorAll('[required]');
-    for (let field of requiredFields) {
-        if (!field.value) {
-            alert(`Please fill out the ${field.name} field.`);
-            return false;
-        }
+function validateForm(form) {
+  const requiredFields = form.querySelectorAll('[required]');
+  for (let field of requiredFields) {
+    if (!field.value.trim()) {
+      alert(`Please fill out the ${field.name} field.`);
+      field.focus();
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 
 // Initialize the form
