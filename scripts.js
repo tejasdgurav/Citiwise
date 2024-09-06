@@ -264,7 +264,7 @@ async function handleSubmit(e) {
   
   // Send data to Google Apps Script Web App
   try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbwfup-ebs513BBa_GBFNbLJXweBX8rJUCNfPL2duM7eMEDmFIOz1y9lDl7UpVI7Lkvc/exec', {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbzR_aruON8iw79udtjByurnY1l9KM6eHcM-1_7BuD52JZJaQrGmnUD3OzVM1d-V36nU/exec', {
       method: 'POST',
       mode: 'no-cors',
       headers: {
@@ -293,8 +293,6 @@ async function handleSubmit(e) {
     loadingIndicator.style.display = 'none';
   }
 }
-
-// ... (rest of the code remains the same)
 
 
 function validateForm(form) {
