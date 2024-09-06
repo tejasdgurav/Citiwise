@@ -50,17 +50,8 @@ async function loadData() {
         populateDropdown('city_specific_area', citySpecificAreas);
         populateDropdown('building_type', buildingTypes);
         
-        // Disable ULB/RP/Special Authority dropdown initially
-        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-        if (ulbRpSpecialAuthority) {
-            ulbRpSpecialAuthority.disabled = true;
-        }
-        
-        // Disable Uses dropdown initially
-        const usesDropdown = document.getElementById('uses');
-        if (usesDropdown) {
-            usesDropdown.disabled = true;
-        }
+        // Initialize dependent dropdowns
+        initializeDependentDropdowns();
         
         // Add event listeners
         addEventListeners();
@@ -86,6 +77,18 @@ function populateDropdown(id, options) {
     console.log(`Populated dropdown '${id}' with ${options.length} options`);
 }
 
+// Initialize dependent dropdowns
+function initializeDependentDropdowns() {
+    const dependentDropdowns = ['ulb_rp_special_authority', 'uses', 'building_subtype'];
+    dependentDropdowns.forEach(id => {
+        const dropdown = document.getElementById(id);
+        if (dropdown) {
+            dropdown.innerHTML = '<option value="">Select an option</option>';
+            dropdown.disabled = true;
+        }
+    });
+}
+
 // Add event listeners
 function addEventListeners() {
     console.log("Adding event listeners");
@@ -94,42 +97,7 @@ function addEventListeners() {
     const ulbTypeSelect = document.getElementById('ulb_type');
     if (ulbTypeSelect) {
         ulbTypeSelect.addEventListener('change', function(e) {
-            console.log("ULB Type changed:", e.target.value);
-            
-            const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-            if (!ulbRpSpecialAuthority) {
-                console.error("ULB/RP/Special Authority select element not found");
-                return;
-            }
-            
-            const selectedUlbTypeId = e.target.value;
-            if (!ulbData.ulb_rp_special_authority) {
-                console.error("ulb_rp_special_authority data not found in ulbData");
-                return;
-            }
-            
-            // Clear existing options
-            ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
-            
-            if (selectedUlbTypeId) {
-                const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
-                console.log("Filtered authorities:", filteredAuthorities);
-                
-                filteredAuthorities.forEach(auth => {
-                    const option = document.createElement('option');
-                    option.value = auth.id;
-                    option.textContent = auth.name;
-                    ulbRpSpecialAuthority.appendChild(option);
-                });
-                
-                // Enable the dropdown
-                ulbRpSpecialAuthority.disabled = false;
-            } else {
-                // If no ULB Type is selected, disable the dropdown
-                ulbRpSpecialAuthority.disabled = true;
-            }
-            
-            console.log("ULB/RP/Special Authority options updated");
+            handleUlbTypeChange(e.target.value);
         });
     }
 
@@ -137,44 +105,15 @@ function addEventListeners() {
     const zoneSelect = document.getElementById('zone');
     if (zoneSelect) {
         zoneSelect.addEventListener('change', function(e) {
-            console.log("Zone changed:", e.target.value);
-            
-            const usesDropdown = document.getElementById('uses');
-            if (!usesDropdown) {
-                console.error("Uses select element not found");
-                return;
-            }
-            
-            const selectedZoneId = e.target.value;
-            
-            // Clear existing options
-            usesDropdown.innerHTML = '<option value="">Select an option</option>';
-            
-            if (selectedZoneId) {
-                const selectedZone = zones.find(zone => zone.id == selectedZoneId);
-                if (selectedZone && selectedZone.allowedUses) {
-                    const filteredUses = uses.filter(use => selectedZone.allowedUses.includes(use.id));
-                    console.log("Filtered uses:", filteredUses);
-                    
-                    filteredUses.forEach(use => {
-                        const option = document.createElement('option');
-                        option.value = use.id;
-                        option.textContent = use.name;
-                        usesDropdown.appendChild(option);
-                    });
-                    
-                    // Enable the dropdown
-                    usesDropdown.disabled = false;
-                } else {
-                    console.error("Selected zone or allowed uses not found");
-                    usesDropdown.disabled = true;
-                }
-            } else {
-                // If no Zone is selected, disable the dropdown
-                usesDropdown.disabled = true;
-            }
-            
-            console.log("Uses options updated");
+            handleZoneChange(e.target.value);
+        });
+    }
+
+    // Building type change event
+    const buildingTypeSelect = document.getElementById('building_type');
+    if (buildingTypeSelect) {
+        buildingTypeSelect.addEventListener('change', function(e) {
+            handleBuildingTypeChange(e.target.value);
         });
     }
 
@@ -228,51 +167,17 @@ function addEventListeners() {
         });
     });
 
-    // Building type change event
-    const buildingTypeSelect = document.getElementById('building_type');
-    const buildingSubtypeSelect = document.getElementById('building_subtype');
-    if (buildingTypeSelect && buildingSubtypeSelect) {
-        buildingTypeSelect.addEventListener('change', function(e) {
-            buildingSubtypeSelect.innerHTML = '<option value="">Select an option</option>';
-            buildingSubtypeSelect.disabled = true;
-            
-            const selectedBuildingTypeId = e.target.value;
-            if (selectedBuildingTypeId) {
-                const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
-                
-                subtypes.forEach(subtype => {
-                    const option = document.createElement('option');
-                    option.value = subtype.id;
-                    option.textContent = subtype.name;
-                    buildingSubtypeSelect.appendChild(option);
-                });
-                
-                buildingSubtypeSelect.disabled = false;
-            }
-        });
-    }
-
-
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-    const boundarySelect = document.getElementById(`${boundary}_boundary_type`);
-    if (boundarySelect) {
-        boundarySelect.addEventListener('change', (e) => {
-            const roadContainer = document.getElementById(`road_container_${boundary}`);
-            const roadTypeSelect = document.getElementById(`road_details_${boundary}`);
-            const roadWidthInput = document.getElementById(`road_details_${boundary}_meters`);
-        
-            if (e.target.value === 'Road') {
-                roadContainer.style.display = 'block';
-                roadTypeSelect.style.display = 'block';
-                roadWidthInput.style.display = 'block';
-            } else {
-                roadContainer.style.display = 'none';
-                roadTypeSelect.style.display = 'none';
-                roadWidthInput.style.display = 'none';
-            }
-        });
-    }
+        const boundarySelect = document.getElementById(`${boundary}_boundary_type`);
+        if (boundarySelect) {
+            boundarySelect.addEventListener('change', (e) => {
+                const roadContainer = document.getElementById(`road_container_${boundary}`);
+                if (roadContainer) {
+                    roadContainer.style.display = e.target.value === 'Road' ? 'block' : 'none';
+                }
+            });
+        }
     });
 
     // Form submission event
@@ -282,6 +187,114 @@ function addEventListeners() {
     } else {
         console.error("Form element not found");
     }
+}
+
+// Handle ULB Type change
+function handleUlbTypeChange(selectedUlbTypeId) {
+    console.log("ULB Type changed:", selectedUlbTypeId);
+    
+    const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+    if (!ulbRpSpecialAuthority) {
+        console.error("ULB/RP/Special Authority select element not found");
+        return;
+    }
+    
+    // Clear existing options
+    ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+    
+    if (selectedUlbTypeId) {
+        const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
+        console.log("Filtered authorities:", filteredAuthorities);
+        
+        filteredAuthorities.forEach(auth => {
+            const option = document.createElement('option');
+            option.value = auth.id;
+            option.textContent = auth.name;
+            ulbRpSpecialAuthority.appendChild(option);
+        });
+        
+        // Enable the dropdown
+        ulbRpSpecialAuthority.disabled = false;
+    } else {
+        // If no ULB Type is selected, disable the dropdown
+        ulbRpSpecialAuthority.disabled = true;
+    }
+    
+    console.log("ULB/RP/Special Authority options updated");
+}
+
+// Handle Zone change
+function handleZoneChange(selectedZoneId) {
+    console.log("Zone changed:", selectedZoneId);
+    
+    const usesDropdown = document.getElementById('uses');
+    if (!usesDropdown) {
+        console.error("Uses select element not found");
+        return;
+    }
+    
+    // Clear existing options
+    usesDropdown.innerHTML = '<option value="">Select an option</option>';
+    
+    if (selectedZoneId) {
+        const selectedZone = zones.find(zone => zone.id == selectedZoneId);
+        if (selectedZone && selectedZone.allowedUses) {
+            const filteredUses = uses.filter(use => selectedZone.allowedUses.includes(use.id));
+            console.log("Filtered uses:", filteredUses);
+            
+            filteredUses.forEach(use => {
+                const option = document.createElement('option');
+                option.value = use.id;
+                option.textContent = use.name;
+                usesDropdown.appendChild(option);
+            });
+            
+            // Enable the dropdown
+            usesDropdown.disabled = false;
+        } else {
+            console.error("Selected zone or allowed uses not found");
+            usesDropdown.disabled = true;
+        }
+    } else {
+        // If no Zone is selected, disable the dropdown
+        usesDropdown.disabled = true;
+    }
+    
+    console.log("Uses options updated");
+}
+
+// Handle Building Type change
+function handleBuildingTypeChange(selectedBuildingTypeId) {
+    console.log("Building Type changed:", selectedBuildingTypeId);
+    
+    const buildingSubtypeDropdown = document.getElementById('building_subtype');
+    if (!buildingSubtypeDropdown) {
+        console.error("Building subtype select element not found");
+        return;
+    }
+    
+    // Clear existing options
+    buildingSubtypeDropdown.innerHTML = '<option value="">Select an option</option>';
+    
+    if (selectedBuildingTypeId) {
+        const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
+        console.log("Building subtypes:", subtypes);
+        
+        subtypes.forEach(subtype => {
+            const option = document.createElement('option');
+            option.value = subtype.id;
+            option.textContent = subtype.name;
+            buildingSubtypeDropdown.appendChild(option);
+        });
+        
+        // Enable the dropdown
+        buildingSubtypeDropdown.disabled = false;
+    } else {
+        // If no Building Type is selected, disable the dropdown
+        buildingSubtypeDropdown.disabled = true;
+    }
+    
+    console.log("Building subtype options updated");
 }
 
 // Handle form submission
@@ -324,19 +337,8 @@ async function handleSubmit(e) {
     alert('Form submitted successfully!');
     form.reset();
     
-    // Reset ULB/RP/Special Authority dropdown
-    const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-    if (ulbRpSpecialAuthority) {
-      ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
-      ulbRpSpecialAuthority.disabled = true;
-    }
-
-    // Reset Uses dropdown
-    const usesDropdown = document.getElementById('uses');
-    if (usesDropdown) {
-      usesDropdown.innerHTML = '<option value="">Select an option</option>';
-      usesDropdown.disabled = true;
-    }
+    // Reset dependent dropdowns
+    initializeDependentDropdowns();
   } catch (error) {
     console.error('Error submitting form:', error);
     alert('An error occurred while submitting the form. Please try again.');
