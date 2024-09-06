@@ -280,7 +280,7 @@ async function handleSubmit(e) {
 
 // Replace the existing sendToGoogleSheets function with this
 async function sendToGoogleSheets(data) {
-  const scriptURL = 'https://script.google.com/macros/s/AKfycbwR3riCx87uOgjeomMRtRuskt89W_kDiLoeYZ_07Ae4JVbSsaBR-u7PiqcFTUZo17k_/exec';
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbw1IJDCgMBOBTqXmRlDDMMPYJgJSh6SUYHeyKo6Yjt_Z8aMjTKF33aUOKkXvSyiP056/exec';
   try {
     const response = await fetch(scriptURL, {
       method: 'POST',
