@@ -263,8 +263,8 @@
                 </div>
                 
 <div class="form-group">
-                    <label for="plot_identification_type">Plot Identification Type</label>
-                    <select id="plot_identification_type" name="plot_identification_type" required>
+                    <label for="survey_type">Plot Identification Type</label>
+                    <select id="survey_type" name="survey_type" required>
                         <option value="">Select type</option>
                         <option value="Tikka Number">Tikka Number</option>
                         <option value="City Survey No.">City Survey No.</option>
@@ -275,8 +275,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="plot_identification_number">Plot Identification Number</label>
-                    <input type="text" id="plot_identification_number" name="plot_identification_number" required>
+                    <label for="survey_number">Plot Identification Number</label>
+                    <input type="text" id="survey_number" name="survey_number" required>
                 </div>
                 
                 <div class="form-group">
@@ -285,18 +285,18 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="area_of_plot_site">Area of plot as per site (Sq.M.)</label>
-                    <input type="number" id="area_of_plot_site" name="area_of_plot_site" step="0.01" required>
+                    <label for="area_plot_site_sqm">Area of plot as per site (Sq.M.)</label>
+                    <input type="number" id="area_plot_site_sqm" name="area_plot_site_sqm" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="area_of_plot_document">Area of plot as per ownership document (Sq.M.)</label>
-                    <input type="number" id="area_of_plot_document" name="area_of_plot_document" step="0.01" required>
+                    <label for="area_plot_ownership_sqm">Area of plot as per ownership document (Sq.M.)</label>
+                    <input type="number" id="area_plot_ownership_sqm" name="area_plot_ownership_sqm" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="area_of_plot_measurement">Area of plot as per measurement sheet (Sq.M.)</label>
-                    <input type="number" id="area_of_plot_measurement" name="area_of_plot_measurement" step="0.01" required>
+                    <label for="area_plot_measurement_sqm">Area of plot as per measurement sheet (Sq.M.)</label>
+                    <input type="number" id="area_plot_measurement_sqm" name="area_plot_measurement_sqm" step="0.01" required>
                 </div>
                 
                 <div class="form-group">
@@ -321,8 +321,8 @@
                 </div>
                 
                 <div class="form-group hidden" id="dp_rp_road_area_sqm">
-                    <label for="dp_rp_road_area_sqm_input">DP/RP road affected (Sq.M.)</label>
-                    <input type="number" id="dp_rp_road_area_sqm_input" name="dp_rp_road_area_sqm" step="0.01">
+                    <label for="dp_rp_road_area_sqm">DP/RP road affected (Sq.M.)</label>
+                    <input type="number" id="dp_rp_road_area_sqm" name="dp_rp_road_area_sqm" step="0.01">
                 </div>
                 
                 <div class="form-group">
@@ -333,8 +333,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="height_of_building">Height of Building</label>
-                    <select id="height_of_building" name="height_of_building" required>
+                    <label for="building_height">Height of Building</label>
+                    <select id="building_height" name="building_height" required>
                         <option value="">Select height</option>
                         <option value="Below 15 meter">Below 15 meter</option>
                         <option value="15-24 meter">15-24 meter</option>
@@ -345,8 +345,8 @@
                 <div class="form-group">
                     <label>Is it a redevelopment proposal?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="is_redevelopment" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="is_redevelopment" value="No" required> No</label>
+                        <label><input type="radio" name="redevelopment_proposal" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="redevelopment_proposal" value="No" required> No</label>
                     </div>
                 </div>
                 
@@ -358,8 +358,8 @@
                 <div class="form-group">
                     <label>Is your land in TOD?</label>
                     <div class="radio-group">
-                        <label><input type="radio" name="is_tod" value="Yes" required> Yes</label>
-                        <label><input type="radio" name="is_tod" value="No" required> No</label>
+                        <label><input type="radio" name="tod" value="Yes" required> Yes</label>
+                        <label><input type="radio" name="tod" value="No" required> No</label>
                     </div>
                 </div>
                 
@@ -382,16 +382,16 @@
                 <legend>Plot Boundaries</legend>
                 
                 <div class="form-group">
-                    <label for="front_boundary">Front</label>
-                    <select id="front_boundary" name="front_boundary" required>
+                    <label for="front_boundary_type">Front</label>
+                    <select id="front_boundary_type" name="front_boundary_type" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
                         <option value="Other Property">Other Property</option>
                         <option value="Layout Open Space">Open Space</option>
                     </select>
-                    <div id="front-road-details" class="road-details" style="display:none;">
-                        <label for="front_road_type">Road Type:</label>
-                        <select id="front_road_type" name="front_road_type">
+                    <div id="road_details_front" class="road-details" style="display:none;">
+                        <label for="road_details_front">Road Type:</label>
+                        <select id="road_details_front" name="road_details_front">
                             <option value="">Select Road Type</option>
                             <option value="DP Road">DP Road</option>
                             <option value="Other General Road">Other General Road</option>
@@ -402,22 +402,22 @@
                             <option value="Other District Road">Other District Road</option>
                             <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="front_road_width">Road Width (in meters):</label>
-                        <input type="number" id="front_road_width" name="front_road_width" step="0.01">
+                        <label for="road_details_front_meters">Road Width (in meters):</label>
+                        <input type="number" id="road_details_front_meters" name="road_details_front_meters" step="0.01">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="left_boundary">Left</label>
-                    <select id="left_boundary" name="left_boundary" required>
+                    <label for="left_boundary_type">Left</label>
+                    <select id="left_boundary_type" name="left_boundary_type" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
                         <option value="Other Property">Other Property</option>
                         <option value="Layout Open Space">Layout Open Space</option>
                     </select>
-                    <div id="left-road-details" class="road-details" style="display:none;">
-                        <label for="left_road_type">Road Type:</label>
-                        <select id="left_road_type" name="left_road_type">
+                    <div id="road_details_left" class="road-details" style="display:none;">
+                        <label for="road_details_left">Road Type:</label>
+                        <select id="road_details_left" name="road_details_left">
                             <option value="">Select Road Type</option>
                             <option value="DP Road">DP Road</option>
                             <option value="Other General Road">Other General Road</option>
@@ -428,22 +428,22 @@
                             <option value="Other District Road">Other District Road</option>
                             <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="left_road_width">Road Width (in meters):</label>
-                        <input type="number" id="left_road_width" name="left_road_width" step="0.01">
+                        <label for="road_details_left_meters">Road Width (in meters):</label>
+                        <input type="number" id="road_details_left_meters" name="road_details_left_meters" step="0.01">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="right_boundary">Right</label>
-                    <select id="right_boundary" name="right_boundary" required>
+                    <label for="right_boundary_type">Right</label>
+                    <select id="right_boundary_type" name="right_boundary_type" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
                         <option value="Other Property">Other Property</option>
                         <option value="Layout Open Space">Layout Open Space</option>
                     </select>
-                    <div id="right-road-details" class="road-details" style="display:none;">
-                        <label for="right_road_type">Road Type:</label>
-                        <select id="right_road_type" name="right_road_type">
+                    <div id="road_details_right" class="road-details" style="display:none;">
+                        <label for="road_details_right">Road Type:</label>
+                        <select id="road_details_right" name="road_details_right">
                             <option value="">Select Road Type</option>
                             <option value="DP Road">DP Road</option>
                             <option value="Other General Road">Other General Road</option>
@@ -454,22 +454,22 @@
                             <option value="Other District Road">Other District Road</option>
                             <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="right_road_width">Road Width (in meters):</label>
-                        <input type="number" id="right_road_width" name="right_road_width" step="0.01">
+                        <label for="road_details_right_meters">Road Width (in meters):</label>
+                        <input type="number" id="road_details_right_meters" name="road_details_right_meters" step="0.01">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="rear_boundary">Rear</label>
-                    <select id="rear_boundary" name="rear_boundary" required>
+                    <label for="rear_boundary_type">Rear</label>
+                    <select id="rear_boundary_type" name="rear_boundary_type" required>
                         <option value="">Select boundary type</option>
                         <option value="Road">Road</option>
                         <option value="Other Property">Other Property</option>
                         <option value="Layout Open Space">Layout Open Space</option>
                     </select>
-                    <div id="rear-road-details" class="road-details" style="display:none;">
-                        <label for="rear_road_type">Road Type:</label>
-                        <select id="rear_road_type" name="rear_road_type">
+                    <div id="road_details_rear" class="road-details" style="display:none;">
+                        <label for="road_details_rear">Road Type:</label>
+                        <select id="road_details_rear" name="road_details_rear">
                             <option value="">Select Road Type</option>
                             <option value="DP Road">DP Road</option>
                             <option value="Other General Road">Other General Road</option>
@@ -480,8 +480,8 @@
                             <option value="Other District Road">Other District Road</option>
                             <option value="15m Village Road">15m Village Road</option>
                         </select>
-                        <label for="rear_road_width">Road Width (in meters):</label>
-                        <input type="number" id="rear_road_width" name="rear_road_width" step="0.01">
+                        <label for="road_details_rear_meters">Road Width (in meters):</label>
+                        <input type="number" id="road_details_rear_meters" name="road_details_rear_meters" step="0.01">
                     </div>
                 </div>
             </fieldset>
