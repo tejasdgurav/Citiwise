@@ -47,7 +47,6 @@ async function loadData() {
         // Populate dropdowns
         populateDropdown('ulb_type', data.ulb_type || []);
         populateDropdown('zone', zones);
-        populateDropdown('city_specific_area', citySpecificAreas);
         populateDropdown('building_type', buildingTypes);
         
         // Initialize dependent dropdowns
@@ -71,7 +70,13 @@ function populateDropdown(id, options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id;
-        optionElement.textContent = option.name;
+        
+        if (id === 'city_specific_area') {
+            optionElement.textContent = option.citySpecificArea || 'Unknown Area';
+        } else {
+            optionElement.textContent = option.name || 'Unknown Option';
+        }
+        
         select.appendChild(optionElement);
     });
     console.log(`Populated dropdown '${id}' with ${options.length} options`);
@@ -79,11 +84,11 @@ function populateDropdown(id, options) {
 
 // Initialize dependent dropdowns
 function initializeDependentDropdowns() {
-    const dependentDropdowns = ['ulb_rp_special_authority', 'uses', 'building_subtype'];
+    const dependentDropdowns = ['ulb_rp_special_authority', 'uses', 'building_subtype', 'city_specific_area'];
     dependentDropdowns.forEach(id => {
         const dropdown = document.getElementById(id);
         if (dropdown) {
-            dropdown.innerHTML = ''; // Remove all options, including "Select an option"
+            dropdown.innerHTML = ''; // Remove all options
             dropdown.disabled = true;
         }
     });
@@ -98,6 +103,14 @@ function addEventListeners() {
     if (ulbTypeSelect) {
         ulbTypeSelect.addEventListener('change', function(e) {
             handleUlbTypeChange(e.target.value);
+        });
+    }
+
+    // ULB/RP/Special Authority change event
+    const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+    if (ulbRpSpecialAuthority) {
+        ulbRpSpecialAuthority.addEventListener('change', function(e) {
+            updateCitySpecificAreas(e.target.value);
         });
     }
 
@@ -226,7 +239,39 @@ function handleUlbTypeChange(selectedUlbTypeId) {
         ulbRpSpecialAuthority.disabled = true;
     }
     
+    // Clear and disable city-specific area dropdown when ULB type changes
+    updateCitySpecificAreas(null);
+    
     console.log("ULB/RP/Special Authority options updated");
+}
+
+// Update City Specific Areas based on selected ULB/RP/Special Authority
+function updateCitySpecificAreas(selectedCouncilId) {
+    const citySpecificAreaSelect = document.getElementById('city_specific_area');
+    if (!citySpecificAreaSelect) {
+        console.error("City Specific Area select element not found");
+        return;
+    }
+
+    // Clear existing options
+    citySpecificAreaSelect.innerHTML = '';
+    
+    if (selectedCouncilId) {
+        // Filter city-specific areas based on the selected councilId
+        const filteredAreas = citySpecificAreas.filter(area => area.councilId == selectedCouncilId);
+        console.log("Filtered city-specific areas:", filteredAreas);
+        
+        // Populate the dropdown with filtered areas
+        populateDropdown('city_specific_area', filteredAreas);
+        
+        // Enable the dropdown if there are matching areas, otherwise disable it
+        citySpecificAreaSelect.disabled = filteredAreas.length === 0;
+    } else {
+        // If no council is selected, disable the dropdown
+        citySpecificAreaSelect.disabled = true;
+    }
+    
+    console.log("City Specific Area options updated");
 }
 
 // Handle Zone change
