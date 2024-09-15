@@ -439,10 +439,12 @@ function initializePlotBoundaries() {
                 if (e.target.value === 'Road') {
                     roadContainer.style.display = 'block';
                     populateRoadTypes(roadTypeSelect);
+                    roadWidthInput.style.display = 'block';
                 } else {
                     roadContainer.style.display = 'none';
                     roadTypeSelect.value = '';
                     roadWidthInput.value = '';
+                    roadWidthInput.style.display = 'none';
                 }
             });
 
@@ -454,12 +456,15 @@ function initializePlotBoundaries() {
 }
 
 function initializeForm() {
-    loadData();
-    initializeFileInputs();
-    initializeRadioButtonHandlers();
-    handlePlotIdentificationTypeChange();
-    initializeNumericInputs();
-    initializePlotBoundaries();
+    loadData().then(() => {
+        initializeFileInputs();
+        initializeRadioButtonHandlers();
+        handlePlotIdentificationTypeChange();
+        initializeNumericInputs();
+        initializePlotBoundaries();
+    }).catch(error => {
+        console.error('Error initializing form:', error);
+    });
 }
 
 document.addEventListener('DOMContentLoaded', initializeForm);
