@@ -460,7 +460,7 @@ function formatContactNumber(number) {
 
 async function sendFormData(data) {
     try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzR_aruON8iw79udtjByurnY1l9KM6eHcM-1_7BuD52JZJaQrGmnUD3OzVM1d-V36nU/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzHYR4sQRFcnosnXhMuGcQYTPOU0_EsdHPMj6eMkGbkLy0o2DMYeiEwfHNE8bJQgWEl/exec', {
             method: 'POST',
             mode: 'no-cors',
             headers: {
