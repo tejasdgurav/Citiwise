@@ -22,7 +22,6 @@ async function loadData() {
         populateDropdown('zone', ulbData.zone || []);
         populateDropdown('uses', ulbData.uses || []);
         populateDropdown('building_type', ulbData.building_type || []);
-        populateDropdown('building_subtypes', []);  // Initially empty, will be populated based on building type
         
         // Initialize form state
         initializeFormState();
@@ -57,7 +56,6 @@ function populateDropdown(id, options) {
 
 // Function to initialize form state
 function initializeFormState() {
-    // Hide conditional fields on page load
     const conditionalFields = [
         'incentive_fsi_rating',
         'electrical_line_voltage',
@@ -72,7 +70,6 @@ function initializeFormState() {
         }
     });
 
-    // Hide road containers
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
         const roadContainer = $('#road_container_' + boundary);
         if (roadContainer) {
@@ -85,72 +82,38 @@ function initializeFormState() {
 function addEventListeners() {
     console.log("Adding event listeners");
 
-    // Zone change event
-    $('#zone').addEventListener('change', function(e) {
-        handleZoneChange(e.target.value);
-    });
+    $('#zone').addEventListener('change', e => handleZoneChange(e.target.value));
+    $('#building_type').addEventListener('change', e => handleBuildingTypeChange(e.target.value));
 
-    // Building type change event
-    $('#building_type').addEventListener('change', function(e) {
-        handleBuildingTypeChange(e.target.value);
-    });
-
-    // Incentive FSI change event
-    $$('input[name="incentive_fsi"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            $('#incentive_fsi_rating').closest('.form-group').classList.toggle('hidden', e.target.value !== 'Yes');
-        });
-    });
-
-    // Electrical Line change event
-    $$('input[name="electrical_line"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            $('#electrical_line_voltage').closest('.form-group').classList.toggle('hidden', e.target.value !== 'Yes');
-        });
-    });
-
-    // Reservation Area Affected change event
-    $$('input[name="reservation_area_affected"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            $('#reservation_area_sqm').closest('.form-group').classList.toggle('hidden', e.target.value !== 'Yes');
-        });
-    });
-
-    // DP/RP road affected change event
-    $$('input[name="dp_rp_road_affected"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            $('#dp_rp_road_area_sqm').closest('.form-group').classList.toggle('hidden', e.target.value !== 'Yes');
+    // Radio button event listeners
+    const radioGroups = ['incentive_fsi', 'electrical_line', 'reservation_area_affected', 'dp_rp_road_affected'];
+    radioGroups.forEach(group => {
+        $$(`input[name="${group}"]`).forEach(radio => {
+            radio.addEventListener('change', e => toggleConditionalField(group, e.target.value));
         });
     });
 
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        $('#' + boundary).addEventListener('change', (e) => {
-            const roadContainer = $('#road_container_' + boundary);
-            if (roadContainer) {
-                roadContainer.style.display = e.target.value === 'Road' ? 'block' : 'none';
-            }
+        $(`#${boundary}`).addEventListener('change', e => {
+            $(`#road_container_${boundary}`).style.display = e.target.value === 'Road' ? 'block' : 'none';
         });
     });
 
-    // Add input event listeners for sentence case conversion
+    // Text input event listeners for sentence case conversion
     $$('input[type="text"], textarea').forEach(input => {
-        input.addEventListener('input', function() {
-            this.value = toSentenceCase(this.value);
+        input.addEventListener('input', e => {
+            e.target.value = toSentenceCase(e.target.value);
         });
     });
 
-    // Initialize contact number handler
     initializeContactNumberHandler();
-
-    // Form submission handler
     $('#project-input-form').addEventListener('submit', handleSubmit);
 }
 
 // Handle Zone change
 function handleZoneChange(selectedZoneId) {
     console.log("Zone changed:", selectedZoneId);
-    
     const usesDropdown = $('#uses');
     usesDropdown.innerHTML = '<option value="">Select uses</option>';
     
@@ -158,8 +121,6 @@ function handleZoneChange(selectedZoneId) {
         const selectedZone = ulbData.zone.find(zone => zone.id == selectedZoneId);
         if (selectedZone && selectedZone.allowedUses) {
             const filteredUses = ulbData.uses.filter(use => selectedZone.allowedUses.includes(use.id));
-            console.log("Filtered uses:", filteredUses);
-            
             filteredUses.forEach(use => {
                 const option = document.createElement('option');
                 option.value = use.id;
@@ -168,14 +129,12 @@ function handleZoneChange(selectedZoneId) {
             });
         }
     }
-    
     usesDropdown.disabled = !selectedZoneId;
 }
 
 // Handle Building Type change
 function handleBuildingTypeChange(selectedBuildingTypeId) {
     console.log("Building Type changed:", selectedBuildingTypeId);
-    
     const buildingSubtypeDropdown = $('#building_subtypes');
     buildingSubtypeDropdown.innerHTML = '<option value="">Select building subtype</option>';
     
@@ -187,8 +146,21 @@ function handleBuildingTypeChange(selectedBuildingTypeId) {
             buildingSubtypeDropdown.appendChild(option);
         });
     }
-    
     buildingSubtypeDropdown.disabled = !selectedBuildingTypeId;
+}
+
+// Toggle conditional fields
+function toggleConditionalField(group, value) {
+    const fieldMap = {
+        'incentive_fsi': 'incentive_fsi_rating',
+        'electrical_line': 'electrical_line_voltage',
+        'reservation_area_affected': 'reservation_area_sqm',
+        'dp_rp_road_affected': 'dp_rp_road_area_sqm'
+    };
+    const field = $('#' + fieldMap[group]);
+    if (field) {
+        field.closest('.form-group').classList.toggle('hidden', value !== 'Yes');
+    }
 }
 
 // Convert text to sentence case
@@ -206,28 +178,22 @@ function initializeContactNumberHandler() {
     }
 }
 
+// Handle form submission
 function handleSubmit(e) {
     e.preventDefault();
-
-    // Show loading indicator
     $('.loading-indicator').style.display = 'flex';
 
-    // Validate form
     if (!validateForm(e.target)) {
         $('.loading-indicator').style.display = 'none';
         return;
     }
 
-    // Collect form data
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
-
-    // Ensure contact number is in correct format
     data.contact_no = formatContactNumber(data.contact_no);
 
     console.log("Form data being sent:", data);
 
-    // Send data to Google Apps Script Web App
     sendFormData(data)
         .then(() => {
             console.log("Form submitted successfully");
@@ -244,6 +210,7 @@ function handleSubmit(e) {
         });
 }
 
+// Validate form
 function validateForm(form) {
     const requiredFields = form.querySelectorAll('[required]');
     for (let field of requiredFields) {
@@ -254,7 +221,6 @@ function validateForm(form) {
         }
     }
 
-    // Validate email format
     const emailInput = $('#email');
     if (emailInput && !isValidEmail(emailInput.value)) {
         alert('Please enter a valid email address.');
@@ -262,7 +228,6 @@ function validateForm(form) {
         return false;
     }
 
-    // Validate contact number
     const contactInput = $('#contact_no');
     if (contactInput && contactInput.value.length !== 10) {
         alert('Please enter a valid 10-digit contact number.');
@@ -273,15 +238,18 @@ function validateForm(form) {
     return true;
 }
 
+// Validate email format
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
 }
 
+// Format contact number
 function formatContactNumber(number) {
     return number.length === 10 ? `+91${number}` : number;
 }
 
+// Send form data to server
 async function sendFormData(data) {
     try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbzHYR4sQRFcnosnXhMuGcQYTPOU0_EsdHPMj6eMkGbkLy0o2DMYeiEwfHNE8bJQgWEl/exec', {
@@ -298,18 +266,14 @@ async function sendFormData(data) {
     }
 }
 
-// Function to handle file input changes
+// Handle file input changes
 function handleFileInputChange(inputId) {
     const fileInput = $('#' + inputId);
     const fileNameDisplay = $('#' + inputId + '_name');
     
     if (fileInput && fileNameDisplay) {
         fileInput.addEventListener('change', function(e) {
-            if (this.files && this.files.length > 0) {
-                fileNameDisplay.textContent = this.files[0].name;
-            } else {
-                fileNameDisplay.textContent = '';
-            }
+            fileNameDisplay.textContent = this.files && this.files.length > 0 ? this.files[0].name : '';
         });
     }
 }
