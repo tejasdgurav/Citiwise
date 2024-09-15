@@ -102,7 +102,7 @@ function addEventListeners() {
     }
 
     // Incentive FSI change event
-    document.querySelectorAll('input[name="incentive_fsi_rating"]').forEach(radio => {
+    document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
         radio.addEventListener('change', function(e) {
             const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
             if (incentiveFsiRating) {
@@ -112,7 +112,7 @@ function addEventListeners() {
     });
 
     // Electrical Line change event
-    document.querySelectorAll('input[name="electrical_line_voltage"]').forEach(radio => {
+    document.querySelectorAll('input[name="electrical_line"]').forEach(radio => {
         radio.addEventListener('change', function(e) {
             const electricalLineVoltage = document.getElementById('electrical_line_voltage');
             if (electricalLineVoltage) {
