@@ -13,7 +13,7 @@ async function loadData() {
         console.log("Data loaded successfully:", ulbData);
         
         // Populate dropdowns
-        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || []);
+        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || [], 'talukaName');
         populateDropdown('special_scheme', ulbData.special_scheme || []);
         populateDropdown('type_of_development', ulbData.type_of_development || []);
         populateDropdown('type_of_proposal', ulbData.type_of_proposal || []);
@@ -33,7 +33,7 @@ async function loadData() {
     }
 }
 
-function populateDropdown(id, options) {
+function populateDropdown(id, options, textProperty = 'name') {
     const select = document.getElementById(id);
     if (!select) {
         console.error(`Dropdown with id '${id}' not found`);
@@ -43,7 +43,7 @@ function populateDropdown(id, options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id || option.value;
-        optionElement.textContent = option.name || option.text || option.talukaName || 'Unknown Option';
+        optionElement.textContent = option[textProperty] || option.text || 'Unknown Option';
         select.appendChild(optionElement);
     });
     console.log(`Populated dropdown '${id}' with ${options.length} options`);
@@ -121,6 +121,19 @@ function addEventListeners() {
         }
     });
 
+    // Road type change events
+    ['front', 'left', 'right', 'rear'].forEach(boundary => {
+        const roadTypeSelect = document.getElementById(`road_type_${boundary}`);
+        if (roadTypeSelect) {
+            roadTypeSelect.addEventListener('change', (e) => {
+                const roadWidthInput = document.getElementById(`road_width_${boundary}`);
+                if (roadWidthInput) {
+                    roadWidthInput.style.display = e.target.value ? 'block' : 'none';
+                }
+            });
+        }
+    });
+
     // Zone change event
     const zoneSelect = document.getElementById('zone');
     if (zoneSelect) {
@@ -166,6 +179,15 @@ function toggleRoadDetails(boundary, show) {
     const roadContainer = document.getElementById(`road_container_${boundary}`);
     if (roadContainer) {
         roadContainer.style.display = show ? 'block' : 'none';
+        if (show) {
+            const roadTypeSelect = document.getElementById(`road_type_${boundary}`);
+            const roadWidthInput = document.getElementById(`road_width_${boundary}`);
+            if (roadTypeSelect) roadTypeSelect.value = '';
+            if (roadWidthInput) {
+                roadWidthInput.value = '';
+                roadWidthInput.style.display = 'none';
+            }
+        }
     }
 }
 
