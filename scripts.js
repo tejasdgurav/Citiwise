@@ -1,5 +1,4 @@
 // Global variables
-let formData = {};
 let ulbData = {};
 
 // Load data from JSON
@@ -110,7 +109,7 @@ function addEventListeners() {
 
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        const boundarySelect = document.getElementById(`${boundary}`);
+        const boundarySelect = document.getElementById(boundary);
         if (boundarySelect) {
             boundarySelect.addEventListener('change', (e) => {
                 toggleRoadDetails(boundary, e.target.value === 'Road');
@@ -148,6 +147,7 @@ function toggleIncentiveFsiRating(show) {
     const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
     if (incentiveFsiRating) {
         incentiveFsiRating.closest('.form-group').style.display = show ? 'block' : 'none';
+        incentiveFsiRating.disabled = !show;
     }
 }
 
@@ -155,6 +155,7 @@ function toggleElectricalLineVoltage(show) {
     const electricalLineVoltage = document.getElementById('electrical_line_voltage');
     if (electricalLineVoltage) {
         electricalLineVoltage.closest('.form-group').style.display = show ? 'block' : 'none';
+        electricalLineVoltage.disabled = !show;
     }
 }
 
