@@ -30,7 +30,7 @@ async function loadData() {
         console.log("Global variables populated");
         
         // Populate dropdowns
-        populateDropdown('ulb_type', data.ulb_type || []);
+        populateUlbDropdown(data.ulb_rp_special_authority || []);
         populateDropdown('zone', zones);
         populateDropdown('building_type', buildingTypes);
         
@@ -44,32 +44,26 @@ async function loadData() {
     }
 }
 
-// Populate dropdown function
-function populateDropdown(id, options) {
-    const select = document.getElementById(id);
+// New function to populate ULB dropdown
+function populateUlbDropdown(options) {
+    const select = document.getElementById('ulb_rp_special_authority');
     if (!select) {
-        console.error(`Dropdown with id '${id}' not found`);
+        console.error("ULB/RP/Special Authority select element not found");
         return;
     }
-    select.innerHTML = '<option value="">Select an option</option>';
+    select.innerHTML = '<option value="">Select ULB/RP/Special Authority</option>';
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id;
-        
-        if (id === 'city_specific_area') {
-            optionElement.textContent = option.citySpecificArea || 'Unknown Area';
-        } else {
-            optionElement.textContent = option.name || 'Unknown Option';
-        }
-        
+        optionElement.textContent = option.name;
         select.appendChild(optionElement);
     });
-    console.log(`Populated dropdown '${id}' with ${options.length} options`);
+    console.log(`Populated ULB dropdown with ${options.length} options`);
 }
 
 // Initialize dependent dropdowns
 function initializeDependentDropdowns() {
-    const dependentDropdowns = ['ulb_rp_special_authority', 'uses', 'building_subtype', 'city_specific_area'];
+    const dependentDropdowns = ['uses', 'building_subtype', 'city_specific_area'];
     dependentDropdowns.forEach(id => {
         const dropdown = document.getElementById(id);
         if (dropdown) {
@@ -82,14 +76,6 @@ function initializeDependentDropdowns() {
 // Add event listeners
 function addEventListeners() {
     console.log("Adding event listeners");
-    
-    // ULB Type change event
-    const ulbTypeSelect = document.getElementById('ulb_type');
-    if (ulbTypeSelect) {
-        ulbTypeSelect.addEventListener('change', function(e) {
-            handleUlbTypeChange(e.target.value);
-        });
-    }
 
     // ULB/RP/Special Authority change event
     const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
@@ -190,48 +176,6 @@ function addEventListeners() {
     initializeContactNumberHandler();
 }
 
-// Handle ULB Type change
-function handleUlbTypeChange(selectedUlbTypeId) {
-    console.log("ULB Type changed:", selectedUlbTypeId);
-    
-    const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-    if (!ulbRpSpecialAuthority) {
-        console.error("ULB/RP/Special Authority select element not found");
-        return;
-    }
-    
-    // Clear existing options
-    ulbRpSpecialAuthority.innerHTML = '';
-    
-    if (selectedUlbTypeId) {
-        // Add "Select an option" only when a ULB Type is selected
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Select an option";
-        ulbRpSpecialAuthority.appendChild(defaultOption);
-
-        const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
-        console.log("Filtered authorities:", filteredAuthorities);
-        
-        filteredAuthorities.forEach(auth => {
-            const option = document.createElement('option');
-            option.value = auth.id;
-            option.textContent = auth.name;
-            ulbRpSpecialAuthority.appendChild(option);
-        });
-        
-        // Enable the dropdown
-        ulbRpSpecialAuthority.disabled = false;
-    } else {
-        // If no ULB Type is selected, disable the dropdown
-        ulbRpSpecialAuthority.disabled = true;
-    }
-    
-    // Clear and disable city-specific area dropdown when ULB type changes
-    updateCitySpecificAreas(null);
-    
-    console.log("ULB/RP/Special Authority options updated");
-}
 
 // Update City Specific Areas based on selected ULB/RP/Special Authority
 function updateCitySpecificAreas(selectedCouncilId) {
