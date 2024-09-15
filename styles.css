@@ -236,3 +236,29 @@ textarea:disabled {
     gap: 10px;
   }
 }
+
+.input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.input-group-addon {
+    background-color: #f8f8f8;
+    color: #333;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-right: 1px solid var(--border-color);
+}
+
+.input-group input[type="tel"] {
+    border: none;
+    flex-grow: 1;
+    padding: 8px 10px;
+}
+
+.input-group:focus-within {
+    border-color: var(--focus-color);
+}
