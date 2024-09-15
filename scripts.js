@@ -89,7 +89,7 @@ function initializeFormState() {
     conditionalFields.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) {
-            field.parentElement.style.display = 'none';
+            field.closest('.form-group').style.display = 'none';
         }
     });
 
@@ -100,6 +100,12 @@ function initializeFormState() {
             roadContainer.style.display = 'none';
         }
     });
+
+    // Ensure Project Information fieldset is visible
+    const projectInfoFieldset = document.querySelector('fieldset:has(legend:contains("Project Information"))');
+    if (projectInfoFieldset) {
+        projectInfoFieldset.style.display = 'block';
+    }
 }
 
 // Add event listeners
@@ -135,7 +141,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
             if (incentiveFsiRating) {
-                incentiveFsiRating.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                incentiveFsiRating.closest('.form-group').style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -145,7 +151,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const electricalLineVoltage = document.getElementById('electrical_line_voltage');
             if (electricalLineVoltage) {
-                electricalLineVoltage.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                electricalLineVoltage.closest('.form-group').style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -155,7 +161,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const reservationAreaSqm = document.getElementById('reservation_area_sqm');
             if (reservationAreaSqm) {
-                reservationAreaSqm.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                reservationAreaSqm.closest('.form-group').style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -165,7 +171,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const dpRpRoadAreaSqm = document.getElementById('dp_rp_road_area_sqm');
             if (dpRpRoadAreaSqm) {
-                dpRpRoadAreaSqm.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                dpRpRoadAreaSqm.closest('.form-group').style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -193,6 +199,20 @@ function addEventListeners() {
 
     // Initialize contact number handler
     initializeContactNumberHandler();
+
+    // Ensure Project Information fieldset remains visible
+    const projectInfoFieldset = document.querySelector('fieldset:has(legend:contains("Project Information"))');
+    if (projectInfoFieldset) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    projectInfoFieldset.style.display = 'block';
+                }
+            });
+        });
+
+        observer.observe(projectInfoFieldset, { attributes: true });
+    }
 }
 
 // Update City Specific Areas based on selected ULB/RP/Special Authority
@@ -462,6 +482,12 @@ function resetForm() {
         form.reset();
         initializeDependentDropdowns();
         initializeFormState();
+        
+        // Ensure Project Information fieldset is visible after reset
+        const projectInfoFieldset = document.querySelector('fieldset:has(legend:contains("Project Information"))');
+        if (projectInfoFieldset) {
+            projectInfoFieldset.style.display = 'block';
+        }
     }
 }
 
@@ -469,6 +495,13 @@ function resetForm() {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
     loadData();
+    initializeFileInputs();
+
+    // Ensure Project Information fieldset is visible
+    const projectInfoFieldset = document.querySelector('fieldset:has(legend:contains("Project Information"))');
+    if (projectInfoFieldset) {
+        projectInfoFieldset.style.display = 'block';
+    }
 });
 
 // Utility function to show/hide elements
@@ -500,12 +533,5 @@ function initializeFileInputs() {
     handleFileInputChange('dp_rp_part_plan');
     handleFileInputChange('google_image');
 }
-
-// Call initializeFileInputs after DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded");
-    loadData();
-    initializeFileInputs();
-});
 
 console.log("scripts.js file loaded");
