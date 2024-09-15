@@ -75,92 +75,163 @@ function initializeFormState() {
 }
 
 function addEventListeners() {
-    console.log("Adding event listeners");
+    // Applicant Information
+    addInputListener('applicant_name');
+    addInputListener('contact_no');
+    addInputListener('email');
 
-    // ULB/RP/Special Authority change event
-    const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-    if (ulbRpSpecialAuthority) {
-        ulbRpSpecialAuthority.addEventListener('change', function(e) {
-            updateCitySpecificAreas(e.target.value);
-        });
-    }
+    // Project Information
+    addInputListener('project_name');
+    addInputListener('site_address');
+    addFileInputListener('dp_rp_part_plan');
+    addFileInputListener('google_image');
 
-    // Incentive FSI change event
-    document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            toggleConditionalField('incentive_fsi_rating', e.target.value === 'Yes');
-        });
-    });
+    // ULB/RP/Special Authority
+    addDropdownListener('ulb_rp_special_authority', updateCitySpecificAreas);
 
-    // Electrical Line change event
-    document.querySelectorAll('input[name="electrical_line"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            toggleConditionalField('electrical_line_voltage', e.target.value === 'Yes');
-        });
-    });
+    // Special Scheme
+    addDropdownListener('special_scheme');
 
-    // Reservation Area Affected change event
-    document.querySelectorAll('input[name="reservation_area_affected"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            toggleConditionalField('reservation_area_sqm', e.target.value === 'Yes');
-        });
-    });
+    // Regularization
+    addRadioListener('regularization');
 
-    // DP/RP road affected change event
-    document.querySelectorAll('input[name="dp_rp_road_affected"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            toggleConditionalField('dp_rp_road_area_sqm', e.target.value === 'Yes');
-        });
-    });
+    // Type of Development
+    addDropdownListener('type_of_development');
 
-    // Plot boundaries change events
+    // Incentive FSI
+    addRadioListener('incentive_fsi', () => toggleConditionalField('incentive_fsi_rating'));
+    addDropdownListener('incentive_fsi_rating');
+
+    // Type of Proposal
+    addDropdownListener('type_of_proposal');
+
+    // Hilly Site
+    addRadioListener('hilly_site');
+
+    // Flood Affected Area
+    addRadioListener('flood_affected_area');
+
+    // Location
+    addRadioListener('location');
+
+    // Electrical Line
+    addRadioListener('electrical_line', () => toggleConditionalField('electrical_line_voltage'));
+    addDropdownListener('electrical_line_voltage');
+
+    // Type of Plot/Layout
+    addDropdownListener('type_of_plot_layout');
+
+    // Reservation Area Affected
+    addRadioListener('reservation_area_affected', () => toggleConditionalField('reservation_area_sqm'));
+    addInputListener('reservation_area_sqm');
+
+    // CRZ Affected
+    addRadioListener('crz_affected');
+
+    // Zone and Uses
+    addDropdownListener('zone', updateUses);
+    addDropdownListener('uses');
+
+    // Plot Identification
+    addDropdownListener('plot_identification_type');
+    addInputListener('plot_identification_number');
+    addInputListener('village_name');
+
+    // Plot Areas
+    addInputListener('plot_area_site');
+    addInputListener('plot_area_document');
+    addInputListener('plot_area_measurement');
+
+    // Pro Rata FSI
+    addInputListener('pro_rata_fsi');
+
+    // Class of Land
+    addRadioListener('class_of_land');
+
+    // DP/RP Road Affected
+    addRadioListener('dp_rp_road_affected', () => toggleConditionalField('dp_rp_road_area_sqm'));
+    addInputListener('dp_rp_road_area_sqm');
+
+    // City Specific Area
+    addDropdownListener('city_specific_area');
+
+    // Height of Building
+    addDropdownListener('height_of_building');
+
+    // Redevelopment Proposal
+    addRadioListener('redevelopment_proposal');
+
+    // Plot Width
+    addInputListener('plot_width');
+
+    // Land in TOD
+    addRadioListener('land_in_tod');
+
+    // Building Type and Subtypes
+    addDropdownListener('building_type', updateBuildingSubtypes);
+    addDropdownListener('building_subtypes');
+
+    // Plot Boundaries
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        const boundarySelect = document.getElementById(`boundary_${boundary}`);
-        if (boundarySelect) {
-            boundarySelect.addEventListener('change', (e) => {
-                toggleRoadDetails(boundary, e.target.value === 'Road');
-            });
-        }
+        addDropdownListener(`boundary_${boundary}`, (value) => toggleRoadDetails(boundary, value === 'Road'));
+        addDropdownListener(`road_type_${boundary}`);
+        addInputListener(`road_width_${boundary}`);
     });
 
-    // Zone change event
-    const zoneSelect = document.getElementById('zone');
-    if (zoneSelect) {
-        zoneSelect.addEventListener('change', function(e) {
-            updateUses(e.target.value);
-        });
-    }
-
-    // Building type change event
-    const buildingTypeSelect = document.getElementById('building_type');
-    if (buildingTypeSelect) {
-        buildingTypeSelect.addEventListener('change', function(e) {
-            updateBuildingSubtypes(e.target.value);
-        });
-    }
-
-    // Add input event listeners for sentence case conversion
-    const textInputs = document.querySelectorAll('input[type="text"], textarea');
-    textInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            this.value = toSentenceCase(this.value);
-        });
-    });
-
-    // Initialize contact number handler
-    initializeContactNumberHandler();
-
-    // Form submission handler
+    // Form submission
     const form = document.getElementById('project-input-form');
     if (form) {
         form.addEventListener('submit', handleSubmit);
     }
 }
 
-function toggleConditionalField(fieldId, show) {
+function addInputListener(id) {
+    const input = document.getElementById(id);
+    if (input) {
+        input.addEventListener('input', function() {
+            if (input.type === 'text') {
+                this.value = toSentenceCase(this.value);
+            }
+            console.log(`${id} value:`, this.value);
+        });
+    }
+}
+
+function addFileInputListener(id) {
+    const input = document.getElementById(id);
+    if (input) {
+        input.addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : '';
+            console.log(`${id} file selected:`, fileName);
+        });
+    }
+}
+
+function addDropdownListener(id, callback) {
+    const dropdown = document.getElementById(id);
+    if (dropdown) {
+        dropdown.addEventListener('change', function() {
+            console.log(`${id} selected:`, this.value);
+            if (callback) callback(this.value);
+        });
+    }
+}
+
+function addRadioListener(name, callback) {
+    const radios = document.querySelectorAll(`input[name="${name}"]`);
+    radios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            console.log(`${name} selected:`, this.value);
+            if (callback) callback(this.value);
+        });
+    });
+}
+
+function toggleConditionalField(fieldId) {
     const field = document.getElementById(fieldId);
     if (field) {
-        field.closest('.form-group').classList.toggle('hidden', !show);
+        const isVisible = field.closest('.form-group').classList.toggle('hidden');
+        console.log(`${fieldId} visibility toggled:`, !isVisible);
     }
 }
 
@@ -168,39 +239,8 @@ function toggleRoadDetails(boundary, show) {
     const roadContainer = document.getElementById(`road_container_${boundary}`);
     if (roadContainer) {
         roadContainer.style.display = show ? 'block' : 'none';
-        if (show) {
-            const roadTypeSelect = document.getElementById(`road_type_${boundary}`);
-            const roadWidthInput = document.getElementById(`road_width_${boundary}`);
-            if (roadTypeSelect) {
-                roadTypeSelect.value = '';
-                populateRoadTypes(roadTypeSelect);
-            }
-            if (roadWidthInput) {
-                roadWidthInput.value = '';
-                roadWidthInput.style.display = 'block';
-            }
-        }
+        console.log(`Road details for ${boundary} ${show ? 'shown' : 'hidden'}`);
     }
-}
-
-function populateRoadTypes(selectElement) {
-    selectElement.innerHTML = '<option value="">Select Road Type</option>';
-    const roadTypes = [
-        'DP Road',
-        'Other General Road',
-        'Express Way',
-        'National Highway - NH',
-        'State Highway - SH',
-        'Major District Road - MDR',
-        'Other District Road',
-        '15m Village Road'
-    ];
-    roadTypes.forEach(type => {
-        const option = document.createElement('option');
-        option.value = type;
-        option.textContent = type;
-        selectElement.appendChild(option);
-    });
 }
 
 function updateCitySpecificAreas(selectedCouncilId) {
@@ -221,6 +261,7 @@ function updateCitySpecificAreas(selectedCouncilId) {
     } else {
         citySpecificAreaSelect.disabled = true;
     }
+    console.log('City specific areas updated');
 }
 
 function updateUses(selectedZoneId) {
@@ -246,6 +287,7 @@ function updateUses(selectedZoneId) {
     } else {
         usesDropdown.disabled = true;
     }
+    console.log('Uses dropdown updated');
 }
 
 function updateBuildingSubtypes(selectedBuildingTypeId) {
@@ -266,19 +308,11 @@ function updateBuildingSubtypes(selectedBuildingTypeId) {
     } else {
         buildingSubtypesDropdown.disabled = true;
     }
+    console.log('Building subtypes updated');
 }
 
 function toSentenceCase(text) {
     return text.replace(/(^\w|\.\s+\w)/g, match => match.toUpperCase());
-}
-
-function initializeContactNumberHandler() {
-    const contactInput = document.getElementById('contact_no');
-    if (contactInput) {
-        contactInput.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '').slice(0, 10);
-        });
-    }
 }
 
 function handleSubmit(e) {
@@ -366,102 +400,9 @@ async function sendFormData(data) {
     }
 }
 
-function handleFileInputChange(inputId) {
-    const fileInput = document.getElementById(inputId);
-    const fileNameDisplay = document.getElementById(`${inputId}_name`);
-    
-    if (fileInput && fileNameDisplay) {
-        fileInput.addEventListener('change', function(e) {
-            if (this.files && this.files.length > 0) {
-                fileNameDisplay.textContent = this.files[0].name;
-            } else {
-                fileNameDisplay.textContent = '';
-            }
-        });
-    }
-}
-
-function initializeFileInputs() {
-    handleFileInputChange('dp_rp_part_plan');
-    handleFileInputChange('google_image');
-}
-
-function initializeRadioButtonHandlers() {
-    const radioGroups = [
-        'hilly_site',
-        'flood_affected_area',
-        'location',
-        'crz_affected',
-        'class_of_land',
-        'redevelopment_proposal',
-        'land_in_tod'
-    ];
-
-    radioGroups.forEach(group => {
-        const radios = document.querySelectorAll(`input[name="${group}"]`);
-        radios.forEach(radio => {
-            radio.addEventListener('change', function(e) {
-                console.log(`${group} selection:`, e.target.value);
-            });
-        });
-    });
-}
-
-function handlePlotIdentificationTypeChange() {
-    const plotIdentificationTypeSelect = document.getElementById('plot_identification_type');
-    if (plotIdentificationTypeSelect) {
-        plotIdentificationTypeSelect.addEventListener('change', function(e) {
-            console.log('Plot identification type selection:', e.target.value);
-        });
-    }
-}
-
-function initializeNumericInputs() {
-    const numericInputs = document.querySelectorAll('input[type="number"]');
-    numericInputs.forEach(input => {
-        input.addEventListener('input', function(e) {
-            if (e.target.value < 0) {
-                e.target.value = 0;
-            }
-        });
-    });
-}
-
-function initializePlotBoundaries() {
-    ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        const boundarySelect = document.getElementById(`boundary_${boundary}`);
-        const roadContainer = document.getElementById(`road_container_${boundary}`);
-        const roadTypeSelect = document.getElementById(`road_type_${boundary}`);
-        const roadWidthInput = document.getElementById(`road_width_${boundary}`);
-
-        if (boundarySelect && roadContainer && roadTypeSelect && roadWidthInput) {
-            boundarySelect.addEventListener('change', function(e) {
-                if (e.target.value === 'Road') {
-                    roadContainer.style.display = 'block';
-                    populateRoadTypes(roadTypeSelect);
-                    roadWidthInput.style.display = 'block';
-                } else {
-                    roadContainer.style.display = 'none';
-                    roadTypeSelect.value = '';
-                    roadWidthInput.value = '';
-                    roadWidthInput.style.display = 'none';
-                }
-            });
-
-            roadTypeSelect.addEventListener('change', function() {
-                roadWidthInput.style.display = this.value ? 'block' : 'none';
-            });
-        }
-    });
-}
-
 function initializeForm() {
     loadData().then(() => {
-        initializeFileInputs();
-        initializeRadioButtonHandlers();
-        handlePlotIdentificationTypeChange();
-        initializeNumericInputs();
-        initializePlotBoundaries();
+        console.log("Form initialized");
     }).catch(error => {
         console.error('Error initializing form:', error);
     });
