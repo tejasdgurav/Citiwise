@@ -1,408 +1,178 @@
-// Global variables
-let ulbData = {};
+// Utility functions
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => document.querySelectorAll(selector);
 
-// Load data from JSON
-async function loadData() {
-    try {
-        console.log("Fetching data from data.json");
-        const response = await fetch('data.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        ulbData = await response.json();
-        console.log("Data loaded successfully:", ulbData);
-        
-        // Populate dropdowns from JSON
-        populateDropdownFromJSON('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || [], 'talukaName');
-        populateDropdownFromJSON('zone', ulbData.zone || []);
-        // Uses will be populated when a zone is selected
-        populateDropdownFromJSON('building_type', ulbData.building_type || []);
-        // Building subtypes will be populated when a building type is selected
-        // City specific areas will be populated when a ULB is selected
+// Load JSON data
+let jsonData;
 
-        // Initialize form state
-        initializeFormState();
-        
-        // Add event listeners
-        addEventListeners();
-    } catch (error) {
-        console.error('Error loading data:', error);
-    }
+fetch('data.json')
+  .then(response => response.json())
+  .then(data => {
+    jsonData = data;
+    populateDropdowns();
+  })
+  .catch(error => console.error('Error loading JSON data:', error));
+
+// Populate dropdowns
+function populateDropdowns() {
+  // ULB/RP/Special Authority
+  const ulbSelect = $('select[name="ulb_rp_special_authority"]');
+  jsonData.ulb_rp_special_authority.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.id;
+    option.textContent = `${item.districtName} - ${item.talukaName} (${item.name})`;
+    ulbSelect.appendChild(option);
+  });
+
+  // Zones
+  const zoneSelect = $('select[name="zone"]');
+  jsonData.zone.forEach(zone => {
+    const option = document.createElement('option');
+    option.value = zone.id;
+    option.textContent = zone.name;
+    zoneSelect.appendChild(option);
+  });
+
+  // Uses
+  const usesSelect = $('select[name="uses"]');
+  jsonData.uses.forEach(use => {
+    const option = document.createElement('option');
+    option.value = use.id;
+    option.textContent = use.name;
+    usesSelect.appendChild(option);
+  });
+
+  // Building type
+  const buildingTypeSelect = $('select[name="building_type"]');
+  jsonData.building_type.forEach(type => {
+    const option = document.createElement('option');
+    option.value = type.id;
+    option.textContent = type.name;
+    buildingTypeSelect.appendChild(option);
+  });
+
+  // Building subtype (will be populated based on building type selection)
 }
 
-function populateDropdownFromJSON(id, options, textProperty = 'name') {
-    const select = document.getElementById(id);
-    if (!select) {
-        console.error(`Dropdown with id '${id}' not found`);
-        return;
+// Form validation
+function validateForm() {
+  let isValid = true;
+
+  // Validate required fields
+  $$('input[required], select[required]').forEach(field => {
+    if (!field.value.trim()) {
+      isValid = false;
+      field.classList.add('invalid');
+    } else {
+      field.classList.remove('invalid');
     }
-    select.innerHTML = `<option value="">Select ${id.replace(/_/g, ' ')}</option>`;
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.id || option.value || option;
-        optionElement.textContent = option[textProperty] || option.text || option;
-        select.appendChild(optionElement);
+  });
+
+  // Validate email
+  const emailField = $('input[name="email"]');
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (emailField.value && !emailRegex.test(emailField.value)) {
+    isValid = false;
+    emailField.classList.add('invalid');
+  } else {
+    emailField.classList.remove('invalid');
+  }
+
+  // Validate phone number
+  const phoneField = $('input[name="contact_no"]');
+  const phoneRegex = /^[0-9]{10}$/;
+  if (phoneField.value && !phoneRegex.test(phoneField.value)) {
+    isValid = false;
+    phoneField.classList.add('invalid');
+  } else {
+    phoneField.classList.remove('invalid');
+  }
+
+  return isValid;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // Sentence case restriction for text inputs
+  $$('input[type="text"]').forEach(input => {
+    input.addEventListener('input', function() {
+      this.value = this.value.replace(/[^a-zA-Z0-9\s]/g, '');
+      this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase();
     });
-    console.log(`Populated dropdown '${id}' with ${options.length} options from JSON`);
-}
+  });
 
-function initializeFormState() {
-    const conditionalFields = [
-        'incentive_fsi_rating',
-        'electrical_line_voltage',
-        'reservation_area_sqm',
-        'dp_rp_road_area_sqm'
-    ];
+  // Phone number restriction
+  $('input[name="contact_no"]').addEventListener('input', function() {
+    this.value = this.value.replace(/\D/g, '').slice(0, 10);
+  });
 
-    conditionalFields.forEach(fieldId => {
-        const field = document.getElementById(fieldId);
-        if (field) {
-            field.closest('.form-group').classList.add('hidden');
-        }
+  // Incentive FSI conditional field
+  $('input[name="incentive_fsi"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      $('#incentive_fsi_rating').style.display = this.value === 'Yes' ? 'block' : 'none';
     });
+  });
 
-    ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        const roadContainer = document.getElementById(`road_container_${boundary}`);
-        if (roadContainer) {
-            roadContainer.style.display = 'none';
-        }
+  // Electrical line conditional field
+  $('input[name="electrical_line"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      $('#electrical_line_voltage').style.display = this.value === 'Yes' ? 'block' : 'none';
     });
-}
+  });
 
-function addEventListeners() {
-    // Applicant Information
-    addInputListener('applicant_name');
-    addInputListener('contact_no');
-    addInputListener('email');
-
-    // Project Information
-    addInputListener('project_name');
-    addInputListener('site_address');
-    addFileInputListener('dp_rp_part_plan');
-    addFileInputListener('google_image');
-
-    // ULB/RP/Special Authority
-    addDropdownListener('ulb_rp_special_authority', updateCitySpecificAreas);
-
-    // Special Scheme
-    addDropdownListener('special_scheme');
-
-    // Regularization
-    addRadioListener('regularization');
-
-    // Type of Development
-    addDropdownListener('type_of_development');
-
-    // Incentive FSI
-    addRadioListener('incentive_fsi', () => toggleConditionalField('incentive_fsi_rating'));
-    addDropdownListener('incentive_fsi_rating');
-
-    // Type of Proposal
-    addDropdownListener('type_of_proposal');
-
-    // Hilly Site
-    addRadioListener('hilly_site');
-
-    // Flood Affected Area
-    addRadioListener('flood_affected_area');
-
-    // Location
-    addRadioListener('location');
-
-    // Electrical Line
-    addRadioListener('electrical_line', () => toggleConditionalField('electrical_line_voltage'));
-    addDropdownListener('electrical_line_voltage');
-
-    // Type of Plot/Layout
-    addDropdownListener('type_of_plot_layout');
-
-    // Reservation Area Affected
-    addRadioListener('reservation_area_affected', () => toggleConditionalField('reservation_area_sqm'));
-    addInputListener('reservation_area_sqm');
-
-    // CRZ Affected
-    addRadioListener('crz_affected');
-
-    // Zone and Uses
-    addDropdownListener('zone', updateUses);
-    addDropdownListener('uses');
-
-    // Plot Identification
-    addDropdownListener('plot_identification_type');
-    addInputListener('plot_identification_number');
-    addInputListener('village_name');
-
-    // Plot Areas
-    addInputListener('plot_area_site');
-    addInputListener('plot_area_document');
-    addInputListener('plot_area_measurement');
-
-    // Pro Rata FSI
-    addInputListener('pro_rata_fsi');
-
-    // Class of Land
-    addRadioListener('class_of_land');
-
-    // DP/RP Road Affected
-    addRadioListener('dp_rp_road_affected', () => toggleConditionalField('dp_rp_road_area_sqm'));
-    addInputListener('dp_rp_road_area_sqm');
-
-    // City Specific Area
-    addDropdownListener('city_specific_area');
-
-    // Height of Building
-    addDropdownListener('height_of_building');
-
-    // Redevelopment Proposal
-    addRadioListener('redevelopment_proposal');
-
-    // Plot Width
-    addInputListener('plot_width');
-
-    // Land in TOD
-    addRadioListener('land_in_tod');
-
-    // Building Type and Subtypes
-    addDropdownListener('building_type', updateBuildingSubtypes);
-    addDropdownListener('building_subtypes');
-
-    // Plot Boundaries
-    ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        addDropdownListener(`boundary_${boundary}`, (value) => toggleRoadDetails(boundary, value === 'Road'));
-        addDropdownListener(`road_type_${boundary}`);
-        addInputListener(`road_width_${boundary}`);
+  // Reservation area affected conditional field
+  $('input[name="reservation_area_affected"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      $('#reservation_area_sqm').style.display = this.value === 'Yes' ? 'block' : 'none';
     });
+  });
 
-    // Form submission
-    const form = document.getElementById('project-input-form');
-    if (form) {
-        form.addEventListener('submit', handleSubmit);
-    }
-}
-
-function addInputListener(id) {
-    const input = document.getElementById(id);
-    if (input) {
-        input.addEventListener('input', function() {
-            if (input.type === 'text') {
-                this.value = toSentenceCase(this.value);
-            }
-            console.log(`${id} value:`, this.value);
-        });
-    }
-}
-
-function addFileInputListener(id) {
-    const input = document.getElementById(id);
-    if (input) {
-        input.addEventListener('change', function() {
-            const fileName = this.files[0] ? this.files[0].name : '';
-            console.log(`${id} file selected:`, fileName);
-        });
-    }
-}
-
-function addDropdownListener(id, callback) {
-    const dropdown = document.getElementById(id);
-    if (dropdown) {
-        dropdown.addEventListener('change', function() {
-            console.log(`${id} selected:`, this.value);
-            if (callback) callback(this.value);
-        });
-    }
-}
-
-function addRadioListener(name, callback) {
-    const radios = document.querySelectorAll(`input[name="${name}"]`);
-    radios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            console.log(`${name} selected:`, this.value);
-            if (callback) callback(this.value);
-        });
+  // DP/RP road affected conditional field
+  $('input[name="dp_rp_road_affected"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      $('#dp_rp_road_area_sqm').style.display = this.value === 'Yes' ? 'block' : 'none';
     });
-}
+  });
 
-function toggleConditionalField(fieldId) {
-    const field = document.getElementById(fieldId);
-    if (field) {
-        const isVisible = field.closest('.form-group').classList.toggle('hidden');
-        console.log(`${fieldId} visibility toggled:`, !isVisible);
-    }
-}
-
-function toggleRoadDetails(boundary, show) {
-    const roadContainer = document.getElementById(`road_container_${boundary}`);
-    if (roadContainer) {
-        roadContainer.style.display = show ? 'block' : 'none';
-        console.log(`Road details for ${boundary} ${show ? 'shown' : 'hidden'}`);
-    }
-}
-
-function updateCitySpecificAreas(selectedCouncilId) {
-    const citySpecificAreaSelect = document.getElementById('city_specific_area');
-    if (!citySpecificAreaSelect) return;
-
-    citySpecificAreaSelect.innerHTML = '<option value="">Select city specific area</option>';
+  // Building type and subtype relationship
+  $('select[name="building_type"]').addEventListener('change', function() {
+    const subtypeSelect = $('select[name="building_subtype"]');
+    subtypeSelect.innerHTML = '<option value="">Select a subtype</option>';
     
-    if (selectedCouncilId) {
-        const filteredAreas = ulbData.city_specific_area.filter(area => area.councilId == selectedCouncilId);
-        filteredAreas.forEach(area => {
-            const option = document.createElement('option');
-            option.value = area.id;
-            option.textContent = area.name;
-            citySpecificAreaSelect.appendChild(option);
-        });
-        citySpecificAreaSelect.disabled = filteredAreas.length === 0;
+    if (this.value && jsonData.building_subtype[this.value]) {
+      jsonData.building_subtype[this.value].forEach(subtype => {
+        const option = document.createElement('option');
+        option.value = subtype.id;
+        option.textContent = subtype.name;
+        subtypeSelect.appendChild(option);
+      });
+      subtypeSelect.disabled = false;
     } else {
-        citySpecificAreaSelect.disabled = true;
+      subtypeSelect.disabled = true;
     }
-    console.log('City specific areas updated');
-}
+  });
 
-function updateUses(selectedZoneId) {
-    const usesDropdown = document.getElementById('uses');
-    if (!usesDropdown) return;
-
-    usesDropdown.innerHTML = '<option value="">Select uses</option>';
-
-    if (selectedZoneId) {
-        const selectedZone = ulbData.zone.find(zone => zone.id == selectedZoneId);
-        if (selectedZone && selectedZone.allowedUses) {
-            const filteredUses = ulbData.uses.filter(use => selectedZone.allowedUses.includes(use.id));
-            filteredUses.forEach(use => {
-                const option = document.createElement('option');
-                option.value = use.id;
-                option.textContent = use.name;
-                usesDropdown.appendChild(option);
-            });
-            usesDropdown.disabled = false;
-        } else {
-            usesDropdown.disabled = true;
-        }
-    } else {
-        usesDropdown.disabled = true;
-    }
-    console.log('Uses dropdown updated');
-}
-
-function updateBuildingSubtypes(selectedBuildingTypeId) {
-    const buildingSubtypesDropdown = document.getElementById('building_subtypes');
-    if (!buildingSubtypesDropdown) return;
-
-    buildingSubtypesDropdown.innerHTML = '<option value="">Select building subtype</option>';
-
-    if (selectedBuildingTypeId) {
-        const subtypes = ulbData.building_subtypes[selectedBuildingTypeId] || [];
-        subtypes.forEach(subtype => {
-            const option = document.createElement('option');
-            option.value = subtype.id;
-            option.textContent = subtype.name;
-            buildingSubtypesDropdown.appendChild(option);
-        });
-        buildingSubtypesDropdown.disabled = false;
-    } else {
-        buildingSubtypesDropdown.disabled = true;
-    }
-    console.log('Building subtypes updated');
-}
-
-function toSentenceCase(text) {
-    return text.replace(/(^\w|\.\s+\w)/g, match => match.toUpperCase());
-}
-
-function handleSubmit(e) {
-    e.preventDefault();
-
-    const loadingIndicator = document.querySelector('.loading-indicator');
-    if (loadingIndicator) loadingIndicator.style.display = 'flex';
-
-    if (!validateForm(e.target)) {
-        if (loadingIndicator) loadingIndicator.style.display = 'none';
-        return;
-    }
-
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-    data.contact_no = formatContactNumber(data.contact_no);
-
-    console.log("Form data being sent:", data);
-
-    sendFormData(data)
-        .then(() => {
-            console.log("Form submitted successfully");
-            alert('Form submitted successfully!');
-            e.target.reset();
-            initializeFormState();
-        })
-        .catch(error => {
-            console.error('Error submitting form:', error);
-            alert('An error occurred while submitting the form. Please try again.');
-        })
-        .finally(() => {
-            if (loadingIndicator) loadingIndicator.style.display = 'none';
-        });
-}
-
-function validateForm(form) {
-    const requiredFields = form.querySelectorAll('[required]');
-    for (let field of requiredFields) {
-        if (!field.value.trim()) {
-            alert(`Please fill out the ${field.name.replace(/_/g, ' ')} field.`);
-            field.focus();
-            return false;
-        }
-    }
-
-    const emailInput = form.querySelector('#email');
-    if (emailInput && !isValidEmail(emailInput.value)) {
-        alert('Please enter a valid email address.');
-        emailInput.focus();
-        return false;
-    }
-
-    const contactInput = form.querySelector('#contact_no');
-    if (contactInput && contactInput.value.length !== 10) {
-        alert('Please enter a valid 10-digit contact number.');
-        contactInput.focus();
-        return false;
-    }
-
-    return true;
-}
-
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-function formatContactNumber(number) {
-    return number.length === 10 ? `+91${number}` : number;
-}
-
-async function sendFormData(data) {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzHYR4sQRFcnosnXhMuGcQYTPOU0_EsdHPMj6eMkGbkLy0o2DMYeiEwfHNE8bJQgWEl/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
-        return response;
-    } catch (error) {
-        throw new Error('Failed to submit form: ' + error.message);
-    }
-}
-
-function initializeForm() {
-    loadData().then(() => {
-        console.log("Form initialized");
-    }).catch(error => {
-        console.error('Error initializing form:', error);
+  // Plot boundaries
+  ['front', 'left', 'right', 'rear'].forEach(side => {
+    $(`select[name="${side}_boundary"]`).addEventListener('change', function() {
+      const roadContainer = $(`#road_container_${side}`);
+      roadContainer.style.display = this.value === 'Road' ? 'block' : 'none';
     });
-}
+  });
 
-document.addEventListener('DOMContentLoaded', initializeForm);
-
-console.log("scripts.js file loaded");
+  // Form submission
+  $('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (validateForm()) {
+      $('.loading-indicator').style.display = 'flex';
+      // Here you would typically send the form data to your backend
+      // For demonstration, we'll just simulate a delay
+      setTimeout(() => {
+        $('.loading-indicator').style.display = 'none';
+        alert('Form submitted successfully!');
+      }, 2000);
+    } else {
+      alert('Please fill in all required fields correctly.');
+    }
+  });
+});
