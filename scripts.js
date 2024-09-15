@@ -37,6 +37,9 @@ async function loadData() {
         // Initialize dependent dropdowns
         initializeDependentDropdowns();
         
+        // Initialize form state
+        initializeFormState();
+        
         // Add event listeners
         addEventListeners();
     } catch (error) {
@@ -69,6 +72,32 @@ function initializeDependentDropdowns() {
         if (dropdown) {
             dropdown.innerHTML = ''; // Remove all options
             dropdown.disabled = true;
+        }
+    });
+}
+
+// Function to initialize form state
+function initializeFormState() {
+    // Hide conditional fields on page load
+    const conditionalFields = [
+        'incentive_fsi_rating',
+        'electrical_line_voltage',
+        'reservation_area_sqm',
+        'dp_rp_road_area_sqm'
+    ];
+
+    conditionalFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.parentElement.style.display = 'none';
+        }
+    });
+
+    // Hide road containers
+    ['front', 'left', 'right', 'rear'].forEach(boundary => {
+        const roadContainer = document.getElementById(`road_container_${boundary}`);
+        if (roadContainer) {
+            roadContainer.style.display = 'none';
         }
     });
 }
@@ -106,7 +135,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
             if (incentiveFsiRating) {
-                incentiveFsiRating.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                incentiveFsiRating.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -116,7 +145,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const electricalLineVoltage = document.getElementById('electrical_line_voltage');
             if (electricalLineVoltage) {
-                electricalLineVoltage.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                electricalLineVoltage.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -126,17 +155,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const reservationAreaSqm = document.getElementById('reservation_area_sqm');
             if (reservationAreaSqm) {
-                reservationAreaSqm.style.display = e.target.value === 'Yes' ? 'block' : 'none';
-            }
-        });
-    });
-
-    // CRZ change event
-    document.querySelectorAll('input[name="crz_status"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            const crzLocation = document.getElementById('crz_location');
-            if (crzLocation) {
-                crzLocation.style.display = 'none'; // Always hide CRZ location
+                reservationAreaSqm.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -146,7 +165,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const dpRpRoadAreaSqm = document.getElementById('dp_rp_road_area_sqm');
             if (dpRpRoadAreaSqm) {
-                dpRpRoadAreaSqm.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+                dpRpRoadAreaSqm.parentElement.style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -175,7 +194,6 @@ function addEventListeners() {
     // Initialize contact number handler
     initializeContactNumberHandler();
 }
-
 
 // Update City Specific Areas based on selected ULB/RP/Special Authority
 function updateCitySpecificAreas(selectedCouncilId) {
@@ -350,6 +368,8 @@ function handleSubmit(e) {
             e.target.reset();
             // Reset dependent dropdowns
             initializeDependentDropdowns();
+            // Reset form state
+            initializeFormState();
         })
         .catch(error => {
             console.error('Error submitting form:', error);
@@ -418,10 +438,74 @@ async function sendFormData(data) {
     }
 }
 
+// Generic function to populate dropdowns
+function populateDropdown(id, options) {
+    const select = document.getElementById(id);
+    if (!select) {
+        console.error(`${id} select element not found`);
+        return;
+    }
+    select.innerHTML = `<option value="">Select an option</option>`;
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.id || option.value;
+        optionElement.textContent = option.name || option.label;
+        select.appendChild(optionElement);
+    });
+    console.log(`Populated ${id} dropdown with ${options.length} options`);
+}
+
+// Function to reset the form
+function resetForm() {
+    const form = document.getElementById('project-input-form');
+    if (form) {
+        form.reset();
+        initializeDependentDropdowns();
+        initializeFormState();
+    }
+}
+
 // Initialize the form
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
     loadData();
+});
+
+// Utility function to show/hide elements
+function toggleElementVisibility(elementId, show) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.style.display = show ? 'block' : 'none';
+    }
+}
+
+// Function to handle file input changes
+function handleFileInputChange(inputId) {
+    const fileInput = document.getElementById(inputId);
+    const fileNameDisplay = document.getElementById(`${inputId}_name`);
+    
+    if (fileInput && fileNameDisplay) {
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.textContent = this.files[0].name;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        });
+    }
+}
+
+// Initialize file input handlers
+function initializeFileInputs() {
+    handleFileInputChange('dp_rp_part_plan');
+    handleFileInputChange('google_image');
+}
+
+// Call initializeFileInputs after DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded");
+    loadData();
+    initializeFileInputs();
 });
 
 console.log("scripts.js file loaded");
