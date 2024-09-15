@@ -2,8 +2,8 @@
 let ulbData = {};
 
 // Utility functions
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
+const $ = selector => document.querySelector(selector);
+const $$ = selector => document.querySelectorAll(selector);
 
 // Load data from JSON
 async function loadData() {
@@ -16,11 +16,13 @@ async function loadData() {
         ulbData = await response.json();
         console.log("Data loaded successfully:", ulbData);
         
-        // Populate dropdowns
+        // Populate dropdowns from JSON
         populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || []);
+        populateDropdown('city_specific_area', ulbData.city_specific_area || []);
         populateDropdown('zone', ulbData.zone || []);
         populateDropdown('uses', ulbData.uses || []);
         populateDropdown('building_type', ulbData.building_type || []);
+        populateDropdown('building_subtypes', []);  // Initially empty, will be populated based on building type
         
         // Initialize form state
         initializeFormState();
@@ -34,7 +36,7 @@ async function loadData() {
 
 // Function to populate dropdowns
 function populateDropdown(id, options) {
-    const select = $(id);
+    const select = $('#' + id);
     if (!select) {
         console.error(`${id} select element not found`);
         return;
@@ -43,7 +45,11 @@ function populateDropdown(id, options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id;
-        optionElement.textContent = option.name || option.districtName + " - " + option.talukaName;
+        if (id === 'ulb_rp_special_authority') {
+            optionElement.textContent = `${option.districtName} - ${option.talukaName}`;
+        } else {
+            optionElement.textContent = option.name || option.citySpecificArea;
+        }
         select.appendChild(optionElement);
     });
     console.log(`Populated ${id} dropdown with ${options.length} options`);
@@ -60,7 +66,7 @@ function initializeFormState() {
     ];
 
     conditionalFields.forEach(fieldId => {
-        const field = $(`#${fieldId}`);
+        const field = $('#' + fieldId);
         if (field) {
             field.closest('.form-group').classList.add('hidden');
         }
@@ -68,7 +74,7 @@ function initializeFormState() {
 
     // Hide road containers
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        const roadContainer = $(`#road_container_${boundary}`);
+        const roadContainer = $('#road_container_' + boundary);
         if (roadContainer) {
             roadContainer.style.display = 'none';
         }
@@ -119,8 +125,11 @@ function addEventListeners() {
 
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        $(`#${boundary}`).addEventListener('change', (e) => {
-            $(`#road_container_${boundary}`).style.display = e.target.value === 'Road' ? 'block' : 'none';
+        $('#' + boundary).addEventListener('change', (e) => {
+            const roadContainer = $('#road_container_' + boundary);
+            if (roadContainer) {
+                roadContainer.style.display = e.target.value === 'Road' ? 'block' : 'none';
+            }
         });
     });
 
@@ -291,8 +300,8 @@ async function sendFormData(data) {
 
 // Function to handle file input changes
 function handleFileInputChange(inputId) {
-    const fileInput = $(`#${inputId}`);
-    const fileNameDisplay = $(`#${inputId}_name`);
+    const fileInput = $('#' + inputId);
+    const fileNameDisplay = $('#' + inputId + '_name');
     
     if (fileInput && fileNameDisplay) {
         fileInput.addEventListener('change', function(e) {
