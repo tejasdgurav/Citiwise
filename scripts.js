@@ -18,39 +18,11 @@ async function loadData() {
         
         console.log("Global variables populated");
         
-        // Populate initial dropdowns
-        populateDropdown('ulb_rp_special_authority', data.ulb_rp_special_authority || []);
-        populateDropdown('special_scheme', data.special_scheme || []);
-        populateDropdown('type_of_development', data.type_of_development || []);
-        populateDropdown('type_of_proposal', data.type_of_proposal || []);
-        populateDropdown('type_of_plot_layout', data.type_of_plot_layout || []);
-        populateDropdown('zone', data.zone || []);
-        populateDropdown('plot_identification_type', data.plot_identification_type || []);
-        populateDropdown('height_of_building', data.height_of_building || []);
-        populateDropdown('building_type', data.building_type || []);
-        
         // Add event listeners
         addEventListeners();
     } catch (error) {
         console.error('Error loading data:', error);
     }
-}
-
-// Populate dropdown function
-function populateDropdown(id, options) {
-    const select = document.getElementById(id);
-    if (!select) {
-        console.error(`Dropdown with id '${id}' not found`);
-        return;
-    }
-    select.innerHTML = '<option value="">Select an option</option>';
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.id || option.value;
-        optionElement.textContent = option.name || option.text;
-        select.appendChild(optionElement);
-    });
-    console.log(`Populated dropdown '${id}' with ${options.length} options`);
 }
 
 // Add event listeners
@@ -69,7 +41,7 @@ function addEventListeners() {
     const incentiveFsiInputs = document.querySelectorAll('input[name="incentive_fsi"]');
     incentiveFsiInputs.forEach(input => {
         input.addEventListener('change', function(e) {
-            toggleIncentiveFsiRating(e.target.value === 'Yes');
+            toggleConditionalField('incentive_fsi_rating', e.target.value === 'Yes');
         });
     });
 
@@ -77,7 +49,7 @@ function addEventListeners() {
     const electricalLineInputs = document.querySelectorAll('input[name="electrical_line"]');
     electricalLineInputs.forEach(input => {
         input.addEventListener('change', function(e) {
-            toggleElectricalLineVoltage(e.target.value === 'Yes');
+            toggleConditionalField('electrical_line_voltage', e.target.value === 'Yes');
         });
     });
 
@@ -85,7 +57,7 @@ function addEventListeners() {
     const reservationAreaInputs = document.querySelectorAll('input[name="reservation_area_affected"]');
     reservationAreaInputs.forEach(input => {
         input.addEventListener('change', function(e) {
-            toggleReservationAreaSqm(e.target.value === 'Yes');
+            toggleConditionalField('reservation_area_sqm', e.target.value === 'Yes');
         });
     });
 
@@ -93,7 +65,7 @@ function addEventListeners() {
     const dpRpRoadInputs = document.querySelectorAll('input[name="dp_rp_road_affected"]');
     dpRpRoadInputs.forEach(input => {
         input.addEventListener('change', function(e) {
-            toggleDpRpRoadAreaSqm(e.target.value === 'Yes');
+            toggleConditionalField('dp_rp_road_area_sqm', e.target.value === 'Yes');
         });
     });
 
@@ -133,31 +105,15 @@ function addEventListeners() {
     initializeContactNumberHandler();
 }
 
-function toggleIncentiveFsiRating(show) {
-    const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
-    if (incentiveFsiRating) {
-        incentiveFsiRating.classList.toggle('hidden', !show);
-    }
-}
-
-function toggleElectricalLineVoltage(show) {
-    const electricalLineVoltage = document.getElementById('electrical_line_voltage');
-    if (electricalLineVoltage) {
-        electricalLineVoltage.classList.toggle('hidden', !show);
-    }
-}
-
-function toggleReservationAreaSqm(show) {
-    const reservationAreaSqm = document.getElementById('reservation_area_sqm');
-    if (reservationAreaSqm) {
-        reservationAreaSqm.classList.toggle('hidden', !show);
-    }
-}
-
-function toggleDpRpRoadAreaSqm(show) {
-    const dpRpRoadAreaSqm = document.getElementById('dp_rp_road_area_sqm');
-    if (dpRpRoadAreaSqm) {
-        dpRpRoadAreaSqm.classList.toggle('hidden', !show);
+function toggleConditionalField(fieldId, show) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.classList.toggle('hidden', !show);
+        const select = field.querySelector('select');
+        if (select) {
+            select.disabled = !show;
+            if (!show) select.value = '';
+        }
     }
 }
 
@@ -170,38 +126,27 @@ function toggleRoadDetails(boundary, show) {
 
 function updateCitySpecificAreas(selectedCouncilId) {
     const citySpecificAreaSelect = document.getElementById('city_specific_area');
-    if (!citySpecificAreaSelect) {
-        console.error("City Specific Area select element not found");
-        return;
-    }
+    if (!citySpecificAreaSelect) return;
 
     citySpecificAreaSelect.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedCouncilId) {
         const filteredAreas = ulbData.city_specific_area.filter(area => area.councilId == selectedCouncilId);
-        console.log("Filtered city-specific areas:", filteredAreas);
-        
         filteredAreas.forEach(area => {
             const option = document.createElement('option');
             option.value = area.id;
             option.textContent = area.name;
             citySpecificAreaSelect.appendChild(option);
         });
-        
         citySpecificAreaSelect.disabled = filteredAreas.length === 0;
     } else {
         citySpecificAreaSelect.disabled = true;
     }
-    
-    console.log("City Specific Area options updated");
 }
 
 function updateUses(selectedZoneId) {
     const usesDropdown = document.getElementById('uses');
-    if (!usesDropdown) {
-        console.error("Uses select element not found");
-        return;
-    }
+    if (!usesDropdown) return;
 
     usesDropdown.innerHTML = '<option value="">Select an option</option>';
 
@@ -209,53 +154,39 @@ function updateUses(selectedZoneId) {
         const selectedZone = ulbData.zone.find(zone => zone.id == selectedZoneId);
         if (selectedZone && selectedZone.allowedUses) {
             const filteredUses = ulbData.uses.filter(use => selectedZone.allowedUses.includes(use.id));
-            console.log("Filtered uses:", filteredUses);
-            
             filteredUses.forEach(use => {
                 const option = document.createElement('option');
                 option.value = use.id;
                 option.textContent = use.name;
                 usesDropdown.appendChild(option);
             });
-            
             usesDropdown.disabled = false;
         } else {
-            console.error("Selected zone or allowed uses not found");
             usesDropdown.disabled = true;
         }
     } else {
         usesDropdown.disabled = true;
     }
-    
-    console.log("Uses options updated");
 }
 
 function updateBuildingSubtypes(selectedBuildingTypeId) {
     const buildingSubtypesDropdown = document.getElementById('building_subtypes');
-    if (!buildingSubtypesDropdown) {
-        console.error("Building subtypes select element not found");
-        return;
-    }
+    if (!buildingSubtypesDropdown) return;
 
     buildingSubtypesDropdown.innerHTML = '<option value="">Select an option</option>';
 
     if (selectedBuildingTypeId) {
         const subtypes = ulbData.building_subtypes[selectedBuildingTypeId] || [];
-        console.log("Building subtypes:", subtypes);
-        
         subtypes.forEach(subtype => {
             const option = document.createElement('option');
             option.value = subtype.id;
             option.textContent = subtype.name;
             buildingSubtypesDropdown.appendChild(option);
         });
-        
         buildingSubtypesDropdown.disabled = false;
     } else {
         buildingSubtypesDropdown.disabled = true;
     }
-    
-    console.log("Building subtype options updated");
 }
 
 function initializeContactNumberHandler() {
@@ -264,8 +195,6 @@ function initializeContactNumberHandler() {
         contactInput.addEventListener('input', function() {
             this.value = this.value.replace(/\D/g, '').slice(0, 10);
         });
-    } else {
-        console.error("Contact input not found");
     }
 }
 
@@ -273,20 +202,15 @@ function handleSubmit(e) {
     e.preventDefault();
 
     const loadingIndicator = document.querySelector('.loading-indicator');
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'flex';
-    }
+    if (loadingIndicator) loadingIndicator.style.display = 'flex';
 
     if (!validateForm(e.target)) {
-        if (loadingIndicator) {
-            loadingIndicator.style.display = 'none';
-        }
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
         return;
     }
 
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
-
     data.contact_no = formatContactNumber(data.contact_no);
 
     console.log("Form data being sent:", data);
@@ -303,9 +227,7 @@ function handleSubmit(e) {
             alert('An error occurred while submitting the form. Please try again.');
         })
         .finally(() => {
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'none';
-            }
+            if (loadingIndicator) loadingIndicator.style.display = 'none';
         });
 }
 
@@ -362,12 +284,7 @@ async function sendFormData(data) {
 }
 
 function resetDependentDropdowns() {
-    const dependentDropdowns = [
-        'city_specific_area',
-        'uses',
-        'building_subtypes'
-    ];
-
+    const dependentDropdowns = ['city_specific_area', 'uses', 'building_subtypes'];
     dependentDropdowns.forEach(id => {
         const dropdown = document.getElementById(id);
         if (dropdown) {
