@@ -2868,5 +2868,95 @@
             "talukaName": "Dehu Nagarpanchayat",
             "name": "NP"
         }
+    ],
+
+        "zone": [
+        { "id": 1, "name": "Purely Residential Zone(R1)", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 2, "name": "Residential Zone(R2)", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 3, "name": "Residential Zone with Shop line. (R-2)", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 4, "name": "General Residential Zone.", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 5, "name": "Residential Zone - R-2, R-3.", "allowedUses": [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+        { "id": 6, "name": "Residential Zone - R-4 with payment of premium." },
+        { "id": 7, "name": "Urbanisable Zone." },
+        { "id": 8, "name": "Special Residential Zone." },
+        { "id": 9, "name": "Pre-dominantly Residential Zone." },
+        { "id": 10, "name": "Slum Improvement Zone." },
+        { "id": 11, "name": "Low Density Residential Zone in Development Plan of Jalgaon." },
+        { "id": 12, "name": "Low Density Residential Zone." },
+        { "id": 13, "name": "Future Urbanizable Zone." },
+        { "id": 14, "name": "Commercial Zone" },
+        { "id": 15, "name": "Local Commercial - (C-1)" },
+        { "id": 16, "name": "Commercial Zone" },
+        { "id": 17, "name": "Commercial Zone - (C-2)" },
+        { "id": 18, "name": "Industrial Zone" },
+        { "id": 19, "name": "Service Industries - (I-1)" },
+        { "id": 20, "name": "General Industries - (I-2)" },
+        { "id": 21, "name": "Special Industries (I-3)" },
+        { "id": 22, "name": "Loom Industry cum Residential Zone." },
+        { "id": 23, "name": "Public Semi-public Zone." },
+        { "id": 24, "name": "Agricultural Zone" },
+        { "id": 25, "name": "Horticultural Zone." },
+        { "id": 26, "name": "Plantation Zone." },
+        { "id": 27, "name": "No Development Zone." },
+        { "id": 28, "name": "Green Zone - 1. / Green Zone." },
+        { "id": 29, "name": "Cattle Shed Zone." },
+        { "id": 30, "name": "Green Belt / Green Belt Zone." },
+        { "id": 31, "name": "Traffic and Transportation Zone." },
+        { "id": 32, "name": "Regional Park Zone." },
+        { "id": 33, "name": "Tourism Development Zone." },
+        { "id": 34, "name": "Afforestation Zone." },
+        { "id": 35, "name": "Hill Top-Hill Slope Zone (HTHS) (Slope having gradient more than 1:5 irrespective of whether shown on plan or not.) / Hilly area." },
+        { "id": 36, "name": "Green Zone -2" },
+        { "id": 37, "name": "Forest Zone." },
+        { "id": 38, "name": "Defence Zone." },
+        { "id": 39, "name": "Mines and Quarry Zone" },
+        { "id": 40, "name": "Quarry to Park Zone." },
+        { "id": 41, "name": "Public Utility Zone." }
+    ],
+
+    "uses": [
+        { "id": 1, "name": "Any residences" },
+        { "id": 2, "name": "Hostels for students / working men/ women, lodging with or without boarding facilities." },
+        { "id": 3, "name": "Old age home, sanatorium, orphanage, night shelter dormitories." },
+        { "id": 4, "name": "Customary Home occupation." },
+        { "id": 5, "name": "Medical and Dental Practitioner's Dispensaries including pathological laboratory, diagnostic clinics, polyclinics etc." },
+        { "id": 6, "name": "Professional Offices." },
+        { "id": 7, "name": "Community halls, welfare centre, gymnasia (each not exceeding 100sq.m.)" },
+        { "id": 8, "name": "Primary and nursery schools including students' hostels except trade schools" },
+        { "id": 9, "name": "Creche, Day-care centre upto 100sq.m.in an independent building or part of building." },
+        { "id": 10, "name": "Private coaching classes" },
+        { "id": 11, "name": "Religious buildings" },
+        { "id": 12, "name": "Public/ City Libraries and Museums" },
+        { "id": 13, "name": "Club Houses or gymkhanas in residential complexes" },
+        { "id": 14, "name": "Public or Private Park (except an amusement park), garden and play field" },
+        { "id": 15, "name": "Bus shelters, Taxi-Rickshaw stands, trolley bus shelters, Railway Station, Metro station, BRT stand, cycle stand and like uses" }
+    ],
+
+        "building_type": [
+        { "id": 1, "name": "Residential" },
+        { "id": 2, "name": "Commercial" },
+        { "id": 3, "name": "Industrial" },
+        { "id": 4, "name": "Mixed Use" }
+    ],
+    
+    "building_subtype": {
+        "1": [
+            { "id": 1, "name": "Apartment" },
+            { "id": 2, "name": "Villa" },
+            { "id": 3, "name": "Row House" }
+        ],
+        "2": [
+            { "id": 1, "name": "Office" },
+            { "id": 2, "name": "Retail" },
+            { "id": 3, "name": "Hotel" }
+        ],
+        "3": [
+            { "id": 1, "name": "Factory" },
+            { "id": 2, "name": "Warehouse" },
+            { "id": 3, "name": "Workshop" }
+        ],
+        "4": [
+            { "id": 1, "name": "Residential-Commercial" },
+            { "id": 2, "name": "Commercial-Industrial" }
     ]
 }
