@@ -55,7 +55,7 @@ function populateUlbDropdown(options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id;
-        optionElement.textContent = option.name;
+        optionElement.textContent = option.talukaName;
         select.appendChild(optionElement);
     });
     console.log(`Populated ULB dropdown with ${options.length} options`);
