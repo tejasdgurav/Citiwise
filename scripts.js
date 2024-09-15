@@ -12,18 +12,13 @@ async function loadData() {
         ulbData = await response.json();
         console.log("Data loaded successfully:", ulbData);
         
-        // Populate dropdowns
-        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || [], 'talukaName');
-        populateDropdown('special_scheme', ulbData.special_scheme || []);
-        populateDropdown('type_of_development', ulbData.type_of_development || []);
-        populateDropdown('type_of_proposal', ulbData.type_of_proposal || []);
-        populateDropdown('type_of_plot_layout', ulbData.type_of_plot_layout || []);
-        populateDropdown('zone', ulbData.zone || []);
-        populateDropdown('plot_identification_type', ulbData.plot_identification_type || []);
-        populateDropdown('height_of_building', ulbData.height_of_building || []);
-        populateDropdown('building_type', ulbData.building_type || []);
-        populateDropdown('incentive_fsi_rating', ulbData.incentive_fsi_rating || []);
-        populateDropdown('electrical_line_voltage', ulbData.electrical_line_voltage || []);
+        // Populate dropdowns from JSON
+        populateDropdownFromJSON('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || [], 'talukaName');
+        populateDropdownFromJSON('zone', ulbData.zone || []);
+        // Uses will be populated when a zone is selected
+        populateDropdownFromJSON('building_type', ulbData.building_type || []);
+        // Building subtypes will be populated when a building type is selected
+        // City specific areas will be populated when a ULB is selected
 
         // Initialize form state
         initializeFormState();
@@ -35,7 +30,7 @@ async function loadData() {
     }
 }
 
-function populateDropdown(id, options, textProperty = 'name') {
+function populateDropdownFromJSON(id, options, textProperty = 'name') {
     const select = document.getElementById(id);
     if (!select) {
         console.error(`Dropdown with id '${id}' not found`);
@@ -48,7 +43,7 @@ function populateDropdown(id, options, textProperty = 'name') {
         optionElement.textContent = option[textProperty] || option.text || option;
         select.appendChild(optionElement);
     });
-    console.log(`Populated dropdown '${id}' with ${options.length} options`);
+    console.log(`Populated dropdown '${id}' with ${options.length} options from JSON`);
 }
 
 function initializeFormState() {
