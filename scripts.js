@@ -281,13 +281,6 @@ async function sendFormData(data) {
     }
 }
 
-// Initialize the form
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded");
-    loadData();
-    initializeFileInputs();
-});
-
 // Function to handle file input changes
 function handleFileInputChange(inputId) {
     const fileInput = document.getElementById(inputId);
@@ -309,5 +302,12 @@ function initializeFileInputs() {
     handleFileInputChange('dp_rp_part_plan');
     handleFileInputChange('google_image');
 }
+
+// Initialize the form
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("DOM fully loaded");
+    loadData();
+    initializeFileInputs();
+});
 
 console.log("scripts.js file loaded");
