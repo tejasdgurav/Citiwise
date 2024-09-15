@@ -18,6 +18,17 @@ async function loadData() {
         
         console.log("Global variables populated");
         
+        // Populate initial dropdowns
+        populateDropdown('ulb_rp_special_authority', data.ulb_rp_special_authority || []);
+        populateDropdown('special_scheme', data.special_scheme || []);
+        populateDropdown('type_of_development', data.type_of_development || []);
+        populateDropdown('type_of_proposal', data.type_of_proposal || []);
+        populateDropdown('type_of_plot_layout', data.type_of_plot_layout || []);
+        populateDropdown('zone', data.zone || []);
+        populateDropdown('plot_identification_type', data.plot_identification_type || []);
+        populateDropdown('height_of_building', data.height_of_building || []);
+        populateDropdown('building_type', data.building_type || []);
+        
         // Add event listeners
         addEventListeners();
     } catch (error) {
@@ -25,10 +36,22 @@ async function loadData() {
     }
 }
 
-// Add event listeners
+function populateDropdown(id, options) {
+    const select = document.getElementById(id);
+    if (!select) {
+        console.error(`Dropdown with id '${id}' not found`);
+        return;
+    }
+    select.innerHTML = '<option value="">Select an option</option>';
+    options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option.id || option.value;
+        optionElement.textContent = option.name || option.text;
+        select.appendChild(optionElement);
+    });
+}
+
 function addEventListeners() {
-    console.log("Adding event listeners");
-    
     // ULB/RP/Special Authority change event
     const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
     if (ulbRpSpecialAuthority) {
