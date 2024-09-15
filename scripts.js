@@ -22,16 +22,12 @@ async function loadData() {
         populateDropdown('ulb_rp_special_authority', data.ulb_rp_special_authority || []);
         populateDropdown('special_scheme', data.special_scheme || []);
         populateDropdown('type_of_development', data.type_of_development || []);
-        populateDropdown('incentive_fsi_rating', data.incentive_fsi_rating || []);
         populateDropdown('type_of_proposal', data.type_of_proposal || []);
-        populateDropdown('electrical_line_voltage', data.electrical_line_voltage || []);
         populateDropdown('type_of_plot_layout', data.type_of_plot_layout || []);
         populateDropdown('zone', data.zone || []);
-        populateDropdown('uses', data.uses || []);
         populateDropdown('plot_identification_type', data.plot_identification_type || []);
         populateDropdown('height_of_building', data.height_of_building || []);
         populateDropdown('building_type', data.building_type || []);
-        populateDropdown('building_subtypes', data.building_subtypes || []);
         
         // Add event listeners
         addEventListeners();
@@ -51,13 +47,7 @@ function populateDropdown(id, options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id || option.value;
-        
-        if (id === 'ulb_rp_special_authority') {
-            optionElement.textContent = option.talukaName || 'Unknown';
-        } else {
-            optionElement.textContent = option.name || option.text;
-        }
-        
+        optionElement.textContent = option.name || option.text;
         select.appendChild(optionElement);
     });
     console.log(`Populated dropdown '${id}' with ${options.length} options`);
@@ -146,30 +136,28 @@ function addEventListeners() {
 function toggleIncentiveFsiRating(show) {
     const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
     if (incentiveFsiRating) {
-        incentiveFsiRating.closest('.form-group').style.display = show ? 'block' : 'none';
-        incentiveFsiRating.disabled = !show;
+        incentiveFsiRating.classList.toggle('hidden', !show);
     }
 }
 
 function toggleElectricalLineVoltage(show) {
     const electricalLineVoltage = document.getElementById('electrical_line_voltage');
     if (electricalLineVoltage) {
-        electricalLineVoltage.closest('.form-group').style.display = show ? 'block' : 'none';
-        electricalLineVoltage.disabled = !show;
+        electricalLineVoltage.classList.toggle('hidden', !show);
     }
 }
 
 function toggleReservationAreaSqm(show) {
     const reservationAreaSqm = document.getElementById('reservation_area_sqm');
     if (reservationAreaSqm) {
-        reservationAreaSqm.closest('.form-group').style.display = show ? 'block' : 'none';
+        reservationAreaSqm.classList.toggle('hidden', !show);
     }
 }
 
 function toggleDpRpRoadAreaSqm(show) {
     const dpRpRoadAreaSqm = document.getElementById('dp_rp_road_area_sqm');
     if (dpRpRoadAreaSqm) {
-        dpRpRoadAreaSqm.closest('.form-group').style.display = show ? 'block' : 'none';
+        dpRpRoadAreaSqm.classList.toggle('hidden', !show);
     }
 }
 
