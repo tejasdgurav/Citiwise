@@ -52,7 +52,13 @@ function populateDropdown(id, options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id || option.value;
-        optionElement.textContent = option.name || option.text;
+        
+        if (id === 'ulb_rp_special_authority') {
+            optionElement.textContent = option.talukaName || 'Unknown';
+        } else {
+            optionElement.textContent = option.name || option.text;
+        }
+        
         select.appendChild(optionElement);
     });
     console.log(`Populated dropdown '${id}' with ${options.length} options`);
@@ -180,15 +186,12 @@ function updateCitySpecificAreas(selectedCouncilId) {
         return;
     }
 
-    // Clear existing options
     citySpecificAreaSelect.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedCouncilId) {
-        // Filter city-specific areas based on the selected councilId
         const filteredAreas = ulbData.city_specific_area.filter(area => area.councilId == selectedCouncilId);
         console.log("Filtered city-specific areas:", filteredAreas);
         
-        // Populate the dropdown with filtered areas
         filteredAreas.forEach(area => {
             const option = document.createElement('option');
             option.value = area.id;
@@ -196,10 +199,8 @@ function updateCitySpecificAreas(selectedCouncilId) {
             citySpecificAreaSelect.appendChild(option);
         });
         
-        // Enable the dropdown if there are matching areas, otherwise disable it
         citySpecificAreaSelect.disabled = filteredAreas.length === 0;
     } else {
-        // If no council is selected, disable the dropdown
         citySpecificAreaSelect.disabled = true;
     }
     
@@ -213,7 +214,6 @@ function updateUses(selectedZoneId) {
         return;
     }
 
-    // Clear existing options
     usesDropdown.innerHTML = '<option value="">Select an option</option>';
 
     if (selectedZoneId) {
@@ -248,7 +248,6 @@ function updateBuildingSubtypes(selectedBuildingTypeId) {
         return;
     }
 
-    // Clear existing options
     buildingSubtypesDropdown.innerHTML = '<option value="">Select an option</option>';
 
     if (selectedBuildingTypeId) {
@@ -284,37 +283,30 @@ function initializeContactNumberHandler() {
 function handleSubmit(e) {
     e.preventDefault();
 
-    // Show loading indicator
     const loadingIndicator = document.querySelector('.loading-indicator');
     if (loadingIndicator) {
         loadingIndicator.style.display = 'flex';
     }
 
-    // Validate form
     if (!validateForm(e.target)) {
-        // Hide loading indicator if validation fails
         if (loadingIndicator) {
             loadingIndicator.style.display = 'none';
         }
         return;
     }
 
-    // Collect form data
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-    // Ensure contact number is in correct format
     data.contact_no = formatContactNumber(data.contact_no);
 
     console.log("Form data being sent:", data);
 
-    // Send data to Google Apps Script Web App
     sendFormData(data)
         .then(() => {
             console.log("Form submitted successfully");
             alert('Form submitted successfully!');
             e.target.reset();
-            // Reset dependent dropdowns
             resetDependentDropdowns();
         })
         .catch(error => {
@@ -322,7 +314,6 @@ function handleSubmit(e) {
             alert('An error occurred while submitting the form. Please try again.');
         })
         .finally(() => {
-            // Hide loading indicator
             if (loadingIndicator) {
                 loadingIndicator.style.display = 'none';
             }
@@ -339,7 +330,6 @@ function validateForm(form) {
         }
     }
 
-    // Validate email format
     const emailInput = form.querySelector('#email');
     if (emailInput && !isValidEmail(emailInput.value)) {
         alert('Please enter a valid email address.');
@@ -347,7 +337,6 @@ function validateForm(form) {
         return false;
     }
 
-    // Validate contact number
     const contactInput = form.querySelector('#contact_no');
     if (contactInput && contactInput.value.length !== 10) {
         alert('Please enter a valid 10-digit contact number.');
@@ -364,7 +353,6 @@ function isValidEmail(email) {
 }
 
 function formatContactNumber(number) {
-    // Ensure the number is 10 digits and add the +91 prefix
     return number.length === 10 ? `+91${number}` : number;
 }
 
