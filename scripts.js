@@ -44,7 +44,7 @@ async function loadData() {
     }
 }
 
-// New function to populate ULB dropdown
+// Function to populate ULB dropdown with talukaName
 function populateUlbDropdown(options) {
     const select = document.getElementById('ulb_rp_special_authority');
     if (!select) {
