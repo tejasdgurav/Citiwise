@@ -22,6 +22,8 @@ async function loadData() {
         populateDropdown('plot_identification_type', ulbData.plot_identification_type || []);
         populateDropdown('height_of_building', ulbData.height_of_building || []);
         populateDropdown('building_type', ulbData.building_type || []);
+        populateDropdown('incentive_fsi_rating', ulbData.incentive_fsi_rating || []);
+        populateDropdown('electrical_line_voltage', ulbData.electrical_line_voltage || []);
 
         // Initialize form state
         initializeFormState();
@@ -83,12 +85,36 @@ function addEventListeners() {
         });
     }
 
+    // Special Scheme change event
+    const specialScheme = document.getElementById('special_scheme');
+    if (specialScheme) {
+        specialScheme.addEventListener('change', function(e) {
+            // Add any specific logic for special scheme selection
+        });
+    }
+
+    // Type of Development change event
+    const typeOfDevelopment = document.getElementById('type_of_development');
+    if (typeOfDevelopment) {
+        typeOfDevelopment.addEventListener('change', function(e) {
+            // Add any specific logic for type of development selection
+        });
+    }
+
     // Incentive FSI change event
     document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
         radio.addEventListener('change', function(e) {
             toggleConditionalField('incentive_fsi_rating', e.target.value === 'Yes');
         });
     });
+
+    // Type of Proposal change event
+    const typeOfProposal = document.getElementById('type_of_proposal');
+    if (typeOfProposal) {
+        typeOfProposal.addEventListener('change', function(e) {
+            // Add any specific logic for type of proposal selection
+        });
+    }
 
     // Electrical Line change event
     document.querySelectorAll('input[name="electrical_line"]').forEach(radio => {
@@ -182,13 +208,36 @@ function toggleRoadDetails(boundary, show) {
         if (show) {
             const roadTypeSelect = document.getElementById(`road_type_${boundary}`);
             const roadWidthInput = document.getElementById(`road_width_${boundary}`);
-            if (roadTypeSelect) roadTypeSelect.value = '';
+            if (roadTypeSelect) {
+                roadTypeSelect.value = '';
+                populateRoadTypes(roadTypeSelect);
+            }
             if (roadWidthInput) {
                 roadWidthInput.value = '';
                 roadWidthInput.style.display = 'none';
             }
         }
     }
+}
+
+function populateRoadTypes(selectElement) {
+    selectElement.innerHTML = '<option value="">Select Road Type</option>';
+    const roadTypes = [
+        'DP Road',
+        'Other General Road',
+        'Express Way',
+        'National Highway - NH',
+        'State Highway - SH',
+        'Major District Road - MDR',
+        'Other District Road',
+        '15m Village Road'
+    ];
+    roadTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type;
+        option.textContent = type;
+        selectElement.appendChild(option);
+    });
 }
 
 function updateCitySpecificAreas(selectedCouncilId) {
@@ -374,11 +423,127 @@ function initializeFileInputs() {
     handleFileInputChange('google_image');
 }
 
-// Initialize the form
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("DOM fully loaded");
+// Function to handle changes in the "Is the site hilly and has gradients more than 1:5?" radio buttons
+function handleHillySiteChange() {
+    const hillySiteRadios = document.querySelectorAll('input[name="hilly_site"]');
+    hillySiteRadios.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            // Add any specific logic for hilly site selection
+            console.log('Hilly site selection:', e.target.value);
+        });
+    });
+}
+
+// Function to handle changes in the "Flood Affected Area" radio buttons
+function handleFloodAffectedAreaChange() {
+    const floodAreaRadios = document.querySelectorAll('input[name="flood_affected_area"]');
+    floodAreaRadios.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            // Add any specific logic for flood affected area selection
+            console.log('Flood affected area selection:', e.target.value);
+        });
+    });
+}
+
+// Function to handle changes in the "Location" radio buttons
+function handleLocationChange() {
+    const locationRadios = document.querySelectorAll('input[name="location"]');
+    locationRadios.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            // Add any specific logic for location selection
+            console.log('Location selection:', e.target.value);
+        });
+    });
+}
+
+// Function to handle changes in the "Is the plot land affected by CRZ?" radio buttons
+function handleCRZAffectedChange() {
+    const crzAffectedRadios = document.querySelectorAll('input[name="crz_affected"]');
+    crzAffectedRadios.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            // Add any specific logic for CRZ affected selection
+            console.log('CRZ affected selection:', e.target.value);
+        });
+    });
+}
+
+// Function to handle changes in the "Class of Land" radio buttons
+function handleClassOfLandChange() {
+    const classOfLandRadios = document.querySelectorAll('input[name="class_of_land"]');
+    classOfLandRadios.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            // Add any specific logic for class of land selection
+            console.log('Class of land selection:', e.target.value);
+        });
+    });
+}
+
+// Function to handle changes in the "Is it a redevelopment proposal?" radio buttons
+function handleRedevelopmentProposalChange() {
+    const redevelopmentRadios = document.querySelectorAll('input[name="redevelopment_proposal"]');
+    redevelopmentRadios.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            // Add any specific logic for redevelopment proposal selection
+            console.log('Redevelopment proposal selection:', e.target.value);
+        });
+    });
+}
+
+// Function to handle changes in the "Is your land in TOD?" radio buttons
+function handleTODChange() {
+    const todRadios = document.querySelectorAll('input[name="land_in_tod"]');
+    todRadios.forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            // Add any specific logic for TOD selection
+            console.log('TOD selection:', e.target.value);
+        });
+    });
+}
+
+// Function to initialize all radio button change handlers
+function initializeRadioButtonHandlers() {
+    handleHillySiteChange();
+    handleFloodAffectedAreaChange();
+    handleLocationChange();
+    handleCRZAffectedChange();
+    handleClassOfLandChange();
+    handleRedevelopmentProposalChange();
+    handleTODChange();
+}
+
+// Function to handle changes in the Plot Identification Type dropdown
+function handlePlotIdentificationTypeChange() {
+    const plotIdentificationTypeSelect = document.getElementById('plot_identification_type');
+    if (plotIdentificationTypeSelect) {
+        plotIdentificationTypeSelect.addEventListener('change', function(e) {
+            // Add any specific logic for plot identification type selection
+            console.log('Plot identification type selection:', e.target.value);
+        });
+    }
+}
+
+// Function to initialize numeric input validation
+function initializeNumericInputs() {
+    const numericInputs = document.querySelectorAll('input[type="number"]');
+    numericInputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            if (e.target.value < 0) {
+                e.target.value = 0;
+            }
+        });
+    });
+}
+
+// Main initialization function
+function initializeForm() {
     loadData();
     initializeFileInputs();
-});
+    initializeRadioButtonHandlers();
+    handlePlotIdentificationTypeChange();
+    initializeNumericInputs();
+}
+
+// Initialize the form when the DOM is fully loaded
+document.addEventListener('DOMContentLoaded', initializeForm);
 
 console.log("scripts.js file loaded");
