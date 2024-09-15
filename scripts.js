@@ -9,25 +9,22 @@ async function loadData() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
+        ulbData = await response.json();
+        console.log("Data loaded successfully:", ulbData);
         
-        console.log("Data loaded successfully:", data);
-        
-        // Store all data for later use
-        ulbData = data;
-        
-        console.log("Global variables populated");
-        
-        // Populate initial dropdowns
-        populateDropdown('ulb_rp_special_authority', data.ulb_rp_special_authority || []);
-        populateDropdown('special_scheme', data.special_scheme || []);
-        populateDropdown('type_of_development', data.type_of_development || []);
-        populateDropdown('type_of_proposal', data.type_of_proposal || []);
-        populateDropdown('type_of_plot_layout', data.type_of_plot_layout || []);
-        populateDropdown('zone', data.zone || []);
-        populateDropdown('plot_identification_type', data.plot_identification_type || []);
-        populateDropdown('height_of_building', data.height_of_building || []);
-        populateDropdown('building_type', data.building_type || []);
+        // Populate dropdowns
+        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || []);
+        populateDropdown('special_scheme', ulbData.special_scheme || []);
+        populateDropdown('type_of_development', ulbData.type_of_development || []);
+        populateDropdown('type_of_proposal', ulbData.type_of_proposal || []);
+        populateDropdown('type_of_plot_layout', ulbData.type_of_plot_layout || []);
+        populateDropdown('zone', ulbData.zone || []);
+        populateDropdown('plot_identification_type', ulbData.plot_identification_type || []);
+        populateDropdown('height_of_building', ulbData.height_of_building || []);
+        populateDropdown('building_type', ulbData.building_type || []);
+
+        // Initialize form state
+        initializeFormState();
         
         // Add event listeners
         addEventListeners();
@@ -42,16 +39,42 @@ function populateDropdown(id, options) {
         console.error(`Dropdown with id '${id}' not found`);
         return;
     }
-    select.innerHTML = '<option value="">Select an option</option>';
+    select.innerHTML = `<option value="">Select ${id.replace(/_/g, ' ')}</option>`;
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id || option.value;
-        optionElement.textContent = option.name || option.text;
+        optionElement.textContent = option.name || option.text || option.talukaName || 'Unknown Option';
         select.appendChild(optionElement);
+    });
+    console.log(`Populated dropdown '${id}' with ${options.length} options`);
+}
+
+function initializeFormState() {
+    const conditionalFields = [
+        'incentive_fsi_rating',
+        'electrical_line_voltage',
+        'reservation_area_sqm',
+        'dp_rp_road_area_sqm'
+    ];
+
+    conditionalFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.closest('.form-group').classList.add('hidden');
+        }
+    });
+
+    ['front', 'left', 'right', 'rear'].forEach(boundary => {
+        const roadContainer = document.getElementById(`road_container_${boundary}`);
+        if (roadContainer) {
+            roadContainer.style.display = 'none';
+        }
     });
 }
 
 function addEventListeners() {
+    console.log("Adding event listeners");
+
     // ULB/RP/Special Authority change event
     const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
     if (ulbRpSpecialAuthority) {
@@ -61,33 +84,29 @@ function addEventListeners() {
     }
 
     // Incentive FSI change event
-    const incentiveFsiInputs = document.querySelectorAll('input[name="incentive_fsi"]');
-    incentiveFsiInputs.forEach(input => {
-        input.addEventListener('change', function(e) {
+    document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
             toggleConditionalField('incentive_fsi_rating', e.target.value === 'Yes');
         });
     });
 
     // Electrical Line change event
-    const electricalLineInputs = document.querySelectorAll('input[name="electrical_line"]');
-    electricalLineInputs.forEach(input => {
-        input.addEventListener('change', function(e) {
+    document.querySelectorAll('input[name="electrical_line"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
             toggleConditionalField('electrical_line_voltage', e.target.value === 'Yes');
         });
     });
 
     // Reservation Area Affected change event
-    const reservationAreaInputs = document.querySelectorAll('input[name="reservation_area_affected"]');
-    reservationAreaInputs.forEach(input => {
-        input.addEventListener('change', function(e) {
+    document.querySelectorAll('input[name="reservation_area_affected"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
             toggleConditionalField('reservation_area_sqm', e.target.value === 'Yes');
         });
     });
 
     // DP/RP road affected change event
-    const dpRpRoadInputs = document.querySelectorAll('input[name="dp_rp_road_affected"]');
-    dpRpRoadInputs.forEach(input => {
-        input.addEventListener('change', function(e) {
+    document.querySelectorAll('input[name="dp_rp_road_affected"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
             toggleConditionalField('dp_rp_road_area_sqm', e.target.value === 'Yes');
         });
     });
@@ -118,25 +137,28 @@ function addEventListeners() {
         });
     }
 
-    // Form submission
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', handleSubmit);
-    }
+    // Add input event listeners for sentence case conversion
+    const textInputs = document.querySelectorAll('input[type="text"], textarea');
+    textInputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = toSentenceCase(this.value);
+        });
+    });
 
     // Initialize contact number handler
     initializeContactNumberHandler();
+
+    // Form submission handler
+    const form = document.getElementById('project-input-form');
+    if (form) {
+        form.addEventListener('submit', handleSubmit);
+    }
 }
 
 function toggleConditionalField(fieldId, show) {
     const field = document.getElementById(fieldId);
     if (field) {
-        field.classList.toggle('hidden', !show);
-        const select = field.querySelector('select');
-        if (select) {
-            select.disabled = !show;
-            if (!show) select.value = '';
-        }
+        field.closest('.form-group').classList.toggle('hidden', !show);
     }
 }
 
@@ -151,7 +173,7 @@ function updateCitySpecificAreas(selectedCouncilId) {
     const citySpecificAreaSelect = document.getElementById('city_specific_area');
     if (!citySpecificAreaSelect) return;
 
-    citySpecificAreaSelect.innerHTML = '<option value="">Select an option</option>';
+    citySpecificAreaSelect.innerHTML = '<option value="">Select city specific area</option>';
     
     if (selectedCouncilId) {
         const filteredAreas = ulbData.city_specific_area.filter(area => area.councilId == selectedCouncilId);
@@ -171,7 +193,7 @@ function updateUses(selectedZoneId) {
     const usesDropdown = document.getElementById('uses');
     if (!usesDropdown) return;
 
-    usesDropdown.innerHTML = '<option value="">Select an option</option>';
+    usesDropdown.innerHTML = '<option value="">Select uses</option>';
 
     if (selectedZoneId) {
         const selectedZone = ulbData.zone.find(zone => zone.id == selectedZoneId);
@@ -196,7 +218,7 @@ function updateBuildingSubtypes(selectedBuildingTypeId) {
     const buildingSubtypesDropdown = document.getElementById('building_subtypes');
     if (!buildingSubtypesDropdown) return;
 
-    buildingSubtypesDropdown.innerHTML = '<option value="">Select an option</option>';
+    buildingSubtypesDropdown.innerHTML = '<option value="">Select building subtype</option>';
 
     if (selectedBuildingTypeId) {
         const subtypes = ulbData.building_subtypes[selectedBuildingTypeId] || [];
@@ -210,6 +232,10 @@ function updateBuildingSubtypes(selectedBuildingTypeId) {
     } else {
         buildingSubtypesDropdown.disabled = true;
     }
+}
+
+function toSentenceCase(text) {
+    return text.replace(/(^\w|\.\s+\w)/g, match => match.toUpperCase());
 }
 
 function initializeContactNumberHandler() {
@@ -243,7 +269,7 @@ function handleSubmit(e) {
             console.log("Form submitted successfully");
             alert('Form submitted successfully!');
             e.target.reset();
-            resetDependentDropdowns();
+            initializeFormState();
         })
         .catch(error => {
             console.error('Error submitting form:', error);
@@ -258,7 +284,7 @@ function validateForm(form) {
     const requiredFields = form.querySelectorAll('[required]');
     for (let field of requiredFields) {
         if (!field.value.trim()) {
-            alert(`Please fill out the ${field.name} field.`);
+            alert(`Please fill out the ${field.name.replace(/_/g, ' ')} field.`);
             field.focus();
             return false;
         }
@@ -306,21 +332,31 @@ async function sendFormData(data) {
     }
 }
 
-function resetDependentDropdowns() {
-    const dependentDropdowns = ['city_specific_area', 'uses', 'building_subtypes'];
-    dependentDropdowns.forEach(id => {
-        const dropdown = document.getElementById(id);
-        if (dropdown) {
-            dropdown.innerHTML = '<option value="">Select an option</option>';
-            dropdown.disabled = true;
-        }
-    });
+function handleFileInputChange(inputId) {
+    const fileInput = document.getElementById(inputId);
+    const fileNameDisplay = document.getElementById(`${inputId}_name`);
+    
+    if (fileInput && fileNameDisplay) {
+        fileInput.addEventListener('change', function(e) {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.textContent = this.files[0].name;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        });
+    }
+}
+
+function initializeFileInputs() {
+    handleFileInputChange('dp_rp_part_plan');
+    handleFileInputChange('google_image');
 }
 
 // Initialize the form
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded");
     loadData();
+    initializeFileInputs();
 });
 
 console.log("scripts.js file loaded");
