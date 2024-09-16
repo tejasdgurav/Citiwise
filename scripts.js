@@ -5,13 +5,17 @@ let ulbData = {};
 const $ = selector => document.querySelector(selector);
 const $$ = selector => document.querySelectorAll(selector);
 
-// Load data from JSON files
+// Load data from JSON file
 async function loadData() {
     try {
         console.log("Fetching data from JSON file");
         const basePath = 'https://raw.githubusercontent.com/tejasdgurav/Citiwise/main/';
         
-        const data = await fetch(`${basePath}data.json`).then(res => res.json());
+        const response = await fetch(`${basePath}data.json`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
 
         ulbData = data;
 
