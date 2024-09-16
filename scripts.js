@@ -7,6 +7,21 @@ let buildingTypes = [];
 let buildingSubtypes = {};
 let ulbData = {}; // Store all ULB data
 
+// Add this function at the beginning of your script
+function getFormData(form) {
+  const formData = new FormData(form);
+  const data = {};
+  for (let [key, value] of formData.entries()) {
+    if (value instanceof File) {
+      // For file inputs, just store the file name
+      data[key] = value.name;
+    } else {
+      data[key] = value;
+    }
+  }
+  return data;
+}
+
 // Load data from JSON
 async function loadData() {
     try {
@@ -32,6 +47,7 @@ async function loadData() {
         // Populate dropdowns
         populateDropdown('ulb_type', data.ulb_type || []);
         populateDropdown('zone', zones);
+        populateDropdown('city_specific_area', citySpecificAreas);
         populateDropdown('building_type', buildingTypes);
         
         // Initialize dependent dropdowns
@@ -55,13 +71,7 @@ function populateDropdown(id, options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id;
-        
-        if (id === 'city_specific_area') {
-            optionElement.textContent = option.citySpecificArea || 'Unknown Area';
-        } else {
-            optionElement.textContent = option.name || 'Unknown Option';
-        }
-        
+        optionElement.textContent = option.name;
         select.appendChild(optionElement);
     });
     console.log(`Populated dropdown '${id}' with ${options.length} options`);
@@ -69,11 +79,11 @@ function populateDropdown(id, options) {
 
 // Initialize dependent dropdowns
 function initializeDependentDropdowns() {
-    const dependentDropdowns = ['ulb_rp_special_authority', 'uses', 'building_subtype', 'city_specific_area'];
+    const dependentDropdowns = ['ulb_rp_special_authority', 'uses', 'building_subtype'];
     dependentDropdowns.forEach(id => {
         const dropdown = document.getElementById(id);
         if (dropdown) {
-            dropdown.innerHTML = ''; // Remove all options
+            dropdown.innerHTML = '<option value="">Select an option</option>';
             dropdown.disabled = true;
         }
     });
@@ -88,14 +98,6 @@ function addEventListeners() {
     if (ulbTypeSelect) {
         ulbTypeSelect.addEventListener('change', function(e) {
             handleUlbTypeChange(e.target.value);
-        });
-    }
-
-    // ULB/RP/Special Authority change event
-    const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
-    if (ulbRpSpecialAuthority) {
-        ulbRpSpecialAuthority.addEventListener('change', function(e) {
-            updateCitySpecificAreas(e.target.value);
         });
     }
 
@@ -150,7 +152,7 @@ function addEventListeners() {
         radio.addEventListener('change', function(e) {
             const crzLocation = document.getElementById('crz_location');
             if (crzLocation) {
-                crzLocation.style.display = 'none'; // Always hide CRZ location
+                crzLocation.style.display = e.target.value === 'Yes' ? 'block' : 'none';
             }
         });
     });
@@ -178,16 +180,13 @@ function addEventListeners() {
         }
     });
 
-    // Add input event listeners for sentence case conversion
-    const textInputs = document.querySelectorAll('input[type="text"], textarea');
-    textInputs.forEach(input => {
-        input.addEventListener('input', function() {
-            this.value = toSentenceCase(this.value);
-        });
-    });
-
-    // Initialize contact number handler
-    initializeContactNumberHandler();
+    // Form submission event
+    const form = document.getElementById('project-input-form');
+    if (form) {
+        form.addEventListener('submit', handleSubmit);
+    } else {
+        console.error("Form element not found");
+    }
 }
 
 // Handle ULB Type change
@@ -201,15 +200,9 @@ function handleUlbTypeChange(selectedUlbTypeId) {
     }
     
     // Clear existing options
-    ulbRpSpecialAuthority.innerHTML = '';
+    ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedUlbTypeId) {
-        // Add "Select an option" only when a ULB Type is selected
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Select an option";
-        ulbRpSpecialAuthority.appendChild(defaultOption);
-
         const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
         console.log("Filtered authorities:", filteredAuthorities);
         
@@ -227,39 +220,7 @@ function handleUlbTypeChange(selectedUlbTypeId) {
         ulbRpSpecialAuthority.disabled = true;
     }
     
-    // Clear and disable city-specific area dropdown when ULB type changes
-    updateCitySpecificAreas(null);
-    
     console.log("ULB/RP/Special Authority options updated");
-}
-
-// Update City Specific Areas based on selected ULB/RP/Special Authority
-function updateCitySpecificAreas(selectedCouncilId) {
-    const citySpecificAreaSelect = document.getElementById('city_specific_area');
-    if (!citySpecificAreaSelect) {
-        console.error("City Specific Area select element not found");
-        return;
-    }
-
-    // Clear existing options
-    citySpecificAreaSelect.innerHTML = '';
-    
-    if (selectedCouncilId) {
-        // Filter city-specific areas based on the selected councilId
-        const filteredAreas = citySpecificAreas.filter(area => area.councilId == selectedCouncilId);
-        console.log("Filtered city-specific areas:", filteredAreas);
-        
-        // Populate the dropdown with filtered areas
-        populateDropdown('city_specific_area', filteredAreas);
-        
-        // Enable the dropdown if there are matching areas, otherwise disable it
-        citySpecificAreaSelect.disabled = filteredAreas.length === 0;
-    } else {
-        // If no council is selected, disable the dropdown
-        citySpecificAreaSelect.disabled = true;
-    }
-    
-    console.log("City Specific Area options updated");
 }
 
 // Handle Zone change
@@ -273,15 +234,9 @@ function handleZoneChange(selectedZoneId) {
     }
     
     // Clear existing options
-    usesDropdown.innerHTML = '';
+    usesDropdown.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedZoneId) {
-        // Add "Select an option" only when a Zone is selected
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Select an option";
-        usesDropdown.appendChild(defaultOption);
-
         const selectedZone = zones.find(zone => zone.id == selectedZoneId);
         if (selectedZone && selectedZone.allowedUses) {
             const filteredUses = uses.filter(use => selectedZone.allowedUses.includes(use.id));
@@ -319,15 +274,9 @@ function handleBuildingTypeChange(selectedBuildingTypeId) {
     }
     
     // Clear existing options
-    buildingSubtypeDropdown.innerHTML = '';
+    buildingSubtypeDropdown.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedBuildingTypeId) {
-        // Add "Select an option" only when a building type is selected
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Select an option";
-        buildingSubtypeDropdown.appendChild(defaultOption);
-
         const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
         console.log("Building subtypes:", subtypes);
         
@@ -348,130 +297,69 @@ function handleBuildingTypeChange(selectedBuildingTypeId) {
     console.log("Building subtype options updated");
 }
 
-// Convert text to sentence case
-function toSentenceCase(text) {
-    return text.replace(/(^\w|\.\s+\w)/g, match => match.toUpperCase());
-}
-
-// Contact Number Handler
-function initializeContactNumberHandler() {
-    const contactInput = document.getElementById('contact_no');
-    const form = document.getElementById('project-input-form');
-
-    if (contactInput && form) {
-        // Input event listener for formatting
-        contactInput.addEventListener('input', function() {
-            this.value = this.value.replace(/\D/g, '').slice(0, 10);
-        });
-
-        // Form submission handler
-        form.addEventListener('submit', handleSubmit);
-    } else {
-        console.error("Contact input or form not found");
-    }
-}
-
-function handleSubmit(e) {
-    e.preventDefault();
-
-    // Show loading indicator
-    const loadingIndicator = document.querySelector('.loading-indicator');
+// Handle form submission
+async function handleSubmit(e) {
+  e.preventDefault();
+  
+  // Show loading indicator
+  const loadingIndicator = document.querySelector('.loading-indicator');
+  if (loadingIndicator) {
+    loadingIndicator.style.display = 'flex';
+  }
+  
+  // Collect form data
+  const form = e.target;
+  const formData = getFormData(form);
+  
+  console.log("Form data being sent:", formData);
+  
+  // Validate form data
+  if (!validateForm(form)) {
+    // Hide loading indicator
     if (loadingIndicator) {
-        loadingIndicator.style.display = 'flex';
+      loadingIndicator.style.display = 'none';
     }
-
-    // Validate form
-    if (!validateForm(e.target)) {
-        // Hide loading indicator if validation fails
-        if (loadingIndicator) {
-            loadingIndicator.style.display = 'none';
-        }
-        return;
-    }
-
-    // Collect form data
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    // Ensure contact number is in correct format
-    data.contact_no = formatContactNumber(data.contact_no);
-
-    console.log("Form data being sent:", data);
-
-    // Send data to Google Apps Script Web App
-    sendFormData(data)
-        .then(() => {
-            console.log("Form submitted successfully");
-            alert('Form submitted successfully!');
-            e.target.reset();
-            // Reset dependent dropdowns
-            initializeDependentDropdowns();
-        })
-        .catch(error => {
-            console.error('Error submitting form:', error);
-            alert('An error occurred while submitting the form. Please try again.');
-        })
-        .finally(() => {
-            // Hide loading indicator
-            if (loadingIndicator) {
-                loadingIndicator.style.display = 'none';
-            }
-        });
+    return;
+  }
+  
+  // Send data to Google Apps Script Web App
+  try {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbzR_aruON8iw79udtjByurnY1l9KM6eHcM-1_7BuD52JZJaQrGmnUD3OzVM1d-V36nU/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+    
+    console.log("Form submitted successfully");
+    alert('Form submitted successfully!');
+    form.reset();
+    
+    // Reset dependent dropdowns
+    initializeDependentDropdowns();
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    alert('An error occurred while submitting the form. Please try again.');
+  }
+  
+  // Hide loading indicator
+  if (loadingIndicator) {
+    loadingIndicator.style.display = 'none';
+  }
 }
 
 function validateForm(form) {
-    const requiredFields = form.querySelectorAll('[required]');
-    for (let field of requiredFields) {
-        if (!field.value.trim()) {
-            alert(`Please fill out the ${field.name} field.`);
-            field.focus();
-            return false;
-        }
+  const requiredFields = form.querySelectorAll('[required]');
+  for (let field of requiredFields) {
+    if (!field.value.trim()) {
+      alert(`Please fill out the ${field.name} field.`);
+      field.focus();
+      return false;
     }
-
-    // Validate email format
-    const emailInput = form.querySelector('#email');
-    if (emailInput && !isValidEmail(emailInput.value)) {
-        alert('Please enter a valid email address.');
-        emailInput.focus();
-        return false;
-    }
-
-    // Validate contact number
-    const contactInput = form.querySelector('#contact_no');
-    if (contactInput && contactInput.value.length !== 10) {
-        alert('Please enter a valid 10-digit contact number.');
-        contactInput.focus();
-        return false;
-    }
-
-    return true;
-}
-
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-
-function formatContactNumber(number) {
-    // Ensure the number is 10 digits and add the +91 prefix
-    return number.length === 10 ? `+91${number}` : number;
-}
-
-async function sendFormData(data) {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzHYR4sQRFcnosnXhMuGcQYTPOU0_EsdHPMj6eMkGbkLy0o2DMYeiEwfHNE8bJQgWEl/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
-        return response;
-    } catch (error) {
-        throw new Error('Failed to submit form: ' + error.message);
-    }
+  }
+  return true;
 }
 
 // Initialize the form
