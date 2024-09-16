@@ -5,19 +5,38 @@ let ulbData = {};
 const $ = selector => document.querySelector(selector);
 const $$ = selector => document.querySelectorAll(selector);
 
-// Load data from JSON file
+// Load data from JSON files
 async function loadData() {
     try {
-        console.log("Fetching data from JSON file");
-        const basePath = 'https://raw.githubusercontent.com/tejasdgurav/Citiwise/main/';
+        console.log("Fetching data from JSON files");
+        const dataFiles = [
+            'ulb_rp_special_authority.json',
+            'city_specific_area.json',
+            'zone.json',
+            'uses.json',
+            'building_type.json',
+            'building_subtype.json'
+        ];
         
-        const response = await fetch(`${basePath}data.json`);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const dataPromises = dataFiles.map(file => 
+            fetch(`data/${file}`).then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+        );
 
-        ulbData = data;
+        const results = await Promise.all(dataPromises);
+
+        ulbData = {
+            ulb_rp_special_authority: results[0],
+            city_specific_area: results[1],
+            zone: results[2],
+            uses: results[3],
+            building_type: results[4],
+            building_subtype: results[5]
+        };
 
         console.log("Data loaded successfully. Detailed structure:");
         Object.keys(ulbData).forEach(key => {
@@ -198,7 +217,13 @@ function handleBoundaryChange(boundary, value) {
 function handleSubmit(e) {
     e.preventDefault();
     console.log("Form submitted");
-    // Add your form submission logic here
+    // Collect form data
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    console.log("Form data:", data);
+    // Here you would typically send this data to a server
+    // For now, we'll just log it to the console
+    alert("Form submitted successfully!");
 }
 
 // Initialize the form
