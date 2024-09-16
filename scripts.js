@@ -5,23 +5,43 @@ let ulbData = {};
 const $ = selector => document.querySelector(selector);
 const $$ = selector => document.querySelectorAll(selector);
 
-// Load data from JSON
+// Load data from JSON files
 async function loadData() {
     try {
-        console.log("Fetching data from data.json");
-        const response = await fetch('data.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        ulbData = await response.json();
+        console.log("Fetching data from JSON files");
+        const [
+            ulbRpSpecialAuthority,
+            citySpecificArea,
+            zone,
+            uses,
+            buildingType,
+            buildingSubtype
+        ] = await Promise.all([
+            fetch('data/ulb_rp_special_authority.json').then(res => res.json()),
+            fetch('data/city_specific_area.json').then(res => res.json()),
+            fetch('data/zone.json').then(res => res.json()),
+            fetch('data/uses.json').then(res => res.json()),
+            fetch('data/building_type.json').then(res => res.json()),
+            fetch('data/building_subtype.json').then(res => res.json())
+        ]);
+
+        ulbData = {
+            ulb_rp_special_authority: ulbRpSpecialAuthority,
+            city_specific_area: citySpecificArea,
+            zone: zone,
+            uses: uses,
+            building_type: buildingType,
+            building_subtype: buildingSubtype
+        };
+
         console.log("Data loaded successfully:", ulbData);
         
         // Populate dropdowns from JSON
-        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority || []);
-        populateDropdown('city_specific_area', ulbData.city_specific_area || []);
-        populateDropdown('zone', ulbData.zone || []);
-        populateDropdown('uses', ulbData.uses || []);
-        populateDropdown('building_type', ulbData.building_type || []);
+        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority);
+        populateDropdown('city_specific_area', ulbData.city_specific_area);
+        populateDropdown('zone', ulbData.zone);
+        populateDropdown('uses', ulbData.uses);
+        populateDropdown('building_type', ulbData.building_type);
         
         // Initialize form state
         initializeFormState();
@@ -138,8 +158,9 @@ function handleBuildingTypeChange(selectedBuildingTypeId) {
     const buildingSubtypeDropdown = $('#building_subtypes');
     buildingSubtypeDropdown.innerHTML = '<option value="">Select building subtype</option>';
     
-    if (selectedBuildingTypeId && ulbData.building_subtype[selectedBuildingTypeId]) {
-        ulbData.building_subtype[selectedBuildingTypeId].forEach(subtype => {
+    if (selectedBuildingTypeId) {
+        const filteredSubtypes = ulbData.building_subtype.filter(subtype => subtype.bldgtypeID == selectedBuildingTypeId);
+        filteredSubtypes.forEach(subtype => {
             const option = document.createElement('option');
             option.value = subtype.id;
             option.textContent = subtype.name;
