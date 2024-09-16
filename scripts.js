@@ -1,10 +1,6 @@
 // Global variables
 let ulbData = {};
 
-// Utility functions
-const $ = selector => document.querySelector(selector);
-const $$ = selector => document.querySelectorAll(selector);
-
 // Load data from JSON files
 async function loadData() {
     try {
@@ -26,21 +22,21 @@ async function loadData() {
         ]);
 
         ulbData = {
-            ulb_rp_special_authority: ulbRpSpecialAuthority.ulb_rp_special_authority,
-            city_specific_area: citySpecificArea.city_specific_area,
-            zone: zone.zone,
-            uses: uses.uses,
-            building_type: buildingType.building_type,
-            building_subtype: buildingSubtype.building_subtype
+            ulb_rp_special_authority: ulbRpSpecialAuthority,
+            city_specific_area: citySpecificArea,
+            zone: zone,
+            uses: uses,
+            building_type: buildingType,
+            building_subtype: buildingSubtype
         };
 
         console.log("Data loaded successfully:", ulbData);
         
         // Populate dropdowns
-        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority);
-        populateDropdown('city_specific_area', ulbData.city_specific_area);
-        populateDropdown('zone', ulbData.zone);
-        populateDropdown('building_type', ulbData.building_type);
+        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority.ulb_rp_special_authority);
+        populateDropdown('city_specific_area', ulbData.city_specific_area.city_specific_area);
+        populateDropdown('zone', ulbData.zone.zone);
+        populateDropdown('building_type', ulbData.building_type.building_type);
         
         // Initialize form state
         initializeFormState();
@@ -73,7 +69,7 @@ function populateDropdown(id, options) {
         });
         console.log(`Populated ${id} dropdown with ${options.length} options`);
     } else {
-        console.error(`Options for ${id} is not an array`);
+        console.error(`Options for ${id} is not an array:`, options);
     }
 }
 
