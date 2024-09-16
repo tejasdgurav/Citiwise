@@ -7,7 +7,7 @@ let buildingTypes = [];
 let buildingSubtypes = {};
 let ulbData = {}; // Store all ULB data
 
-// Add this function at the beginning of your script
+// Function to get form data
 function getFormData(form) {
   const formData = new FormData(form);
   const data = {};
@@ -26,7 +26,7 @@ function getFormData(form) {
 async function loadData() {
     try {
         console.log("Fetching data from data.json");
-        const response = await fetch('/Citiwise/data.json');
+        const response = await fetch('/Citiwise/data/data.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -83,7 +83,7 @@ function initializeDependentDropdowns() {
     dependentDropdowns.forEach(id => {
         const dropdown = document.getElementById(id);
         if (dropdown) {
-            dropdown.innerHTML = ''; // Remove all options, including "Select an option"
+            dropdown.innerHTML = '<option value="">Select an option</option>';
             dropdown.disabled = true;
         }
     });
@@ -200,15 +200,9 @@ function handleUlbTypeChange(selectedUlbTypeId) {
     }
     
     // Clear existing options
-    ulbRpSpecialAuthority.innerHTML = '';
+    ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedUlbTypeId) {
-        // Add "Select an option" only when a ULB Type is selected
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Select an option";
-        ulbRpSpecialAuthority.appendChild(defaultOption);
-
         const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
         console.log("Filtered authorities:", filteredAuthorities);
         
@@ -240,15 +234,9 @@ function handleZoneChange(selectedZoneId) {
     }
     
     // Clear existing options
-    usesDropdown.innerHTML = '';
+    usesDropdown.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedZoneId) {
-        // Add "Select an option" only when a Zone is selected
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Select an option";
-        usesDropdown.appendChild(defaultOption);
-
         const selectedZone = zones.find(zone => zone.id == selectedZoneId);
         if (selectedZone && selectedZone.allowedUses) {
             const filteredUses = uses.filter(use => selectedZone.allowedUses.includes(use.id));
@@ -286,15 +274,9 @@ function handleBuildingTypeChange(selectedBuildingTypeId) {
     }
     
     // Clear existing options
-    buildingSubtypeDropdown.innerHTML = '';
+    buildingSubtypeDropdown.innerHTML = '<option value="">Select an option</option>';
     
     if (selectedBuildingTypeId) {
-        // Add "Select an option" only when a building type is selected
-        const defaultOption = document.createElement('option');
-        defaultOption.value = "";
-        defaultOption.textContent = "Select an option";
-        buildingSubtypeDropdown.appendChild(defaultOption);
-
         const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
         console.log("Building subtypes:", subtypes);
         
