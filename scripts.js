@@ -102,8 +102,15 @@ function initializeFormState() {
 function addEventListeners() {
     console.log("Adding event listeners");
 
-    $('#zone').addEventListener('change', e => handleZoneChange(e.target.value));
-    $('#building_type').addEventListener('change', e => handleBuildingTypeChange(e.target.value));
+    const zoneSelect = $('#zone');
+    if (zoneSelect) {
+        zoneSelect.addEventListener('change', e => handleZoneChange(e.target.value));
+    }
+
+    const buildingTypeSelect = $('#building_type');
+    if (buildingTypeSelect) {
+        buildingTypeSelect.addEventListener('change', e => handleBuildingTypeChange(e.target.value));
+    }
 
     // Radio button event listeners
     const radioGroups = ['incentive_fsi', 'electrical_line', 'reservation_area_affected', 'dp_rp_road_affected'];
@@ -115,9 +122,15 @@ function addEventListeners() {
 
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        $(`#${boundary}`).addEventListener('change', e => {
-            $(`#road_container_${boundary}`).style.display = e.target.value === 'Road' ? 'block' : 'none';
-        });
+        const boundarySelect = $(`#${boundary}`);
+        if (boundarySelect) {
+            boundarySelect.addEventListener('change', e => {
+                const roadContainer = $(`#road_container_${boundary}`);
+                if (roadContainer) {
+                    roadContainer.style.display = e.target.value === 'Road' ? 'block' : 'none';
+                }
+            });
+        }
     });
 
     // Text input event listeners for sentence case conversion
@@ -128,13 +141,23 @@ function addEventListeners() {
     });
 
     initializeContactNumberHandler();
-    $('#project-input-form').addEventListener('submit', handleSubmit);
+    
+    const form = $('#project-input-form');
+    if (form) {
+        form.addEventListener('submit', handleSubmit);
+    } else {
+        console.error("Form with id 'project-input-form' not found");
+    }
 }
 
 // Handle Zone change
 function handleZoneChange(selectedZoneId) {
     console.log("Zone changed:", selectedZoneId);
     const usesDropdown = $('#uses');
+    if (!usesDropdown) {
+        console.error("Uses dropdown not found");
+        return;
+    }
     usesDropdown.innerHTML = '<option value="">Select uses</option>';
     
     if (selectedZoneId) {
@@ -156,6 +179,10 @@ function handleZoneChange(selectedZoneId) {
 function handleBuildingTypeChange(selectedBuildingTypeId) {
     console.log("Building Type changed:", selectedBuildingTypeId);
     const buildingSubtypeDropdown = $('#building_subtypes');
+    if (!buildingSubtypeDropdown) {
+        console.error("Building subtype dropdown not found");
+        return;
+    }
     buildingSubtypeDropdown.innerHTML = '<option value="">Select building subtype</option>';
     
     if (selectedBuildingTypeId) {
@@ -202,10 +229,15 @@ function initializeContactNumberHandler() {
 // Handle form submission
 function handleSubmit(e) {
     e.preventDefault();
-    $('.loading-indicator').style.display = 'flex';
+    const loadingIndicator = $('.loading-indicator');
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'flex';
+    }
 
     if (!validateForm(e.target)) {
-        $('.loading-indicator').style.display = 'none';
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
         return;
     }
 
@@ -227,7 +259,9 @@ function handleSubmit(e) {
             alert('An error occurred while submitting the form. Please try again.');
         })
         .finally(() => {
-            $('.loading-indicator').style.display = 'none';
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
         });
 }
 
