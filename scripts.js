@@ -7,72 +7,47 @@ let buildingTypes = [];
 let buildingSubtypes = {};
 let ulbData = {}; // Store all ULB data
 
-// Utility functions
-const $ = selector => document.querySelector(selector);
-const $$ = selector => document.querySelectorAll(selector);
-
-// Get form data
-function getFormData(form) {
-  const formData = new FormData(form);
-  const data = {};
-  for (let [key, value] of formData.entries()) {
-    if (value instanceof File) {
-      // For file inputs, just store the file name
-      data[key] = value.name;
-    } else {
-      data[key] = value;
-    }
-  }
-  return data;
-}
-
 // Load data from JSON
 async function loadData() {
     try {
-        console.log("Fetching data from JSON files");
-        const [
-            ulbRpSpecialAuthority,
-            citySpecificArea,
-            zone,
-            uses,
-            buildingType,
-            buildingSubtype
-        ] = await Promise.all([
-            fetch('/Citiwise/data/ulb_rp_special_authority.json').then(res => res.json()),
-            fetch('/Citiwise/data/city_specific_area.json').then(res => res.json()),
-            fetch('/Citiwise/data/zone.json').then(res => res.json()),
-            fetch('/Citiwise/data/uses.json').then(res => res.json()),
-            fetch('/Citiwise/data/building_type.json').then(res => res.json()),
-            fetch('/Citiwise/data/building_subtype.json').then(res => res.json())
-        ]);
+        console.log("Fetching data from data.json");
+        const response = await fetch('data.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
         
-        ulbData = {
-            ulb_rp_special_authority: ulbRpSpecialAuthority,
-            city_specific_area: citySpecificArea,
-            zone: zone,
-            uses: uses,
-            building_type: buildingType,
-            building_subtype: buildingSubtype
-        };
-        
-        console.log("Data loaded successfully:", ulbData);
+        console.log("Data loaded successfully:", data);
         
         // Populate global variables
-        zones = ulbData.zone || [];
-        uses = ulbData.uses || [];
-        citySpecificAreas = ulbData.city_specific_area || [];
-        buildingTypes = ulbData.building_type || [];
-        buildingSubtypes = ulbData.building_subtype || {};
+        zones = data.zone || [];
+        uses = data.uses || [];
+        citySpecificAreas = data.city_specific_area || [];
+        buildingTypes = data.building_type || [];
+        buildingSubtypes = data.building_subtype || {};
+        ulbData = data; // Store all data for later use
         
-        console.log("Global variables populated");
+        console.log("Global variables populated:");
+        console.log("Zones:", zones.length);
+        console.log("Uses:", uses.length);
+        console.log("City Specific Areas:", citySpecificAreas.length);
+        console.log("Building Types:", buildingTypes.length);
+        console.log("Building Subtypes:", Object.keys(buildingSubtypes).length);
+        console.log("ULB Types:", (data.ulb_type || []).length);
+        console.log("ULB/RP/Special Authorities:", (data.ulb_rp_special_authority || []).length);
         
         // Populate dropdowns
-        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority);
+        populateDropdown('ulb_type', data.ulb_type || []);
         populateDropdown('zone', zones);
+        populateDropdown('uses', uses);
+        populateDropdown('city_specific_area', citySpecificAreas);
         populateDropdown('building_type', buildingTypes);
         
-        // Initialize dependent dropdowns
-        initializeDependentDropdowns();
+        // Disable ULB/RP/Special Authority dropdown initially
+        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+        if (ulbRpSpecialAuthority) {
+            ulbRpSpecialAuthority.disabled = true;
+        }
         
         // Add event listeners
         addEventListeners();
@@ -83,7 +58,7 @@ async function loadData() {
 
 // Populate dropdown function
 function populateDropdown(id, options) {
-    const select = $('#' + id);
+    const select = document.getElementById(id);
     if (!select) {
         console.error(`Dropdown with id '${id}' not found`);
         return;
@@ -92,204 +67,246 @@ function populateDropdown(id, options) {
     options.forEach(option => {
         const optionElement = document.createElement('option');
         optionElement.value = option.id;
-        
-        if (id === 'ulb_rp_special_authority') {
-            optionElement.textContent = `${option.districtName} - ${option.talukaName}`;
-        } else if (id === 'city_specific_area') {
-            optionElement.textContent = option.citySpecificArea || 'Unknown Area';
-        } else {
-            optionElement.textContent = option.name || 'Unknown Option';
-        }
-        
+        optionElement.textContent = option.name;
         select.appendChild(optionElement);
     });
     console.log(`Populated dropdown '${id}' with ${options.length} options`);
-}
-
-// Initialize dependent dropdowns
-function initializeDependentDropdowns() {
-    const dependentDropdowns = ['uses', 'building_subtype', 'city_specific_area'];
-    dependentDropdowns.forEach(id => {
-        const dropdown = $('#' + id);
-        if (dropdown) {
-            dropdown.innerHTML = '<option value="">Select an option</option>';
-            dropdown.disabled = true;
-        }
-    });
 }
 
 // Add event listeners
 function addEventListeners() {
     console.log("Adding event listeners");
     
-    // ULB/RP/Special Authority change event
-    $('#ulb_rp_special_authority').addEventListener('change', e => updateCitySpecificAreas(e.target.value));
+    // ULB Type change event
+    const ulbTypeSelect = document.getElementById('ulb_type');
+    if (!ulbTypeSelect) {
+        console.error("ULB Type select element not found");
+        return;
+    }
+    
+    ulbTypeSelect.addEventListener('change', function(e) {
+        console.log("ULB Type changed:", e.target.value);
+        
+        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+        if (!ulbRpSpecialAuthority) {
+            console.error("ULB/RP/Special Authority select element not found");
+            return;
+        }
+        
+        const selectedUlbTypeId = e.target.value;
+        if (!ulbData.ulb_rp_special_authority) {
+            console.error("ulb_rp_special_authority data not found in ulbData");
+            return;
+        }
+        
+        // Clear existing options
+        ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+        
+        if (selectedUlbTypeId) {
+            const filteredAuthorities = ulbData.ulb_rp_special_authority.filter(auth => auth.typeId == selectedUlbTypeId);
+            console.log("Filtered authorities:", filteredAuthorities);
+            
+            filteredAuthorities.forEach(auth => {
+                const option = document.createElement('option');
+                option.value = auth.id;
+                option.textContent = auth.name;
+                ulbRpSpecialAuthority.appendChild(option);
+            });
+            
+            // Enable the dropdown
+            ulbRpSpecialAuthority.disabled = false;
+        } else {
+            // If no ULB Type is selected, disable the dropdown
+            ulbRpSpecialAuthority.disabled = true;
+        }
+        
+        console.log("ULB/RP/Special Authority options updated");
+    });
 
-    // Zone change event
-    $('#zone').addEventListener('change', e => handleZoneChange(e.target.value));
-
-    // Building type change event
-    $('#building_type').addEventListener('change', e => handleBuildingTypeChange(e.target.value));
-
-    // Conditional field events
-    const conditionalFields = [
-        { name: 'incentive_fsi', targetId: 'incentive_fsi_rating' },
-        { name: 'electrical_line', targetId: 'electrical_line_voltage' },
-        { name: 'reservation_area_affected', targetId: 'reservation_area_sqm' },
-        { name: 'crz_status', targetId: 'crz_location' },
-        { name: 'dp_rp_road_affected', targetId: 'dp_rp_road_area_sqm' }
-    ];
-
-    conditionalFields.forEach(field => {
-        $$(`input[name="${field.name}"]`).forEach(radio => {
-            radio.addEventListener('change', e => toggleConditionalField(field.targetId, e.target.value === 'Yes'));
+    // Incentive FSI change event
+    document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
+            if (incentiveFsiRating) {
+                incentiveFsiRating.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+            }
         });
     });
+
+    // Electrical Line change event
+    document.querySelectorAll('input[name="electrical_line"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const electricalLineVoltage = document.getElementById('electrical_line_voltage');
+            if (electricalLineVoltage) {
+                electricalLineVoltage.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+            }
+        });
+    });
+
+    // Reservation Area Affected change event
+    document.querySelectorAll('input[name="reservation_area_affected"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const reservationAreaSqm = document.getElementById('reservation_area_sqm');
+            if (reservationAreaSqm) {
+                reservationAreaSqm.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+            }
+        });
+    });
+
+    // CRZ change event
+    document.querySelectorAll('input[name="crz"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const crzLocation = document.getElementById('crz_location');
+            if (crzLocation) {
+                crzLocation.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+            }
+        });
+    });
+
+    // DP/RP road affected change event
+    document.querySelectorAll('input[name="dp_rp_road_affected"]').forEach(radio => {
+        radio.addEventListener('change', function(e) {
+            const dpRpRoadAreaSqm = document.getElementById('dp_rp_road_area_sqm');
+            if (dpRpRoadAreaSqm) {
+                dpRpRoadAreaSqm.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+            }
+        });
+    });
+
+    // Building type change event
+    const buildingTypeSelect = document.getElementById('building_type');
+    if (buildingTypeSelect) {
+        buildingTypeSelect.addEventListener('change', function(e) {
+            const buildingSubtype = document.getElementById('building_subtype');
+            if (!buildingSubtype) {
+                console.error("Building subtype select element not found");
+                return;
+            }
+            
+            buildingSubtype.innerHTML = '<option value="">Select an option</option>';
+            
+            const selectedBuildingTypeId = e.target.value;
+            const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
+            
+            subtypes.forEach(subtype => {
+                const option = document.createElement('option');
+                option.value = subtype.id;
+                option.textContent = subtype.name;
+                buildingSubtype.appendChild(option);
+            });
+        });
+    }
 
     // Plot boundaries change events
     ['front', 'left', 'right', 'rear'].forEach(boundary => {
-        $(`#${boundary}_boundary_type`).addEventListener('change', e => {
-            $(`#road_container_${boundary}`).style.display = e.target.value === 'Road' ? 'block' : 'none';
-        });
+        const boundarySelect = document.getElementById(`${boundary}_boundary`);
+        if (boundarySelect) {
+            boundarySelect.addEventListener('change', function(e) {
+                const roadDetails = document.getElementById(`${boundary}-road-details`);
+                if (roadDetails) {
+                    roadDetails.style.display = e.target.value === 'Road' ? 'block' : 'none';
+                }
+            });
+        }
     });
 
     // Form submission event
-    $('#project-input-form').addEventListener('submit', handleSubmit);
-}
-
-// Update City Specific Areas based on selected ULB/RP/Special Authority
-function updateCitySpecificAreas(selectedCouncilId) {
-    const citySpecificAreaSelect = $('#city_specific_area');
-    citySpecificAreaSelect.innerHTML = '<option value="">Select an option</option>';
-    
-    if (selectedCouncilId) {
-        const filteredAreas = citySpecificAreas.filter(area => area.councilId == selectedCouncilId);
-        console.log("Filtered city-specific areas:", filteredAreas);
-        
-        populateDropdown('city_specific_area', filteredAreas);
-        citySpecificAreaSelect.disabled = filteredAreas.length === 0;
+    const form = document.getElementById('project-input-form');
+    if (form) {
+        form.addEventListener('submit', handleSubmit);
     } else {
-        citySpecificAreaSelect.disabled = true;
-    }
-    
-    console.log("City Specific Area options updated");
-}
-
-// Handle Zone change
-function handleZoneChange(selectedZoneId) {
-    console.log("Zone changed:", selectedZoneId);
-    
-    const usesDropdown = $('#uses');
-    usesDropdown.innerHTML = '<option value="">Select an option</option>';
-    
-    if (selectedZoneId) {
-        const selectedZone = zones.find(zone => zone.id == selectedZoneId);
-        if (selectedZone && selectedZone.allowedUses) {
-            const filteredUses = uses.filter(use => selectedZone.allowedUses.includes(use.id));
-            console.log("Filtered uses:", filteredUses);
-            
-            filteredUses.forEach(use => {
-                const option = document.createElement('option');
-                option.value = use.id;
-                option.textContent = use.name;
-                usesDropdown.appendChild(option);
-            });
-            
-            usesDropdown.disabled = false;
-        } else {
-            console.error("Selected zone or allowed uses not found");
-            usesDropdown.disabled = true;
-        }
-    } else {
-        usesDropdown.disabled = true;
-    }
-    
-    console.log("Uses options updated");
-}
-
-// Handle Building Type change
-function handleBuildingTypeChange(selectedBuildingTypeId) {
-    console.log("Building Type changed:", selectedBuildingTypeId);
-    
-    const buildingSubtypeDropdown = $('#building_subtype');
-    buildingSubtypeDropdown.innerHTML = '<option value="">Select an option</option>';
-    
-    if (selectedBuildingTypeId) {
-        const subtypes = buildingSubtypes[selectedBuildingTypeId] || [];
-        console.log("Building subtypes:", subtypes);
-        
-        subtypes.forEach(subtype => {
-            const option = document.createElement('option');
-            option.value = subtype.id;
-            option.textContent = subtype.name;
-            buildingSubtypeDropdown.appendChild(option);
-        });
-        
-        buildingSubtypeDropdown.disabled = false;
-    } else {
-        buildingSubtypeDropdown.disabled = true;
-    }
-    
-    console.log("Building subtype options updated");
-}
-
-// Toggle conditional fields
-function toggleConditionalField(fieldId, show) {
-    const field = $('#' + fieldId);
-    if (field) {
-        field.style.display = show ? 'block' : 'none';
+        console.error("Form element not found");
     }
 }
 
 // Handle form submission
 async function handleSubmit(e) {
-  e.preventDefault();
-  
-  $('.loading-indicator').style.display = 'flex';
-  
-  const form = e.target;
-  const formData = getFormData(form);
-  
-  console.log("Form data being sent:", formData);
-  
-  if (!validateForm(form)) {
-    $('.loading-indicator').style.display = 'none';
-    return;
-  }
-  
-  try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbzHYR4sQRFcnosnXhMuGcQYTPOU0_EsdHPMj6eMkGbkLy0o2DMYeiEwfHNE8bJQgWEl/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData)
-    });
+    e.preventDefault();
     
-    console.log("Form submitted successfully");
-    alert('Form submitted successfully!');
-    form.reset();
+    // Show loading indicator
+    const loadingIndicator = document.querySelector('.loading-indicator');
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'flex';
+    }
     
-    initializeDependentDropdowns();
-  } catch (error) {
-    console.error('Error submitting form:', error);
-    alert('An error occurred while submitting the form. Please try again.');
-  }
-  
-  $('.loading-indicator').style.display = 'none';
+    // Collect form data
+    const formElements = e.target.elements;
+    for (let element of formElements) {
+        if (element.name) {
+            if (element.type === 'radio') {
+                if (element.checked) {
+                    formData[element.name] = element.value;
+                }
+            } else if (element.type === 'file') {
+                formData[element.name] = element.files[0] ? element.files[0].name : '';
+            } else {
+                formData[element.name] = element.value;
+            }
+        }
+    }
+    
+    // Validate form data
+    if (!validateForm()) {
+        // Hide loading indicator
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
+        return;
+    }
+    
+    // Send data to Google Sheets
+    try {
+        await sendToGoogleSheets(formData);
+        alert('Form submitted successfully!');
+        e.target.reset();
+        
+        // Reset ULB/RP/Special Authority dropdown
+        const ulbRpSpecialAuthority = document.getElementById('ulb_rp_special_authority');
+        if (ulbRpSpecialAuthority) {
+            ulbRpSpecialAuthority.innerHTML = '<option value="">Select an option</option>';
+            ulbRpSpecialAuthority.disabled = true;
+        }
+    } catch (error) {
+        console.error('Error submitting form:', error);
+        alert('An error occurred while submitting the form. Please try again.');
+    }
+    
+    // Hide loading indicator
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'none';
+    }
 }
 
-function validateForm(form) {
-  const requiredFields = form.querySelectorAll('[required]');
-  for (let field of requiredFields) {
-    if (!field.value.trim()) {
-      alert(`Please fill out the ${field.name} field.`);
-      field.focus();
-      return false;
+// Validate form data
+function validateForm() {
+    // Add your validation logic here
+    // For now, we'll just check if required fields are filled
+    const requiredFields = document.querySelectorAll('[required]');
+    for (let field of requiredFields) {
+        if (!field.value) {
+            alert(`Please fill out the ${field.name} field.`);
+            return false;
+        }
     }
-  }
-  return true;
+    return true;
+}
+
+// Send data to Google Sheets
+async function sendToGoogleSheets(data) {
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbynupzlWSifTvfii8Sz74T09_GpXNJ6upgkdTvpv4iAPcAcbBnj3eosUf2_rWOBtSh5/exec'; // Replace with your actual script URL
+    const response = await fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    
+    return response.json();
 }
 
 // Initialize the form
@@ -298,4 +315,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadData();
 });
 
+// Add this line at the end of the file to check if the script is loaded
 console.log("scripts.js file loaded");
