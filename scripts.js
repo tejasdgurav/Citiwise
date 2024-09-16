@@ -1,42 +1,30 @@
 // Global variables
 let ulbData = {};
 
+// Utility functions
+const $ = selector => document.querySelector(selector);
+const $$ = selector => document.querySelectorAll(selector);
+
 // Load data from JSON files
 async function loadData() {
     try {
-        console.log("Fetching data from JSON files");
-        const [
-            ulbRpSpecialAuthority,
-            citySpecificArea,
-            zone,
-            uses,
-            buildingType,
-            buildingSubtype
-        ] = await Promise.all([
-            fetch('data/ulb_rp_special_authority.json').then(res => res.json()),
-            fetch('data/city_specific_area.json').then(res => res.json()),
-            fetch('data/zone.json').then(res => res.json()),
-            fetch('data/uses.json').then(res => res.json()),
-            fetch('data/building_type.json').then(res => res.json()),
-            fetch('data/building_subtype.json').then(res => res.json())
-        ]);
+        console.log("Fetching data from JSON file");
+        const basePath = 'https://raw.githubusercontent.com/tejasdgurav/Citiwise/main/';
+        
+        const data = await fetch(`${basePath}data.json`).then(res => res.json());
 
-        ulbData = {
-            ulb_rp_special_authority: ulbRpSpecialAuthority,
-            city_specific_area: citySpecificArea,
-            zone: zone,
-            uses: uses,
-            building_type: buildingType,
-            building_subtype: buildingSubtype
-        };
+        ulbData = data;
 
-        console.log("Data loaded successfully:", ulbData);
+        console.log("Data loaded successfully. Detailed structure:");
+        Object.keys(ulbData).forEach(key => {
+            console.log(`${key}:`, JSON.stringify(ulbData[key]).slice(0, 200) + "...");
+        });
         
         // Populate dropdowns
-        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority.ulb_rp_special_authority);
-        populateDropdown('city_specific_area', ulbData.city_specific_area.city_specific_area);
-        populateDropdown('zone', ulbData.zone.zone);
-        populateDropdown('building_type', ulbData.building_type.building_type);
+        populateDropdown('ulb_rp_special_authority', ulbData.ulb_rp_special_authority);
+        populateDropdown('city_specific_area', ulbData.city_specific_area);
+        populateDropdown('zone', ulbData.zone);
+        populateDropdown('building_type', ulbData.building_type);
         
         // Initialize form state
         initializeFormState();
@@ -50,12 +38,14 @@ async function loadData() {
 
 // Function to populate dropdowns
 function populateDropdown(id, options) {
+    console.log(`Populating ${id} dropdown. Options:`, options);
     const select = $('#' + id);
     if (!select) {
         console.error(`${id} select element not found`);
         return;
     }
     select.innerHTML = `<option value="">Select ${id.replace(/_/g, ' ')}</option>`;
+    
     if (Array.isArray(options)) {
         options.forEach(option => {
             const optionElement = document.createElement('option');
@@ -69,7 +59,7 @@ function populateDropdown(id, options) {
         });
         console.log(`Populated ${id} dropdown with ${options.length} options`);
     } else {
-        console.error(`Options for ${id} is not an array:`, options);
+        console.error(`Data for ${id} is not an array:`, options);
     }
 }
 
