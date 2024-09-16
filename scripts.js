@@ -118,14 +118,19 @@ function addEventListeners() {
     }
 
     // Incentive FSI change event
-    document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
-        radio.addEventListener('change', function(e) {
-            const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
-            if (incentiveFsiRating) {
-                incentiveFsiRating.style.display = e.target.value === 'Yes' ? 'block' : 'none';
+document.querySelectorAll('input[name="incentive_fsi"]').forEach(radio => {
+    radio.addEventListener('change', function(e) {
+        const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
+        if (incentiveFsiRating) {
+            if (e.target.value === 'Yes') {
+                incentiveFsiRating.classList.remove('hidden');
+            } else {
+                incentiveFsiRating.classList.add('hidden');
             }
-        });
+        }
     });
+});
+
 
     // Electrical Line change event
     document.querySelectorAll('input[name="electrical_line"]').forEach(radio => {
