@@ -26,12 +26,12 @@ async function loadData() {
         ]);
 
         ulbData = {
-            ulb_rp_special_authority: ulbRpSpecialAuthority,
-            city_specific_area: citySpecificArea,
-            zone: zone,
-            uses: uses,
-            building_type: buildingType,
-            building_subtype: buildingSubtype
+            ulb_rp_special_authority: ulbRpSpecialAuthority.ulb_rp_special_authority,
+            city_specific_area: citySpecificArea.city_specific_area,
+            zone: zone.zone,
+            uses: uses.uses,
+            building_type: buildingType.building_type,
+            building_subtype: buildingSubtype.building_subtype
         };
 
         console.log("Data loaded successfully:", ulbData);
@@ -60,17 +60,21 @@ function populateDropdown(id, options) {
         return;
     }
     select.innerHTML = `<option value="">Select ${id.replace(/_/g, ' ')}</option>`;
-    options.forEach(option => {
-        const optionElement = document.createElement('option');
-        optionElement.value = option.id;
-        if (id === 'ulb_rp_special_authority') {
-            optionElement.textContent = `${option.districtName} - ${option.talukaName}`;
-        } else {
-            optionElement.textContent = option.name || option.citySpecificArea;
-        }
-        select.appendChild(optionElement);
-    });
-    console.log(`Populated ${id} dropdown with ${options.length} options`);
+    if (Array.isArray(options)) {
+        options.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.id;
+            if (id === 'ulb_rp_special_authority') {
+                optionElement.textContent = `${option.districtName} - ${option.talukaName}`;
+            } else {
+                optionElement.textContent = option.name || option.citySpecificArea;
+            }
+            select.appendChild(optionElement);
+        });
+        console.log(`Populated ${id} dropdown with ${options.length} options`);
+    } else {
+        console.error(`Options for ${id} is not an array`);
+    }
 }
 
 // Function to initialize form state
