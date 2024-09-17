@@ -156,31 +156,36 @@ document.addEventListener('DOMContentLoaded', async function() {
     usesSelect.disabled = false;
   });
 
-// ULB and City Specific Area
-document.getElementById('ulb_rp_special_authority').addEventListener('change', function(e) {
+  // Initially disable the city specific area dropdown
   const citySpecificAreaSelect = document.getElementById('city_specific_area');
-  const selectedUlbId = parseInt(this.value);
-  const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === selectedUlbId);
-  
-  console.log('Selected ULB:', selectedUlb); // Debug log
+  citySpecificAreaSelect.disabled = true;
+  citySpecificAreaSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority first</option>';
 
-  if (selectedUlb) {
-    const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
+  // ULB and City Specific Area
+  document.getElementById('ulb_rp_special_authority').addEventListener('change', function(e) {
+    const citySpecificAreaSelect = document.getElementById('city_specific_area');
+    const selectedUlbId = parseInt(this.value);
+    const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === selectedUlbId);
     
-    console.log('Filtered Areas:', filteredAreas); // Debug log
+    console.log('Selected ULB:', selectedUlb); // Debug log
 
-    if (filteredAreas.length > 0) {
-      populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
-      citySpecificAreaSelect.disabled = false;
+    if (selectedUlb) {
+      const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
+      
+      console.log('Filtered Areas:', filteredAreas); // Debug log
+
+      if (filteredAreas.length > 0) {
+        populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
+        citySpecificAreaSelect.disabled = false;
+      } else {
+        citySpecificAreaSelect.innerHTML = '<option value="">No specific areas available for this ULB</option>';
+        citySpecificAreaSelect.disabled = true;
+      }
     } else {
-      citySpecificAreaSelect.innerHTML = '<option value="">No specific areas available for this ULB</option>';
+      citySpecificAreaSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority first</option>';
       citySpecificAreaSelect.disabled = true;
     }
-  } else {
-    citySpecificAreaSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority first</option>';
-    citySpecificAreaSelect.disabled = true;
-  }
-});
+  });
 
 // Helper function to populate dropdowns
 function populateDropdown(selectElement, data, valueKey, textKey) {
