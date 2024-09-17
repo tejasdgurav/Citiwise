@@ -63,10 +63,10 @@ document.addEventListener('DOMContentLoaded', async function() {
   const usesData = await loadJSONData('uses.json');
   const citySpecificAreaData = await loadJSONData('city_specific_area.json');
 
-  // Populate initial dropdowns
+  // Populate dropdowns from JSON
   populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'talukaName');
   populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
-  populateDropdown(document.getElementById('type_of_proposal'), buildingTypeData.building_type.filter(type => type.id !== 0), 'id', 'name');
+  populateDropdown(document.getElementById('building_type'), buildingTypeData.building_type, 'id', 'name');
 
   // Hide conditional elements initially
   toggleElement('incentive_fsi_rating', false);
@@ -165,17 +165,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     citySpecificAreaSelect.disabled = false;
   });
 
-  // Type of Proposal and Building Type
-  document.getElementById('type_of_proposal').addEventListener('change', function(e) {
-    const buildingTypeSelect = document.getElementById('building_type');
-    const selectedProposal = this.value;
-    const filteredBuildingTypes = buildingTypeData.building_type.filter(type => type.proposalId === parseInt(selectedProposal));
-    populateDropdown(buildingTypeSelect, filteredBuildingTypes, 'id', 'name');
-    buildingTypeSelect.disabled = false;
-    document.getElementById('building_subtype').innerHTML = '<option value="">Select an option</option>';
-    document.getElementById('building_subtype').disabled = true;
-  });
-
   // Building Type and Building Subtype
   document.getElementById('building_type').addEventListener('change', function(e) {
     const buildingSubtypeSelect = document.getElementById('building_subtype');
@@ -190,24 +179,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById(`${side}_boundary_type`).addEventListener('change', function(e) {
       toggleElement(`road_container_${side}`, this.value === 'Road');
     });
-  });
-
-  // Populate Road Types
-  const roadTypes = [
-    "DP Road",
-    "Other General Road",
-    "Express Way",
-    "National Highway - NH",
-    "State Highway - SH",
-    "Major District Road - MDR",
-    "Other District Road",
-    "15m Village Road"
-  ];
-
-  ['front', 'left', 'right', 'rear'].forEach(side => {
-    populateDropdown(document.getElementById(`road_details_${side}`), 
-      roadTypes.map((type, index) => ({ id: index, name: type })), 
-      'id', 'name');
   });
 
   // Restrict numeric inputs
@@ -246,7 +217,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const jsonData = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbySdR0qSjRk7xSirHoDki9Cb64D7gUwD9LomQ9M2GU4C57DZ8-MLekLb2NDAIsFUXCr/exec', {
+      const response = await fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
         method: 'POST',
         body: JSON.stringify(jsonData),
         headers: {
