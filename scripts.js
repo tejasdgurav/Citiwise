@@ -64,13 +64,18 @@ document.addEventListener('DOMContentLoaded', async function() {
   const citySpecificAreaData = await loadJSONData('city_specific_area.json');
 
   // Populate initial dropdowns
-  populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'councilName');
+  populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'talukaName');
   populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
-  populateDropdown(document.getElementById('type_of_proposal'), [
-    {id: '1', name: 'Residential'},
-    {id: '2', name: 'Commercial'},
-    {id: '3', name: 'Industrial'}
-  ], 'id', 'name');
+  populateDropdown(document.getElementById('type_of_proposal'), buildingTypeData.building_type.filter(type => type.id !== 0), 'id', 'name');
+
+  // Hide conditional elements initially
+  toggleElement('incentive_fsi_rating', false);
+  toggleElement('electrical_line_voltage', false);
+  toggleElement('reservation_area_sqm', false);
+  toggleElement('dp_rp_road_area_sqm', false);
+  ['front', 'left', 'right', 'rear'].forEach(side => {
+    toggleElement(`road_container_${side}`, false);
+  });
 
   // Applicant Name
   document.getElementById('applicant_name').addEventListener('input', function(e) {
@@ -154,8 +159,8 @@ document.addEventListener('DOMContentLoaded', async function() {
   // ULB and City Specific Area
   document.getElementById('ulb_rp_special_authority').addEventListener('change', function(e) {
     const citySpecificAreaSelect = document.getElementById('city_specific_area');
-    const selectedUlb = this.value;
-    const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === parseInt(selectedUlb));
+    const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === parseInt(this.value));
+    const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
     populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
     citySpecificAreaSelect.disabled = false;
   });
@@ -185,6 +190,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById(`${side}_boundary_type`).addEventListener('change', function(e) {
       toggleElement(`road_container_${side}`, this.value === 'Road');
     });
+  });
+
+  // Populate Road Types
+  const roadTypes = [
+    "DP Road",
+    "Other General Road",
+    "Express Way",
+    "National Highway - NH",
+    "State Highway - SH",
+    "Major District Road - MDR",
+    "Other District Road",
+    "15m Village Road"
+  ];
+
+  ['front', 'left', 'right', 'rear'].forEach(side => {
+    populateDropdown(document.getElementById(`road_details_${side}`), 
+      roadTypes.map((type, index) => ({ id: index, name: type })), 
+      'id', 'name');
   });
 
   // Restrict numeric inputs
