@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const jsonData = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbySdR0qSjRk7xSirHoDki9Cb64D7gUwD9LomQ9M2GU4C57DZ8-MLekLb2NDAIsFUXCr/exec', {
         method: 'POST',
         body: JSON.stringify(jsonData),
         headers: {
