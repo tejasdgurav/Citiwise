@@ -156,14 +156,27 @@ document.addEventListener('DOMContentLoaded', async function() {
     usesSelect.disabled = false;
   });
 
-  // ULB and City Specific Area
-  document.getElementById('ulb_rp_special_authority').addEventListener('change', function(e) {
-    const citySpecificAreaSelect = document.getElementById('city_specific_area');
-    const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === parseInt(this.value));
+// ULB and City Specific Area
+document.getElementById('ulb_rp_special_authority').addEventListener('change', function(e) {
+  const citySpecificAreaSelect = document.getElementById('city_specific_area');
+  const selectedUlbId = parseInt(this.value);
+  const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === selectedUlbId);
+  
+  if (selectedUlb) {
     const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
-    populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
-    citySpecificAreaSelect.disabled = false;
-  });
+    
+    if (filteredAreas.length > 0) {
+      populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
+      citySpecificAreaSelect.disabled = false;
+    } else {
+      citySpecificAreaSelect.innerHTML = '<option value="">No specific areas available for this ULB</option>';
+      citySpecificAreaSelect.disabled = true;
+    }
+  } else {
+    citySpecificAreaSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority first</option>';
+    citySpecificAreaSelect.disabled = true;
+  }
+});
 
   // Building Type and Building Subtype
   document.getElementById('building_type').addEventListener('change', function(e) {
