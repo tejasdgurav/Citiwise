@@ -53,6 +53,16 @@ function toggleElement(elementId, show) {
   }
 }
 
+// Handle radio button changes
+function handleRadioChange(name, elementToToggle) {
+  const radioButtons = document.getElementsByName(name);
+  radioButtons.forEach(radio => {
+    radio.addEventListener('change', function() {
+      toggleElement(elementToToggle, this.value === 'Yes');
+    });
+  });
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', async function() {
   // Load all JSON data
@@ -76,6 +86,12 @@ document.addEventListener('DOMContentLoaded', async function() {
   ['front', 'left', 'right', 'rear'].forEach(side => {
     toggleElement(`road_container_${side}`, false);
   });
+
+  // Setup conditional elements
+  handleRadioChange('incentive_fsi', 'incentive_fsi_rating');
+  handleRadioChange('electrical_line', 'electrical_line_voltage');
+  handleRadioChange('reservation_area_affected', 'reservation_area_sqm');
+  handleRadioChange('dp_rp_road_affected', 'dp_rp_road_area_sqm');
 
   // Applicant Name
   document.getElementById('applicant_name').addEventListener('input', function(e) {
@@ -127,26 +143,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // Incentive FSI
-  document.getElementById('incentive_fsi').addEventListener('change', function(e) {
-    toggleElement('incentive_fsi_rating', this.value === 'Yes');
-  });
-
-  // Electrical Line
-  document.getElementById('electrical_line').addEventListener('change', function(e) {
-    toggleElement('electrical_line_voltage', this.value === 'Yes');
-  });
-
-  // Reservation Area Affected
-  document.getElementById('reservation_area_affected').addEventListener('change', function(e) {
-    toggleElement('reservation_area_sqm', this.value === 'Yes');
-  });
-
-  // DP/RP Road Affected
-  document.getElementById('dp_rp_road_affected').addEventListener('change', function(e) {
-    toggleElement('dp_rp_road_area_sqm', this.value === 'Yes');
-  });
-
   // Zone and Uses
   document.getElementById('zone').addEventListener('change', function(e) {
     const usesSelect = document.getElementById('uses');
@@ -186,17 +182,6 @@ document.addEventListener('DOMContentLoaded', async function() {
       citySpecificAreaSelect.disabled = true;
     }
   });
-
-// Helper function to populate dropdowns
-function populateDropdown(selectElement, data, valueKey, textKey) {
-  selectElement.innerHTML = '<option value="">Select an option</option>';
-  data.forEach(item => {
-    const option = document.createElement('option');
-    option.value = item[valueKey];
-    option.textContent = item[textKey];
-    selectElement.appendChild(option);
-  });
-}
 
   // Building Type and Building Subtype
   document.getElementById('building_type').addEventListener('change', function(e) {
