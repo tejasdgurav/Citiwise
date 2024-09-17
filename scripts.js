@@ -45,6 +45,14 @@ function populateDropdown(selectElement, data, valueKey, textKey) {
   });
 }
 
+// Show/hide element
+function toggleElement(elementId, show) {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.style.display = show ? 'block' : 'none';
+  }
+}
+
 // Event Listeners
 document.addEventListener('DOMContentLoaded', async function() {
   // Load all JSON data
@@ -55,10 +63,14 @@ document.addEventListener('DOMContentLoaded', async function() {
   const usesData = await loadJSONData('uses.json');
   const citySpecificAreaData = await loadJSONData('city_specific_area.json');
 
-  // Populate dropdowns
-  populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'talukaName');
+  // Populate initial dropdowns
+  populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'councilName');
   populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
-  populateDropdown(document.getElementById('building_type'), buildingTypeData.building_type, 'id', 'name');
+  populateDropdown(document.getElementById('type_of_proposal'), [
+    {id: '1', name: 'Residential'},
+    {id: '2', name: 'Commercial'},
+    {id: '3', name: 'Industrial'}
+  ], 'id', 'name');
 
   // Applicant Name
   document.getElementById('applicant_name').addEventListener('input', function(e) {
@@ -110,45 +122,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
   });
 
-  // Special Scheme
-  const specialSchemeOptions = [
-    "Pradhan Mantri Awas Yojna",
-    "Affordable Housing Scheme",
-    "Integrated Information Technology Township",
-    "Integrated Logistic Park",
-    "Tourism and Hospitality Services",
-    "Industrial Township under Aerospace and Defence Manufacturing Policy"
-  ];
-  populateDropdown(document.getElementById('special_scheme'), specialSchemeOptions.map((name, id) => ({ id, name })), 'id', 'name');
-
   // Incentive FSI
   document.getElementById('incentive_fsi').addEventListener('change', function(e) {
-    const incentiveFsiRating = document.getElementById('incentive_fsi_rating');
-    if (this.value === 'Yes') {
-      incentiveFsiRating.style.display = 'block';
-    } else {
-      incentiveFsiRating.style.display = 'none';
-    }
+    toggleElement('incentive_fsi_rating', this.value === 'Yes');
   });
 
   // Electrical Line
   document.getElementById('electrical_line').addEventListener('change', function(e) {
-    const electricalLineVoltage = document.getElementById('electrical_line_voltage');
-    if (this.value === 'Yes') {
-      electricalLineVoltage.style.display = 'block';
-    } else {
-      electricalLineVoltage.style.display = 'none';
-    }
+    toggleElement('electrical_line_voltage', this.value === 'Yes');
   });
 
   // Reservation Area Affected
   document.getElementById('reservation_area_affected').addEventListener('change', function(e) {
-    const reservationAreaSqm = document.getElementById('reservation_area_sqm');
-    if (this.value === 'Yes') {
-      reservationAreaSqm.style.display = 'block';
-    } else {
-      reservationAreaSqm.style.display = 'none';
-    }
+    toggleElement('reservation_area_sqm', this.value === 'Yes');
+  });
+
+  // DP/RP Road Affected
+  document.getElementById('dp_rp_road_affected').addEventListener('change', function(e) {
+    toggleElement('dp_rp_road_area_sqm', this.value === 'Yes');
   });
 
   // Zone and Uses
@@ -176,6 +167,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     const filteredBuildingTypes = buildingTypeData.building_type.filter(type => type.proposalId === parseInt(selectedProposal));
     populateDropdown(buildingTypeSelect, filteredBuildingTypes, 'id', 'name');
     buildingTypeSelect.disabled = false;
+    document.getElementById('building_subtype').innerHTML = '<option value="">Select an option</option>';
+    document.getElementById('building_subtype').disabled = true;
   });
 
   // Building Type and Building Subtype
@@ -190,12 +183,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Plot Boundaries
   ['front', 'left', 'right', 'rear'].forEach(side => {
     document.getElementById(`${side}_boundary_type`).addEventListener('change', function(e) {
-      const roadDetails = document.getElementById(`road_container_${side}`);
-      if (this.value === 'Road') {
-        roadDetails.style.display = 'block';
-      } else {
-        roadDetails.style.display = 'none';
-      }
+      toggleElement(`road_container_${side}`, this.value === 'Road');
     });
   });
 
