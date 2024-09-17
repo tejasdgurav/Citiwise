@@ -206,61 +206,53 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-// Form submission
-document.querySelector('form').addEventListener('submit', async function(e) {
-  e.preventDefault();
+  // Form submission
+  document.querySelector('form').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-  // Perform final validations
-  const applicantName = document.getElementById('applicant_name').value;
-  const contactNo = document.getElementById('contact_no').value;
-  const email = document.getElementById('email').value;
+    // Perform final validations
+    const applicantName = document.getElementById('applicant_name').value;
+    const contactNo = document.getElementById('contact_no').value;
+    const email = document.getElementById('email').value;
 
-  if (!applicantName || !contactNo || !email) {
-    alert('Please fill in all required fields.');
-    return;
-  }
-
-  if (!validatePhoneNumber(contactNo)) {
-    alert('Please enter a valid 10-digit phone number.');
-    return;
-  }
-
-  if (!validateEmail(email)) {
-    alert('Please enter a valid email address.');
-    return;
-  }
-
-  // If validation passes, submit the form
-  const formData = new FormData(this);
-  const jsonData = Object.fromEntries(formData.entries());
-
-  try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbynB6fDE5eeREzi0X9Y1Ik110IIIptevHe9VZ_dFKYfXHAmeQcnyEJNcucQgxFfAwOS/exec', {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonData)
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if (!applicantName || !contactNo || !email) {
+      alert('Please fill in all required fields.');
+      return;
     }
 
-    const result = await response.json();
-    if (result.status === 'success') {
-      alert('Form submitted successfully!');
-      this.reset();
-    } else {
-      alert('Error submitting form. Please try again.');
+    if (!validatePhoneNumber(contactNo)) {
+      alert('Please enter a valid 10-digit phone number.');
+      return;
     }
-  } catch (error) {
-    console.error('Error:', error);
-    if (error.message.includes('Failed to fetch')) {
-      alert('Unable to connect to the server. Please check your internet connection and try again.');
-    } else {
+
+    if (!validateEmail(email)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // If validation passes, submit the form
+    const formData = new FormData(this);
+    const jsonData = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbynB6fDE5eeREzi0X9Y1Ik110IIIptevHe9VZ_dFKYfXHAmeQcnyEJNcucQgxFfAwOS/exec', {
+        method: 'POST',
+        body: JSON.stringify(jsonData),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const result = await response.json();
+      if (result.status === 'success') {
+        alert('Form submitted successfully!');
+        this.reset();
+      } else {
+        alert('Error submitting form. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
       alert('An error occurred. Please try again later.');
     }
-  }
+  });
 });
