@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   const citySpecificAreaData = await loadJSONData('city_specific_area.json');
 
   // Populate dropdowns
-  populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'councilName');
+  populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'talukaName');
   populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
   populateDropdown(document.getElementById('building_type'), buildingTypeData.building_type, 'id', 'name');
 
