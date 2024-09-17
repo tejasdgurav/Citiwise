@@ -162,9 +162,13 @@ document.getElementById('ulb_rp_special_authority').addEventListener('change', f
   const selectedUlbId = parseInt(this.value);
   const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === selectedUlbId);
   
+  console.log('Selected ULB:', selectedUlb); // Debug log
+
   if (selectedUlb) {
     const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
     
+    console.log('Filtered Areas:', filteredAreas); // Debug log
+
     if (filteredAreas.length > 0) {
       populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
       citySpecificAreaSelect.disabled = false;
@@ -177,6 +181,17 @@ document.getElementById('ulb_rp_special_authority').addEventListener('change', f
     citySpecificAreaSelect.disabled = true;
   }
 });
+
+// Helper function to populate dropdowns
+function populateDropdown(selectElement, data, valueKey, textKey) {
+  selectElement.innerHTML = '<option value="">Select an option</option>';
+  data.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item[valueKey];
+    option.textContent = item[textKey];
+    selectElement.appendChild(option);
+  });
+}
 
   // Building Type and Building Subtype
   document.getElementById('building_type').addEventListener('change', function(e) {
