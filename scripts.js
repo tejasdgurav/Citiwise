@@ -199,12 +199,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
   });
 
-  // Restrict numeric inputs
-  document.querySelectorAll('input[type="number"]').forEach(input => {
-    input.addEventListener('input', function(e) {
-      restrictToNumbers(this);
-    });
+  // Restrict numeric inputs (allow decimals)
+document.querySelectorAll('input[type="number"]').forEach(input => {
+  input.addEventListener('input', function(e) {
+    restrictToNumbers(this);
   });
+});
+
+function restrictToNumbers(input) {
+  // Allow numbers and one decimal point
+  const validValue = input.value.match(/^\d*\.?\d*$/);
+
+  if (!validValue) {
+    input.value = input.value.slice(0, -1); // Remove the last invalid character
+  }
+}
+
 
   // Form submission
   document.querySelector('form').addEventListener('submit', async function(e) {
