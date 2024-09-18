@@ -1,5 +1,5 @@
 // Utility Functions
-function toSentenceCase(str) {
+function toTitleCase(str) {
   return str.replace(/\w\S*/g, function(txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
@@ -26,8 +26,8 @@ function restrictToNumbers(input, allowDecimal = false) {
   }
 }
 
-function restrictToSentenceCase(input) {
-  input.value = toSentenceCase(input.value);
+function restrictToTitleCase(input) {
+  input.value = toTitleCase(input.value);
 }
 
 // Feedback Functions
@@ -116,19 +116,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Input formatting and validation
   const inputValidations = [
-    { id: 'applicant_name', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid name' },
+    { id: 'applicant_name', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid name' },
     { id: 'contact_no', validate: validatePhoneNumber, format: (input) => restrictToNumbers(input), errorMsg: 'Please enter a valid 10-digit Indian mobile number' },
     { id: 'email', validate: validateEmail, format: (input) => { input.value = input.value.toLowerCase(); }, errorMsg: 'Please enter a valid email address' },
-    { id: 'project_name', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid project name' },
-    { id: 'site_address', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid site address' },
-    { id: 'village_mouje_name', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid village/mouje name' },
-    { id: 'reservation_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input), errorMsg: 'Please enter a valid non-negative number' },
+    { id: 'project_name', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid project name' },
+    { id: 'site_address', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid site address' },
+    { id: 'village_mouje_name', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid village/mouje name' },
+    { id: 'reservation_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
     { id: 'area_of_plot_as_per_site', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
     { id: 'area_of_plot_as_per_ownership_document', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
     { id: 'area_of_plot_as_per_measurement_sheet', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
-    { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number (decimals allowed)' },
     { id: 'dp_rp_road_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
-    { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' }
+    { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number (decimals allowed)' }
   ];
 
   inputValidations.forEach(({ id, validate, format, errorMsg }) => {
