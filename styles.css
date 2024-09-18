@@ -262,3 +262,17 @@ textarea:disabled {
 .input-group:focus-within {
     border-color: var(--focus-color);
 }
+
+.feedback {
+  font-size: 0.8em;
+  margin-top: 5px;
+}
+.feedback.invalid {
+  color: #d9534f;
+}
+.feedback.valid {
+  color: #5cb85c;
+}
+.invalid-input {
+  border-color: #d9534f;
+}
