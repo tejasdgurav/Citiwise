@@ -126,9 +126,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     { id: 'area_of_plot_as_per_site', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
     { id: 'area_of_plot_as_per_ownership_document', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
     { id: 'area_of_plot_as_per_measurement_sheet', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
-    { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && parseFloat(value) > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
     { id: 'dp_rp_road_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
-    { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' }
+    { id: 'plot_width', validate: (value) => !isNaN(value) && parseFloat(value) > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' }
   ];
 
   inputValidations.forEach(({ id, validate, format, errorMsg }) => {
