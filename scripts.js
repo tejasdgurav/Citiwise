@@ -6,21 +6,42 @@ function toSentenceCase(str) {
 }
 
 function validateEmail(email) {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
   return re.test(String(email).toLowerCase());
 }
 
 function validatePhoneNumber(phone) {
-  const re = /^\d{10}$/;
+  const re = /^[6-9]\d{9}$/;
   return re.test(phone);
 }
 
-function restrictToNumbers(input) {
-  input.value = input.value.replace(/[^0-9]/g, '');
+function restrictToNumbers(input, allowDecimal = false) {
+  const regex = allowDecimal ? /[^0-9.]/g : /[^0-9]/g;
+  input.value = input.value.replace(regex, '');
+  if (allowDecimal) {
+    const parts = input.value.split('.');
+    if (parts.length > 2) {
+      input.value = parts[0] + '.' + parts.slice(1).join('');
+    }
+  }
 }
 
 function restrictToSentenceCase(input) {
   input.value = toSentenceCase(input.value);
+}
+
+// Feedback Functions
+function showFeedback(input, isValid, message) {
+  const feedbackEl = input.nextElementSibling;
+  if (!feedbackEl || !feedbackEl.classList.contains('feedback')) {
+    const newFeedbackEl = document.createElement('div');
+    newFeedbackEl.classList.add('feedback');
+    input.parentNode.insertBefore(newFeedbackEl, input.nextSibling);
+  }
+  const feedbackDiv = input.nextElementSibling;
+  feedbackDiv.textContent = message;
+  feedbackDiv.className = 'feedback ' + (isValid ? 'valid' : 'invalid');
+  input.classList.toggle('invalid-input', !isValid);
 }
 
 // Load JSON data
@@ -63,7 +84,7 @@ function handleRadioChange(name, elementToToggle) {
   });
 }
 
-// Event Listeners
+// Main function
 document.addEventListener('DOMContentLoaded', async function() {
   // Load all JSON data
   const ulbData = await loadJSONData('ulb_rp_special_authority.json');
@@ -93,58 +114,73 @@ document.addEventListener('DOMContentLoaded', async function() {
   handleRadioChange('reservation_area_affected', 'reservation_area_sqm');
   handleRadioChange('dp_rp_road_affected', 'dp_rp_road_area_sqm');
 
-  // Applicant Name
-  document.getElementById('applicant_name').addEventListener('input', function(e) {
-    this.value = toSentenceCase(this.value);
-  });
+  // Input formatting and validation
+  const inputValidations = [
+    { id: 'applicant_name', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid name' },
+    { id: 'contact_no', validate: validatePhoneNumber, format: (input) => restrictToNumbers(input), errorMsg: 'Please enter a valid 10-digit Indian mobile number' },
+    { id: 'email', validate: validateEmail, format: (input) => { input.value = input.value.toLowerCase(); }, errorMsg: 'Please enter a valid email address' },
+    { id: 'project_name', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid project name' },
+    { id: 'site_address', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid site address' },
+    { id: 'village_mouje_name', validate: (value) => value.trim().length > 0, format: restrictToSentenceCase, errorMsg: 'Please enter a valid village/mouje name' },
+    { id: 'reservation_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input), errorMsg: 'Please enter a valid non-negative number' },
+    { id: 'area_of_plot_as_per_site', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'area_of_plot_as_per_ownership_document', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'area_of_plot_as_per_measurement_sheet', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'dp_rp_road_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
+    { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' }
+  ];
 
-  // Contact Number
-  document.getElementById('contact_no').addEventListener('input', function(e) {
-    restrictToNumbers(this);
-    if (this.value.length > 10) {
-      this.value = this.value.slice(0, 10);
+  inputValidations.forEach(({ id, validate, format, errorMsg }) => {
+    const input = document.getElementById(id);
+    if (input) {
+      input.addEventListener('input', function() {
+        format(this);
+        const isValid = validate(this.value);
+        showFeedback(this, isValid, isValid ? '' : errorMsg);
+      });
+      input.addEventListener('blur', function() {
+        const isValid = validate(this.value);
+        showFeedback(this, isValid, isValid ? '' : errorMsg);
+      });
     }
   });
 
-  // Email
-  document.getElementById('email').addEventListener('blur', function(e) {
-    if (!validateEmail(this.value)) {
-      alert('Please enter a valid email address');
-    }
+  // File input validation
+  ['dp_rp_part_plan', 'google_image'].forEach(id => {
+    const fileInput = document.getElementById(id);
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      const fileSize = file.size / 1024 / 1024; // in MB
+      const allowedFormats = ['image/jpeg', 'image/png', 'image/gif'];
+      let isValid = true;
+      let errorMsg = '';
+
+      if (fileSize > 5) {
+        isValid = false;
+        errorMsg = 'File size should not exceed 5MB';
+      } else if (!allowedFormats.includes(file.type)) {
+        isValid = false;
+        errorMsg = 'Please upload an image file (JPEG, PNG, or GIF)';
+      }
+
+      showFeedback(this, isValid, errorMsg);
+      if (!isValid) this.value = '';
+    });
   });
 
-  // Project Name
-  document.getElementById('project_name').addEventListener('input', function(e) {
-    this.value = toSentenceCase(this.value);
-  });
-
-  // Site Address
-  document.getElementById('site_address').addEventListener('input', function(e) {
-    restrictToSentenceCase(this);
-  });
-
-  // DP/RP Part Plan
-  document.getElementById('dp_rp_part_plan').addEventListener('change', function(e) {
-    const file = this.files[0];
-    const fileSize = file.size / 1024 / 1024; // in MB
-    if (fileSize > 5) {
-      alert('File size should not exceed 5MB');
-      this.value = '';
-    }
-  });
-
-  // Google Image
-  document.getElementById('google_image').addEventListener('change', function(e) {
-    const file = this.files[0];
-    const fileSize = file.size / 1024 / 1024; // in MB
-    if (fileSize > 5) {
-      alert('File size should not exceed 5MB');
-      this.value = '';
-    }
+  // Road Width inputs
+  const roadWidthInputs = document.querySelectorAll('.road-width-input');
+  roadWidthInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      restrictToNumbers(this, true);
+      const isValid = !isNaN(this.value) && parseFloat(this.value) > 0;
+      showFeedback(this, isValid, isValid ? '' : 'Please enter a valid positive number');
+    });
   });
 
   // Zone and Uses
-  document.getElementById('zone').addEventListener('change', function(e) {
+  document.getElementById('zone').addEventListener('change', function() {
     const usesSelect = document.getElementById('uses');
     const selectedZone = this.value;
     const filteredUses = usesData.uses.filter(use => use.zoneId === parseInt(selectedZone));
@@ -152,24 +188,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     usesSelect.disabled = false;
   });
 
-  // Initially disable the city specific area dropdown
+  // ULB and City Specific Area
   const citySpecificAreaSelect = document.getElementById('city_specific_area');
   citySpecificAreaSelect.disabled = true;
   citySpecificAreaSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority first</option>';
 
-  // ULB and City Specific Area
-  document.getElementById('ulb_rp_special_authority').addEventListener('change', function(e) {
-    const citySpecificAreaSelect = document.getElementById('city_specific_area');
+  document.getElementById('ulb_rp_special_authority').addEventListener('change', function() {
     const selectedUlbId = parseInt(this.value);
     const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === selectedUlbId);
     
-    console.log('Selected ULB:', selectedUlb); // Debug log
-
     if (selectedUlb) {
       const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
       
-      console.log('Filtered Areas:', filteredAreas); // Debug log
-
       if (filteredAreas.length > 0) {
         populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
         citySpecificAreaSelect.disabled = false;
@@ -184,7 +214,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   });
 
   // Building Type and Building Subtype
-  document.getElementById('building_type').addEventListener('change', function(e) {
+  document.getElementById('building_type').addEventListener('change', function() {
     const buildingSubtypeSelect = document.getElementById('building_subtype');
     const selectedBuildingType = this.value;
     const filteredBuildingSubtypes = buildingSubtypeData.building_subtype.filter(subtype => subtype.bldgtypeID === parseInt(selectedBuildingType));
@@ -194,49 +224,27 @@ document.addEventListener('DOMContentLoaded', async function() {
 
   // Plot Boundaries
   ['front', 'left', 'right', 'rear'].forEach(side => {
-    document.getElementById(`${side}_boundary_type`).addEventListener('change', function(e) {
+    document.getElementById(`${side}_boundary_type`).addEventListener('change', function() {
       toggleElement(`road_container_${side}`, this.value === 'Road');
     });
   });
-
-  // Restrict numeric inputs (allow decimals)
-document.querySelectorAll('input[type="number"]').forEach(input => {
-  input.addEventListener('input', function(e) {
-    restrictToNumbers(this);
-  });
-});
-
-function restrictToNumbers(input) {
-  // Allow numbers and one decimal point
-  const validValue = input.value.match(/^\d*\.?\d*$/);
-
-  if (!validValue) {
-    input.value = input.value.slice(0, -1); // Remove the last invalid character
-  }
-}
-
 
   // Form submission
   document.querySelector('form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     // Perform final validations
-    const applicantName = document.getElementById('applicant_name').value;
-    const contactNo = document.getElementById('contact_no').value;
-    const email = document.getElementById('email').value;
+    let isValid = true;
+    inputValidations.forEach(({ id, validate, errorMsg }) => {
+      const input = document.getElementById(id);
+      if (input && !validate(input.value)) {
+        showFeedback(input, false, errorMsg);
+        isValid = false;
+      }
+    });
 
-    if (!applicantName || !contactNo || !email) {
-      alert('Please fill in all required fields.');
-      return;
-    }
-
-    if (!validatePhoneNumber(contactNo)) {
-      alert('Please enter a valid 10-digit phone number.');
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      alert('Please enter a valid email address.');
+    if (!isValid) {
+      alert('Please correct the errors in the form before submitting.');
       return;
     }
 
@@ -257,6 +265,9 @@ function restrictToNumbers(input) {
       if (result.status === 'success') {
         alert('Form submitted successfully!');
         this.reset();
+        // Clear all feedback
+        document.querySelectorAll('.feedback').forEach(el => el.textContent = '');
+        document.querySelectorAll('.invalid-input').forEach(el => el.classList.remove('invalid-input'));
       } else {
         alert('Error submitting form. Please try again.');
       }
