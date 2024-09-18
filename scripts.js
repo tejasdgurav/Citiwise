@@ -132,19 +132,17 @@ document.addEventListener('DOMContentLoaded', async function() {
   ];
 
   inputValidations.forEach(({ id, validate, format, errorMsg }) => {
-    const input = document.getElementById(id);
-    if (input) {
-      input.addEventListener('input', function() {
-        format(this);
-        const isValid = validate(this.value);
-        showFeedback(this, isValid, isValid ? '' : errorMsg);
-      });
-      input.addEventListener('blur', function() {
-        const isValid = validate(this.value);
-        showFeedback(this, isValid, isValid ? '' : errorMsg);
-      });
-    }
-  });
+  const input = document.getElementById(id);
+  if (input) {
+    input.addEventListener('input', function() {
+      format(this);
+    });
+    input.addEventListener('blur', function() {
+      const isValid = validate(this.value);
+      showFeedback(this, isValid, isValid ? '' : errorMsg);
+    });
+  }
+});
 
   // File input validation
   ['dp_rp_part_plan', 'google_image'].forEach(id => {
