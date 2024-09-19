@@ -2838,21 +2838,21 @@
         {
             "id": 406,
             "districtName": "Satara",
-            "talukaName": " Satara Regional Plan",
+            "talukaName": "Satara Regional Plan",
             "councilName": "RP",
             "councilId": 408
         },
         {
             "id": 407,
             "districtName": "Hingoli",
-            "talukaName": " Hingoli Regional Plan",
+            "talukaName": "Hingoli Regional Plan",
             "councilName": "RP",
             "councilId": 409
         },
         {
             "id": 408,
             "districtName": "Buldhana",
-            "talukaName": " Buldhana Regional Plan",
+            "talukaName": "Buldhana Regional Plan",
             "councilName": "RP",
             "councilId": 410
         },
@@ -2880,14 +2880,14 @@
         {
             "id": 412,
             "districtName": "Raigad",
-            "talukaName": " Raigad Regional Plan",
+            "talukaName": "Raigad Regional Plan",
             "councilName": "RP",
             "councilId": 414
         },
         {
             "id": 413,
             "districtName": "Solapur",
-            "talukaName": " Solapur Regional Plan",
+            "talukaName": "Solapur Regional Plan",
             "councilName": "RP",
             "councilId": 417
         },
