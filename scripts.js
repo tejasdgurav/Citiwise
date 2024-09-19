@@ -100,8 +100,22 @@ document.addEventListener('DOMContentLoaded', async function() {
   const usesData = await loadJSONData('uses.json');
   const citySpecificAreaData = await loadJSONData('city_specific_area.json');
 
+  // Sort ULB/RP/Special Authority data alphabetically by talukaName
+const sortedUlbData = ulbData.ulb_rp_special_authority.sort((a, b) => 
+  a.talukaName.localeCompare(b.talukaName)
+);
+
+// Populate ULB/RP/Special Authority dropdown with sorted data
+const ulbDropdown = document.getElementById('ulb_rp_special_authority');
+ulbDropdown.innerHTML = '<option value="">Select ULB/RP/Special Authority</option>';
+sortedUlbData.forEach(item => {
+  const option = document.createElement('option');
+  option.value = item.id;
+  option.textContent = item.talukaName;
+  ulbDropdown.appendChild(option);
+});
+
   // Populate dropdowns from JSON
-  populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'id', 'talukaName');
   populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
   populateDropdown(document.getElementById('building_type'), buildingTypeData.building_type, 'id', 'name');
 
