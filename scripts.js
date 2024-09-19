@@ -141,14 +141,20 @@ document.addEventListener('DOMContentLoaded', async function() {
   const input = document.getElementById(id);
   if (input) {
     input.addEventListener('input', function() {
-      format(this);
+      // Only remove non-numeric characters on input for number fields
+      if (format === restrictToNumbers) {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+      }
     });
     input.addEventListener('blur', function() {
+      // Apply full formatting on blur
+      format(this);
       const isValid = validate(this.value);
       showFeedback(this, isValid, isValid ? '' : errorMsg);
     });
   }
 });
+
 
   // File input validation
   ['dp_rp_part_plan', 'google_image'].forEach(id => {
