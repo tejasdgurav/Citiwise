@@ -1,11 +1,6 @@
 {
     "building_type": [
         {
-            "id": 0,
-            "name": null,
-            "proposalId": 0
-        },
-        {
             "id": 1,
             "name": "Residential",
             "proposalId": 1
