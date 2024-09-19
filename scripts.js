@@ -129,9 +129,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     { id: 'site_address', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid site address' },
     { id: 'village_name', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid village/mouje name' },
     { id: 'reservation_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
-    { id: 'area_plot_site_sqm', validate: (value) => !isNaN(value) && parseFloat(value) > 0, errorMsg: 'Please enter a valid positive number' },
-    { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && parseFloat(value) > 0, errorMsg: 'Please enter a valid positive number' },
-    { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && parseFloat(value) > 0, errorMsg: 'Please enter a valid positive number' },
+    { id: 'area_plot_site_sqm', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
+    { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
     { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
     { id: 'dp_rp_road_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
     { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' }
