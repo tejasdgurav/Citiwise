@@ -277,12 +277,31 @@ sortedUlbData.forEach(item => {
     buildingSubtypeSelect.disabled = false;
   });
 
-  // Plot Boundaries
-  ['front', 'left', 'right', 'rear'].forEach(side => {
-    document.getElementById(`${side}_boundary_type`).addEventListener('change', function() {
+
+// Plot Boundaries
+const boundarySelects = {
+  front: document.getElementById('front_boundary_type'),
+  left: document.getElementById('left_boundary_type'),
+  right: document.getElementById('right_boundary_type'),
+  rear: document.getElementById('rear_boundary_type')
+};
+
+function setupBoundaryListeners() {
+  Object.entries(boundarySelects).forEach(([side, select]) => {
+    select.addEventListener('change', function() {
       toggleElement(`road_container_${side}`, this.value === 'Road');
+      
+      if (side === 'front') {
+        const isSelected = this.value !== '';
+        ['left', 'right', 'rear'].forEach(otherSide => {
+          boundarySelects[otherSide].disabled = !isSelected;
+        });
+      }
     });
   });
+}
+
+setupBoundaryListeners();
 
   // Form submission
   document.querySelector('form').addEventListener('submit', async function(e) {
