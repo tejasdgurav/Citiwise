@@ -277,6 +277,7 @@ sortedUlbData.forEach(item => {
     buildingSubtypeSelect.disabled = false;
   });
 
+
 // Plot Boundaries
 const boundarySelects = {
   front: document.getElementById('front_boundary_type'),
@@ -298,17 +299,29 @@ function setupBoundaryListeners() {
       }
     });
   });
+}
 
-  // Enable other selects if front is already selected on page load
+// Initialize boundary selects
+function initializeBoundarySelects() {
+  ['left', 'right', 'rear'].forEach(side => {
+    boundarySelects[side].disabled = true;
+  });
+
   if (boundarySelects.front.value !== '') {
     ['left', 'right', 'rear'].forEach(side => {
       boundarySelects[side].disabled = false;
     });
   }
+
+  Object.entries(boundarySelects).forEach(([side, select]) => {
+    toggleElement(`road_container_${side}`, select.value === 'Road');
+  });
 }
 
-// Call the setup function when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', setupBoundaryListeners);
+document.addEventListener('DOMContentLoaded', function() {
+  setupBoundaryListeners();
+  initializeBoundarySelects();
+});
 
   // Form submission
   document.querySelector('form').addEventListener('submit', async function(e) {
