@@ -16,14 +16,20 @@ function validatePhoneNumber(phone) {
 }
 
 function restrictToNumbers(input, allowDecimal = false) {
-  const regex = allowDecimal ? /[^0-9.]/g : /[^0-9]/g;
-  input.value = input.value.replace(regex, '');
+  let value = input.value;
+  
   if (allowDecimal) {
-    const parts = input.value.split('.');
+    // Allow one decimal point
+    value = value.replace(/[^0-9.]/g, '');
+    const parts = value.split('.');
     if (parts.length > 2) {
-      input.value = parts[0] + '.' + parts.slice(1).join('');
+      value = parts[0] + '.' + parts.slice(1).join('');
     }
+  } else {
+    value = value.replace(/[^0-9]/g, '');
   }
+  
+  input.value = value;
 }
 
 function restrictToTitleCase(input) {
