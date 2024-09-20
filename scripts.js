@@ -290,10 +290,17 @@ function setupBoundaryListeners() {
   Object.entries(boundarySelects).forEach(([side, select]) => {
     select.addEventListener('change', function() {
       const roadContainer = document.getElementById(`road_container_${side}`);
+      const roadTypeSelect = document.getElementById(`road_details_${side}`);
+      const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
+      
       if (this.value === 'Road') {
         roadContainer.style.display = 'block';
+        roadTypeSelect.disabled = false;
+        roadWidthInput.disabled = false;
       } else {
         roadContainer.style.display = 'none';
+        roadTypeSelect.disabled = true;
+        roadWidthInput.disabled = true;
       }
       
       if (side === 'front') {
@@ -312,20 +319,27 @@ function initializeBoundarySelects() {
     boundarySelects[side].disabled = true;
   });
 
+  Object.entries(boundarySelects).forEach(([side, select]) => {
+    const roadContainer = document.getElementById(`road_container_${side}`);
+    const roadTypeSelect = document.getElementById(`road_details_${side}`);
+    const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
+
+    if (select.value === 'Road') {
+      roadContainer.style.display = 'block';
+      roadTypeSelect.disabled = false;
+      roadWidthInput.disabled = false;
+    } else {
+      roadContainer.style.display = 'none';
+      roadTypeSelect.disabled = true;
+      roadWidthInput.disabled = true;
+    }
+  });
+
   if (boundarySelects.front.value !== '') {
     ['left', 'right', 'rear'].forEach(side => {
       boundarySelects[side].disabled = false;
     });
   }
-
-  Object.entries(boundarySelects).forEach(([side, select]) => {
-    const roadContainer = document.getElementById(`road_container_${side}`);
-    if (select.value === 'Road') {
-      roadContainer.style.display = 'block';
-    } else {
-      roadContainer.style.display = 'none';
-    }
-  });
 }
 
 // Road Width inputs
@@ -334,6 +348,9 @@ function setupRoadWidthInputs() {
   roadWidthInputs.forEach(input => {
     input.addEventListener('input', function() {
       restrictToNumbers(this, true);
+    });
+
+    input.addEventListener('blur', function() {
       const isValid = !isNaN(this.value) && parseFloat(this.value) > 0;
       showFeedback(this, isValid, isValid ? '' : 'Please enter a valid positive number');
     });
@@ -344,30 +361,8 @@ document.addEventListener('DOMContentLoaded', function() {
   setupBoundaryListeners();
   initializeBoundarySelects();
   setupRoadWidthInputs();
-});
 
-
-
-// Initialize boundary selects
-function initializeBoundarySelects() {
-  ['left', 'right', 'rear'].forEach(side => {
-    boundarySelects[side].disabled = true;
-  });
-
-  if (boundarySelects.front.value !== '') {
-    ['left', 'right', 'rear'].forEach(side => {
-      boundarySelects[side].disabled = false;
-    });
-  }
-
-  Object.entries(boundarySelects).forEach(([side, select]) => {
-    toggleElement(`road_container_${side}`, select.value === 'Road');
-  });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-  setupBoundaryListeners();
-  initializeBoundarySelects();
+  console.log('Plot boundaries script loaded and executed.');
 });
 
   // Form submission
