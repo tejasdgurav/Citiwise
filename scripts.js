@@ -15,6 +15,7 @@ function validatePhoneNumber(phone) {
   return re.test(phone);
 }
 
+
 function restrictToNumbers(input, allowDecimal = false) {
   let value = input.value;
   
@@ -186,18 +187,11 @@ sortedUlbData.forEach(item => {
   if (input) {
     input.addEventListener('input', function() {
       // Less restrictive during typing
-      if (this.type === 'number' || format === restrictToNumbers) {
-        this.value = this.value.replace(/[^0-9.-]/g, '');
-      } else {
-        format(this);
-      }
+      format(this);
     });
     input.addEventListener('blur', function() {
       // Apply full validation and formatting when the field loses focus
-      if (this.type === 'number' || format === restrictToNumbers) {
-        restrictToNumbers(this, true);
-        formatNumber(this, true);
-      }
+      formatNumber(this, true);
       const isValid = validate(this.value);
       showFeedback(this, isValid, isValid ? '' : errorMsg);
     });
