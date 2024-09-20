@@ -164,14 +164,12 @@ sortedUlbData.forEach(item => {
     { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
   ];
 
-
   inputValidations.forEach(({ id, validate, format, errorMsg }) => {
   const input = document.getElementById(id);
   if (input) {
     input.addEventListener('input', function() {
       if (this.type === 'number' || format === restrictToNumbers) {
         restrictToNumbers(this, true); // Allow decimal for all number fields
-        handleNumberInput(this);
       } else {
         format(this);
       }
