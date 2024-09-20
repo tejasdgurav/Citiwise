@@ -186,12 +186,14 @@ sortedUlbData.forEach(item => {
   const input = document.getElementById(id);
   if (input) {
     input.addEventListener('input', function() {
-      // Less restrictive during typing
-      format(this);
+      // Only remove non-numeric characters on input for number fields
+      if (format === restrictToNumbers) {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+      }
     });
     input.addEventListener('blur', function() {
-      // Apply full validation and formatting when the field loses focus
-      formatNumber(this, true);
+      // Apply full formatting on blur
+      format(this);
       const isValid = validate(this.value);
       showFeedback(this, isValid, isValid ? '' : errorMsg);
     });
