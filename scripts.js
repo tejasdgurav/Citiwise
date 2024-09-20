@@ -32,6 +32,22 @@ function restrictToNumbers(input, allowDecimal = false) {
   input.value = value;
 }
 
+// New function to format numbers
+function formatNumber(input, allowDecimal = false) {
+  let value = input.value;
+  if (allowDecimal) {
+    value = parseFloat(value);
+    if (!isNaN(value)) {
+      input.value = value.toFixed(2);
+    }
+  } else {
+    value = parseInt(value);
+    if (!isNaN(value)) {
+      input.value = value;
+    }
+  }
+}
+
 function restrictToTitleCase(input) {
   input.value = toTitleCase(input.value);
 }
@@ -164,23 +180,29 @@ sortedUlbData.forEach(item => {
     { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
   ];
 
+
   inputValidations.forEach(({ id, validate, format, errorMsg }) => {
   const input = document.getElementById(id);
   if (input) {
     input.addEventListener('input', function() {
+      // Less restrictive during typing
       if (this.type === 'number' || format === restrictToNumbers) {
-        restrictToNumbers(this, true); // Allow decimal for all number fields
+        this.value = this.value.replace(/[^0-9.-]/g, '');
       } else {
         format(this);
       }
     });
     input.addEventListener('blur', function() {
+      // Apply full validation and formatting when the field loses focus
+      if (this.type === 'number' || format === restrictToNumbers) {
+        restrictToNumbers(this, true);
+        formatNumber(this, true);
+      }
       const isValid = validate(this.value);
       showFeedback(this, isValid, isValid ? '' : errorMsg);
     });
   }
 });
-
 
 
   // File input validation
