@@ -20,7 +20,7 @@
                 
                 <div class="form-group">
                     <label for="applicant_name">Applicant Name</label>
-                    <input type="text" id="applicant_name" name="applicant_name" required>
+                    <input type="text" id="applicant_name" name="applicant_name" required maxlength="100">
                     <div class="feedback"></div>
                 </div>
 
@@ -35,7 +35,7 @@
                 
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" id="email" name="email" required maxlength="100">
                 </div>
             </fieldset>
 
@@ -44,13 +44,13 @@
                 
                 <div class="form-group">
                     <label for="project_name">Project Name</label>
-                    <input type="text" id="project_name" name="project_name" required>
+                    <input type="text" id="project_name" name="project_name" required maxlength="100">
                     <div class="feedback"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="site_address">Site Address</label>
-                    <textarea id="site_address" name="site_address" required></textarea>
+                    <textarea id="site_address" name="site_address" required maxlength="200"></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -217,7 +217,7 @@
                 
                 <div class="form-group hidden" id="reservation_area_sqm">
                     <label for="reservation_area_sqm">Reservation Area Affected (Sq.M.)</label>
-                    <input type="number" id="reservation_area_sqm" name="reservation_area_sqm" step="0.01">
+                    <input type="number" id="reservation_area_sqm" name="reservation_area_sqm" step="0.01" min="0" max="999999.99">
                 </div>
                 
                 <div class="form-group">
@@ -262,31 +262,32 @@
                 
                 <div class="form-group">
                     <label for="village_name">Village/Mouje Name</label>
-                    <input type="text" id="village_name" name="village_name" required>
+                    <input type="text" id="village_name" name="village_name" required maxlength="50">
                     <div class="feedback"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="area_plot_site_sqm">Area of plot as per site (Sq.M.)</label>
-                    <input type="number" id="area_plot_site_sqm" name="area_plot_site_sqm" step="0.01" required>
+                    <input type="number" id="area_plot_site_sqm" name="area_plot_site_sqm" step="0.01" min="0" max="999999.99" required>
                     <div class="feedback"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="area_plot_ownership_sqm">Area of plot as per ownership document (Sq.M.)</label>
-                    <input type="number" id="area_plot_ownership_sqm" name="area_plot_ownership_sqm" step="0.01" required>
+                    <input type="number" id="area_plot_ownership_sqm" name="area_plot_ownership_sqm" step="0.01" min="0" max="999999.99" required>
+
                     <div class="feedback"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="area_plot_measurement_sqm">Area of plot as per measurement sheet (Sq.M.)</label>
-                    <input type="number" id="area_plot_measurement_sqm" name="area_plot_measurement_sqm" step="0.01" required>
+                    <input type="number" id="area_plot_measurement_sqm" name="area_plot_measurement_sqm" step="0.01" min="0" max="999999.99" required>
                     <div class="feedback"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="pro_rata_fsi">Pro Rata FSI (Optional)</label>
-                    <input type="number" id="pro_rata_fsi" name="pro_rata_fsi" step="0.01">
+                    <input type="number" id="pro_rata_fsi" name="pro_rata_fsi" step="0.01" min="0" max="999.99">
                     <div class="feedback"></div>
                 </div>
                 
@@ -308,7 +309,7 @@
                 
                 <div class="form-group hidden" id="dp_rp_road_area_sqm">
                     <label for="dp_rp_road_area_sqm">DP/RP road affected (Sq.M.)</label>
-                    <input type="number" id="dp_rp_road_area_sqm" name="dp_rp_road_area_sqm" step="0.01">
+                    <input type="number" id="dp_rp_road_area_sqm" name="dp_rp_road_area_sqm" step="0.01" min="0" max="999999.99">
                 </div>
                 
                 <div class="form-group">
@@ -338,7 +339,7 @@
                 
                 <div class="form-group">
                     <label for="plot_width">Plot width (in meter)</label>
-                    <input type="number" id="plot_width" name="plot_width" step="0.01" required>
+                    <input type="number" id="plot_width" name="plot_width" step="0.01" min="0" max="999.99" required>
                     <div class="feedback"></div>
                 </div>
                 

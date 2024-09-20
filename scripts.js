@@ -31,8 +31,15 @@ function restrictToTitleCase(input) {
 }
 
 function handleNumberInput(input) {
-  if (input.value !== '' && parseFloat(input.value) < 0) {
-    input.value = '';
+  if (input.value !== '') {
+    const value = parseFloat(input.value);
+    const min = parseFloat(input.min);
+    const max = parseFloat(input.max);
+    if (value < min) {
+      input.value = min;
+    } else if (value > max) {
+      input.value = max;
+    }
   }
 }
 
@@ -135,39 +142,41 @@ sortedUlbData.forEach(item => {
   handleRadioChange('dp_rp_road_affected', 'dp_rp_road_area_sqm');
 
   // Input formatting and validation
-  const inputValidations = [
-    { id: 'applicant_name', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid name' },
+    const inputValidations = [
+    { id: 'applicant_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 100, format: restrictToTitleCase, errorMsg: 'Please enter a valid name (max 100 characters)' },
     { id: 'contact_no', validate: validatePhoneNumber, format: (input) => restrictToNumbers(input), errorMsg: 'Please enter a valid 10-digit Indian mobile number' },
-    { id: 'email', validate: validateEmail, format: (input) => { input.value = input.value.toLowerCase(); }, errorMsg: 'Please enter a valid email address' },
-    { id: 'project_name', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid project name' },
-    { id: 'site_address', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid site address' },
-    { id: 'village_name', validate: (value) => value.trim().length > 0, format: restrictToTitleCase, errorMsg: 'Please enter a valid village/mouje name' },
-    { id: 'reservation_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
-    { id: 'area_plot_site_sqm', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
-    { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
-    { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
-    { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' },
-    { id: 'dp_rp_road_area_sqm', validate: (value) => !isNaN(value) && value >= 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid non-negative number' },
-    { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid positive number' }
+    { id: 'email', validate: (value) => validateEmail(value) && value.length <= 100, format: (input) => { input.value = input.value.toLowerCase(); }, errorMsg: 'Please enter a valid email address (max 100 characters)' },
+    { id: 'project_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 100, format: restrictToTitleCase, errorMsg: 'Please enter a valid project name (max 100 characters)' },
+    { id: 'site_address', validate: (value) => value.trim().length > 0 && value.trim().length <= 200, format: restrictToTitleCase, errorMsg: 'Please enter a valid site address (max 200 characters)' },
+    { id: 'village_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 50, format: restrictToTitleCase, errorMsg: 'Please enter a valid village/mouje name (max 50 characters)' },
+    { id: 'reservation_area_sqm', validate: (value) => !isNaN(value) && value >= 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999,999.99' },
+    { id: 'area_plot_site_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+    { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+    { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+    { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value >= 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
+    { id: 'dp_rp_road_area_sqm', validate: (value) => !isNaN(value) && value >= 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999,999.99' },
+    { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
   ];
+
 
   inputValidations.forEach(({ id, validate, format, errorMsg }) => {
   const input = document.getElementById(id);
   if (input) {
     input.addEventListener('input', function() {
-      // Only remove non-numeric characters on input for number fields
-      if (format === restrictToNumbers) {
-        this.value = this.value.replace(/[^0-9.]/g, '');
+      if (this.type === 'number' || format === restrictToNumbers) {
+        restrictToNumbers(this, true); // Allow decimal for all number fields
+        handleNumberInput(this);
+      } else {
+        format(this);
       }
     });
     input.addEventListener('blur', function() {
-      // Apply full formatting on blur
-      format(this);
       const isValid = validate(this.value);
       showFeedback(this, isValid, isValid ? '' : errorMsg);
     });
   }
 });
+
 
 
   // File input validation
