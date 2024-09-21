@@ -133,6 +133,49 @@ input[type="submit"]:hover {
   background-color: #2952cc;
 }
 
+/* Add this after the existing input[type="submit"] styles */
+
+button#submit {
+  background-color: var(--focus-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+  margin: 30px auto 0;
+  width: auto;
+  min-width: 200px;
+  max-width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button#submit:hover {
+  background-color: #2952cc;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button#submit:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+button#submit:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(51, 102, 255, 0.3);
+}
+
+@media (max-width: 600px) {
+  button#submit {
+    width: 100%;
+    min-width: auto;
+  }
+}
+
 fieldset {
   border: 1px solid var(--border-color);
   border-radius: 4px;
