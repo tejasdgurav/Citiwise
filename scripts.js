@@ -355,6 +355,12 @@ document.addEventListener('DOMContentLoaded', function() {
   setupBoundaryListeners();
   initializeBoundarySelects();
 
+  // Trigger change event on front boundary select to properly initialize other selects
+  const frontBoundarySelect = document.getElementById('front_boundary_type');
+  if (frontBoundarySelect) {
+    frontBoundarySelect.dispatchEvent(new Event('change'));
+  }
+
   console.log('Plot boundaries script loaded and executed.');
 });
 
