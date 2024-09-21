@@ -304,12 +304,39 @@ function setupBoundaryListeners() {
 
         // Enable/disable other selects based on front boundary
         if (side === 'front') {
-          const isSelected = this.value !== '';
+          const isRoadSelected = this.value === 'Road';
           sides.slice(1).forEach(otherSide => {
             const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
             if (otherSelect) {
-              otherSelect.disabled = !isSelected;
+              otherSelect.disabled = !isRoadSelected;
+              if (!isRoadSelected) {
+                otherSelect.value = '';
+                  toggleElement(`road_container_${otherSide}`, false);
+              }
             }
+          });
+        }
+
+        if (side === 'front' && roadTypeSelect) {
+          roadTypeSelect.addEventListener('change', function() {
+            sides.slice(1).forEach(otherSide => {
+              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+              if (otherSelect) {
+                otherSelect.disabled = false;
+              }
+            });
+          });
+        }
+
+        if (side === 'front' && roadWidthInput) {
+          roadWidthInput.addEventListener('blur', function() {
+            const value = parseFloat(this.value);
+            sides.slice(1).forEach(otherSide => {
+              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+              if (otherSelect) {
+                otherSelect.disabled = !(value > 0);
+              }
+            });
           });
         }
       });
