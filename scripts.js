@@ -279,116 +279,89 @@ sortedUlbData.forEach(item => {
 
 
 // Plot Boundaries
-const sides = ['front', 'left', 'right', 'rear'];
-const frontBoundarySelect = document.getElementById('front_boundary_type');
-const roadTypeSelect = document.getElementById('road_type_front');
+document.addEventListener('DOMContentLoaded', function() {
+  const sides = ['front', 'left', 'right', 'rear'];
+  const frontBoundarySelect = document.getElementById('front_boundary_type');
+  const roadTypeSelect = document.getElementById('road_type_front');
 
-// Toggle element visibility
-function toggleElement(id, show) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.style.display = show ? 'block' : 'none';
-  }
-}
-
-// Update other boundary selects
-function updateOtherBoundarySelects() {
-  const isRoadSelected = frontBoundarySelect && frontBoundarySelect.value === 'Road';
-  const isRoadTypeSelected = roadTypeSelect && roadTypeSelect.value !== '';
-
-  console.log('Updating other boundary selects:');
-  console.log('Is Road Selected:', isRoadSelected);
-  console.log('Is Road Type Selected:', isRoadTypeSelected);
-
-  sides.slice(1).forEach(otherSide => {
-    const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-    if (otherSelect) {
-      otherSelect.disabled = !(isRoadSelected && isRoadTypeSelected);
-      console.log(`${otherSide} select disabled:`, otherSelect.disabled);
-      if (!isRoadSelected || !isRoadTypeSelected) {
-        otherSelect.value = '';
-        toggleElement(`road_container_${otherSide}`, false);
-      }
+  function toggleElement(id, show) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.style.display = show ? 'block' : 'none';
     }
-  });
-}
+  }
 
-// Setup boundary listeners
-function setupBoundaryListeners() {
-  sides.forEach(side => {
-    const select = document.getElementById(`${side}_boundary_type`);
-    const roadContainer = document.getElementById(`road_container_${side}`);
-    const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
-    
-    if (select) {
-      select.addEventListener('change', function() {
-        console.log(`${side} boundary changed to:`, this.value);
-        if (roadContainer) {
-          toggleElement(`road_container_${side}`, this.value === 'Road');
+  function updateBoundarySelects() {
+    const isRoadSelected = frontBoundarySelect.value === 'Road';
+    const isRoadTypeSelected = roadTypeSelect.value !== '';
+
+    toggleElement('road_type_front', isRoadSelected);
+
+    sides.slice(1).forEach(side => {
+      const select = document.getElementById(`${side}_boundary_type`);
+      if (select) {
+        select.disabled = !(isRoadSelected && isRoadTypeSelected);
+        if (!isRoadSelected || !isRoadTypeSelected) {
+          select.value = '';
+          toggleElement(`road_container_${side}`, false);
         }
-        
-        if (side === 'front') {
-          if (roadTypeSelect) {
-            roadTypeSelect.disabled = this.value !== 'Road';
-            console.log('Road type select disabled:', roadTypeSelect.disabled);
+      }
+    });
+  }
+
+  function setupBoundaryListeners() {
+    sides.forEach(side => {
+      const select = document.getElementById(`${side}_boundary_type`);
+      const roadContainer = document.getElementById(`road_container_${side}`);
+      const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
+      
+      if (select) {
+        select.addEventListener('change', function() {
+          toggleElement(`road_container_${side}`, this.value === 'Road');
+          if (side === 'front') {
             if (this.value !== 'Road') {
               roadTypeSelect.value = '';
             }
+            updateBoundarySelects();
           }
-          updateOtherBoundarySelects();
-        }
-      });
-    }
-    
-    // Road width input validation
-    if (roadWidthInput) {
-      roadWidthInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9.]/g, '');
-      });
-      roadWidthInput.addEventListener('blur', function() {
-        const value = parseFloat(this.value);
-        if (!isNaN(value) && value > 0) {
-          this.value = value.toFixed(2);
-          this.classList.remove('error');
-        } else {
-          this.classList.add('error');
-        }
-      });
-    }
-  });
+        });
+      }
+      
+      if (roadWidthInput) {
+        roadWidthInput.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9.]/g, '');
+        });
+        roadWidthInput.addEventListener('blur', function() {
+          const value = parseFloat(this.value);
+          if (!isNaN(value) && value > 0) {
+            this.value = value.toFixed(2);
+            this.classList.remove('error');
+          } else {
+            this.classList.add('error');
+          }
+        });
+      }
+    });
 
-  // Road type select event listener
-  if (roadTypeSelect) {
-    roadTypeSelect.addEventListener('change', function() {
-      console.log('Road type changed to:', this.value);
-      updateOtherBoundarySelects();
+    if (roadTypeSelect) {
+      roadTypeSelect.addEventListener('change', updateBoundarySelects);
+    }
+  }
+
+  function initializeBoundarySelects() {
+    toggleElement('road_type_front', false);
+    sides.slice(1).forEach(side => {
+      const select = document.getElementById(`${side}_boundary_type`);
+      if (select) {
+        select.disabled = true;
+      }
+      toggleElement(`road_container_${side}`, false);
     });
   }
-}
 
-// Initialize boundary selects
-function initializeBoundarySelects() {
-  sides.slice(1).forEach(side => {
-    const select = document.getElementById(`${side}_boundary_type`);
-    if (select) {
-      select.disabled = true;
-      console.log(`${side} select initially disabled`);
-    }
-  });
-
-  if (roadTypeSelect) {
-    roadTypeSelect.disabled = true;
-    console.log('Road type select initially disabled');
-  }
-
-  updateOtherBoundarySelects();
-}
-
-// Call these functions to set up the functionality
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM fully loaded. Setting up boundary listeners.');
   setupBoundaryListeners();
   initializeBoundarySelects();
+  updateBoundarySelects();
 });
 
 // Form submission
