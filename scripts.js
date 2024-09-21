@@ -286,54 +286,15 @@ const boundarySelects = {
   rear: document.getElementById('rear_boundary_type')
 };
 
-function createRoadWidthInput(side) {
-  const container = document.createElement('div');
-  container.className = 'road-width-container';
-  container.style.marginTop = '10px';
-  
-  const input = document.createElement('input');
-  input.type = 'number';
-  input.id = `${side}_road_width`;
-  input.className = 'road-width-input';
-  input.placeholder = 'Enter road width';
-  input.step = '0.01';
-  input.min = '0';
-  
-  const label = document.createElement('label');
-  label.htmlFor = input.id;
-  label.textContent = 'Road Width (meters):';
-  
-  container.appendChild(label);
-  container.appendChild(input);
-  
-  return container;
-}
-
 function setupBoundaryListeners() {
   Object.entries(boundarySelects).forEach(([side, select]) => {
-    const container = document.getElementById(`${side}_boundary_container`);
-    
+    const roadContainer = document.getElementById(`road_container_${side}`);
+    const roadTypeSelect = document.getElementById(`road_details_${side}`);
+    const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
+
     select.addEventListener('change', function() {
-      const existingRoadWidth = container.querySelector('.road-width-container');
-      if (existingRoadWidth) {
-        existingRoadWidth.remove();
-      }
-      
-      if (this.value === 'Road') {
-        const roadWidthInput = createRoadWidthInput(side);
-        container.appendChild(roadWidthInput);
-        
-        const input = roadWidthInput.querySelector('input');
-        input.addEventListener('input', function() {
-          restrictToNumbers(this, true);
-        });
-        input.addEventListener('blur', function() {
-          formatNumber(this, true);
-          const isValid = !isNaN(this.value) && parseFloat(this.value) > 0;
-          showFeedback(this, isValid, isValid ? '' : 'Please enter a valid positive number');
-        });
-      }
-      
+      roadContainer.style.display = this.value === 'Road' ? 'block' : 'none';
+
       if (side === 'front') {
         const isSelected = this.value !== '';
         ['left', 'right', 'rear'].forEach(otherSide => {
@@ -341,10 +302,23 @@ function setupBoundaryListeners() {
         });
       }
     });
+
+    roadWidthInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9.]/g, '');
+    });
+
+    roadWidthInput.addEventListener('blur', function() {
+      const value = parseFloat(this.value);
+      if (!isNaN(value) && value > 0) {
+        this.value = value.toFixed(2);
+        this.classList.remove('error');
+      } else {
+        this.classList.add('error');
+      }
+    });
   });
 }
 
-// Initialize boundary selects
 function initializeBoundarySelects() {
   ['left', 'right', 'rear'].forEach(side => {
     boundarySelects[side].disabled = true;
@@ -354,13 +328,13 @@ function initializeBoundarySelects() {
 document.addEventListener('DOMContentLoaded', function() {
   setupBoundaryListeners();
   initializeBoundarySelects();
-
+  
   // Trigger change event on front boundary select to properly initialize other selects
   const frontBoundarySelect = document.getElementById('front_boundary_type');
   if (frontBoundarySelect) {
     frontBoundarySelect.dispatchEvent(new Event('change'));
   }
-
+  
   console.log('Plot boundaries script loaded and executed.');
 });
 
