@@ -293,19 +293,27 @@ function toggleElement(id, show) {
 function setupBoundaryListeners() {
   sides.forEach(side => {
     const select = document.getElementById(`${side}_boundary_type`);
+    const roadContainer = document.getElementById(`road_container_${side}`);
     const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
 
-    select.addEventListener('change', function() {
-      toggleElement(`road_container_${side}`, this.value === 'Road');
+    if (select) {
+      select.addEventListener('change', function() {
+        if (roadContainer) {
+          toggleElement(`road_container_${side}`, this.value === 'Road');
+        }
 
-      // Enable/disable other selects based on front boundary
-      if (side === 'front') {
-        const isSelected = this.value !== '';
-        sides.slice(1).forEach(otherSide => {
-          document.getElementById(`${otherSide}_boundary_type`).disabled = !isSelected;
-        });
-      }
-    });
+        // Enable/disable other selects based on front boundary
+        if (side === 'front') {
+          const isSelected = this.value !== '';
+          sides.slice(1).forEach(otherSide => {
+            const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+            if (otherSelect) {
+              otherSelect.disabled = !isSelected;
+            }
+          });
+        }
+      });
+    }
 
     // Road width input validation
     if (roadWidthInput) {
@@ -329,7 +337,10 @@ function setupBoundaryListeners() {
 // Initialize boundary selects
 function initializeBoundarySelects() {
   sides.slice(1).forEach(side => {
-    document.getElementById(`${side}_boundary_type`).disabled = true;
+    const select = document.getElementById(`${side}_boundary_type`);
+    if (select) {
+      select.disabled = true;
+    }
   });
 }
 
@@ -394,4 +405,8 @@ document.addEventListener('DOMContentLoaded', function() {
       alert('An error occurred. Please try again later.');
     }
   });
+
+    // Setup plot boundary listeners and initialize selects
+  setupBoundaryListeners();
+  initializeBoundarySelects();
 });
