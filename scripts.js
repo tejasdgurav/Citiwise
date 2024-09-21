@@ -280,6 +280,7 @@ sortedUlbData.forEach(item => {
 
 // Plot Boundaries
 const sides = ['front', 'left', 'right', 'rear'];
+const frontBoundarySelect = document.getElementById('front_boundary_type');
 const roadTypeSelect = document.getElementById('road_type_front');
 
 // Toggle element visibility
@@ -292,7 +293,6 @@ function toggleElement(id, show) {
 
 // Update other boundary selects
 function updateOtherBoundarySelects() {
-  const frontBoundarySelect = document.getElementById('front_boundary_type');
   const isRoadSelected = frontBoundarySelect && frontBoundarySelect.value === 'Road';
   const isRoadTypeSelected = roadTypeSelect && roadTypeSelect.value !== '';
 
