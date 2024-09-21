@@ -290,6 +290,24 @@ function toggleElement(id, show) {
   }
 }
 
+// Update other boundary selects
+function updateOtherBoundarySelects() {
+  const frontBoundarySelect = document.getElementById('front_boundary_type');
+  const isRoadSelected = frontBoundarySelect && frontBoundarySelect.value === 'Road';
+  const isRoadTypeSelected = roadTypeSelect && roadTypeSelect.value !== '';
+
+  sides.slice(1).forEach(otherSide => {
+    const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+    if (otherSelect) {
+      otherSelect.disabled = !(isRoadSelected && isRoadTypeSelected);
+      if (!isRoadSelected || !isRoadTypeSelected) {
+        otherSelect.value = '';
+        toggleElement(`road_container_${otherSide}`, false);
+      }
+    }
+  });
+}
+
 // Setup boundary listeners
 function setupBoundaryListeners() {
   sides.forEach(side => {
@@ -303,27 +321,14 @@ function setupBoundaryListeners() {
           toggleElement(`road_container_${side}`, this.value === 'Road');
         }
         
-        // Enable/disable other selects based on front boundary
         if (side === 'front') {
-          const isRoadSelected = this.value === 'Road';
-          sides.slice(1).forEach(otherSide => {
-            const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-            if (otherSelect) {
-              otherSelect.disabled = !(isRoadSelected && roadTypeSelect && roadTypeSelect.value !== '');
-              if (!isRoadSelected || (roadTypeSelect && roadTypeSelect.value === '')) {
-                otherSelect.value = '';
-                toggleElement(`road_container_${otherSide}`, false);
-              }
-            }
-          });
-          
-          // Enable/disable road type select based on front boundary
           if (roadTypeSelect) {
-            roadTypeSelect.disabled = !isRoadSelected;
-            if (!isRoadSelected) {
+            roadTypeSelect.disabled = this.value !== 'Road';
+            if (this.value !== 'Road') {
               roadTypeSelect.value = '';
             }
           }
+          updateOtherBoundarySelects();
         }
       });
     }
@@ -347,22 +352,7 @@ function setupBoundaryListeners() {
 
   // Road type select event listener
   if (roadTypeSelect) {
-    roadTypeSelect.addEventListener('change', function() {
-      const frontBoundarySelect = document.getElementById('front_boundary_type');
-      const isRoadSelected = frontBoundarySelect && frontBoundarySelect.value === 'Road';
-      const isRoadTypeSelected = this.value !== '';
-      
-      sides.slice(1).forEach(otherSide => {
-        const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-        if (otherSelect) {
-          otherSelect.disabled = !(isRoadSelected && isRoadTypeSelected);
-          if (!isRoadSelected || !isRoadTypeSelected) {
-            otherSelect.value = '';
-            toggleElement(`road_container_${otherSide}`, false);
-          }
-        }
-      });
-    });
+    roadTypeSelect.addEventListener('change', updateOtherBoundarySelects);
   }
 }
 
@@ -374,6 +364,12 @@ function initializeBoundarySelects() {
       select.disabled = true;
     }
   });
+
+  if (roadTypeSelect) {
+    roadTypeSelect.disabled = true;
+  }
+
+  updateOtherBoundarySelects();
 }
 
 // Form submission
