@@ -279,104 +279,97 @@ sortedUlbData.forEach(item => {
 
 
 // Plot Boundaries
-document.addEventListener('DOMContentLoaded', function() {
-  const sides = ['front', 'left', 'right', 'rear'];
-  const frontBoundarySelect = document.getElementById('front_boundary_type');
-  const roadTypeSelect = document.getElementById('road_type_front');
+const sides = ['front', 'left', 'right', 'rear'];
 
-  function toggleElement(id, show) {
-    const element = document.getElementById(id);
-    if (element) {
-      element.style.display = show ? 'block' : 'none';
-    }
+// Toggle element visibility
+function toggleElement(id, show) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.style.display = show ? 'block' : 'none';
   }
+}
 
-  function updateBoundarySelects() {
-    const isRoadSelected = frontBoundarySelect.value === 'Road';
-    const isRoadTypeSelected = roadTypeSelect.value !== '';
+// Setup boundary listeners
+function setupBoundaryListeners() {
+  sides.forEach(side => {
+    const select = document.getElementById(`${side}_boundary_type`);
+    const roadContainer = document.getElementById(`road_container_${side}`);
+    const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
 
-    toggleElement('road_type_front', isRoadSelected);
-
-    sides.slice(1).forEach(side => {
-      const select = document.getElementById(`${side}_boundary_type`);
-      if (select) {
-        select.disabled = !(isRoadSelected && isRoadTypeSelected);
-        if (!isRoadSelected || !isRoadTypeSelected) {
-          select.value = '';
-          toggleElement(`road_container_${side}`, false);
-        }
-      }
-    });
-  }
-
-  function setupBoundaryListeners() {
-    sides.forEach(side => {
-      const select = document.getElementById(`${side}_boundary_type`);
-      const roadContainer = document.getElementById(`road_container_${side}`);
-      const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
-      
-      if (select) {
-        select.addEventListener('change', function() {
+    if (select) {
+      select.addEventListener('change', function() {
+        if (roadContainer) {
           toggleElement(`road_container_${side}`, this.value === 'Road');
-          if (side === 'front') {
-            if (this.value !== 'Road') {
-              roadTypeSelect.value = '';
+        }
+
+        // Enable/disable other selects based on front boundary
+        if (side === 'front') {
+          const isRoadSelected = this.value === 'Road';
+          sides.slice(1).forEach(otherSide => {
+            const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+            if (otherSelect) {
+              otherSelect.disabled = !isRoadSelected;
+              if (!isRoadSelected) {
+                otherSelect.value = '';
+                  toggleElement(`road_container_${otherSide}`, false);
+              }
             }
-            updateBoundarySelects();
-          }
-        });
-      }
-      
-      if (roadWidthInput) {
-        roadWidthInput.addEventListener('input', function() {
-          this.value = this.value.replace(/[^0-9.]/g, '');
-        });
-        roadWidthInput.addEventListener('blur', function() {
-          const value = parseFloat(this.value);
-          if (!isNaN(value) && value > 0) {
-            this.value = value.toFixed(2);
-            this.classList.remove('error');
-          } else {
-            this.classList.add('error');
-          }
-        });
-      }
-    });
+          });
+        }
 
-    if (roadTypeSelect) {
-      roadTypeSelect.addEventListener('change', updateBoundarySelects);
+        if (side === 'front' && roadTypeSelect) {
+          roadTypeSelect.addEventListener('change', function() {
+            sides.slice(1).forEach(otherSide => {
+              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+              if (otherSelect) {
+                otherSelect.disabled = false;
+              }
+            });
+          });
+        }
+
+        if (side === 'front' && roadWidthInput) {
+          roadWidthInput.addEventListener('blur', function() {
+            const value = parseFloat(this.value);
+            sides.slice(1).forEach(otherSide => {
+              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+              if (otherSelect) {
+                otherSelect.disabled = !(value > 0);
+              }
+            });
+          });
+        }
+      });
     }
-  }
 
-  function initializeBoundarySelects() {
-    toggleElement('road_type_front', false);
-    sides.slice(1).forEach(side => {
-      const select = document.getElementById(`${side}_boundary_type`);
-      if (select) {
-        select.disabled = true;
-      }
-      toggleElement(`road_container_${side}`, false);
-    });
-  }
+    // Road width input validation
+    if (roadWidthInput) {
+      roadWidthInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+      });
 
-  setupBoundaryListeners();
-  initializeBoundarySelects();
-  updateBoundarySelects();
-});
+      roadWidthInput.addEventListener('blur', function() {
+        const value = parseFloat(this.value);
+        if (!isNaN(value) && value > 0) {
+          this.value = value.toFixed(2);
+          this.classList.remove('error');
+        } else {
+          this.classList.add('error');
+        }
+      });
+    }
+  });
+}
 
-// Form submission
-document.querySelector('form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  // Add your form submission logic here
-  console.log('Form submitted');
-});
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  setupBoundaryListeners();
-  initializeBoundarySelects();
-  console.log('Plot boundaries script loaded and executed.');
-});
+// Initialize boundary selects
+function initializeBoundarySelects() {
+  sides.slice(1).forEach(side => {
+    const select = document.getElementById(`${side}_boundary_type`);
+    if (select) {
+      select.disabled = true;
+    }
+  });
+}
 
   // Form submission
   document.querySelector('form').addEventListener('submit', async function(e) {
