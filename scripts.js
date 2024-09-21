@@ -280,6 +280,7 @@ sortedUlbData.forEach(item => {
 
 // Plot Boundaries
 const sides = ['front', 'left', 'right', 'rear'];
+const roadTypeSelect = document.getElementById('road_type_front');
 
 // Toggle element visibility
 function toggleElement(id, show) {
@@ -295,59 +296,43 @@ function setupBoundaryListeners() {
     const select = document.getElementById(`${side}_boundary_type`);
     const roadContainer = document.getElementById(`road_container_${side}`);
     const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
-
+    
     if (select) {
       select.addEventListener('change', function() {
         if (roadContainer) {
           toggleElement(`road_container_${side}`, this.value === 'Road');
         }
-
+        
         // Enable/disable other selects based on front boundary
         if (side === 'front') {
           const isRoadSelected = this.value === 'Road';
           sides.slice(1).forEach(otherSide => {
             const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
             if (otherSelect) {
-              otherSelect.disabled = !isRoadSelected;
-              if (!isRoadSelected) {
+              otherSelect.disabled = !(isRoadSelected && roadTypeSelect && roadTypeSelect.value !== '');
+              if (!isRoadSelected || (roadTypeSelect && roadTypeSelect.value === '')) {
                 otherSelect.value = '';
-                  toggleElement(`road_container_${otherSide}`, false);
+                toggleElement(`road_container_${otherSide}`, false);
               }
             }
           });
-        }
-
-        if (side === 'front' && roadTypeSelect) {
-          roadTypeSelect.addEventListener('change', function() {
-            sides.slice(1).forEach(otherSide => {
-              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-              if (otherSelect) {
-                otherSelect.disabled = false;
-              }
-            });
-          });
-        }
-
-        if (side === 'front' && roadWidthInput) {
-          roadWidthInput.addEventListener('blur', function() {
-            const value = parseFloat(this.value);
-            sides.slice(1).forEach(otherSide => {
-              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-              if (otherSelect) {
-                otherSelect.disabled = !(value > 0);
-              }
-            });
-          });
+          
+          // Enable/disable road type select based on front boundary
+          if (roadTypeSelect) {
+            roadTypeSelect.disabled = !isRoadSelected;
+            if (!isRoadSelected) {
+              roadTypeSelect.value = '';
+            }
+          }
         }
       });
     }
-
+    
     // Road width input validation
     if (roadWidthInput) {
       roadWidthInput.addEventListener('input', function() {
         this.value = this.value.replace(/[^0-9.]/g, '');
       });
-
       roadWidthInput.addEventListener('blur', function() {
         const value = parseFloat(this.value);
         if (!isNaN(value) && value > 0) {
@@ -359,6 +344,26 @@ function setupBoundaryListeners() {
       });
     }
   });
+
+  // Road type select event listener
+  if (roadTypeSelect) {
+    roadTypeSelect.addEventListener('change', function() {
+      const frontBoundarySelect = document.getElementById('front_boundary_type');
+      const isRoadSelected = frontBoundarySelect && frontBoundarySelect.value === 'Road';
+      const isRoadTypeSelected = this.value !== '';
+      
+      sides.slice(1).forEach(otherSide => {
+        const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+        if (otherSelect) {
+          otherSelect.disabled = !(isRoadSelected && isRoadTypeSelected);
+          if (!isRoadSelected || !isRoadTypeSelected) {
+            otherSelect.value = '';
+            toggleElement(`road_container_${otherSide}`, false);
+          }
+        }
+      });
+    });
+  }
 }
 
 // Initialize boundary selects
