@@ -177,7 +177,7 @@ sortedUlbData.forEach(item => {
     { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
     { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
     { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value >= 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
-    { id: 'dp_rp_road_area_sqm', validate: (value) => !isNaN(value) && value >= 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999,999.99' },
+    { id: 'dp_rp_road_area_sqm', validate: (value) => { const isVisible = document.getElementById('dp_rp_road_area_sqm').style.display !== 'none'; return isVisible ? (value.trim() !== '' && !isNaN(value) && parseFloat(value) >= 0 && parseFloat(value) <= 999999.99) : true; }, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999,999.99' },
     { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
   ];
 
