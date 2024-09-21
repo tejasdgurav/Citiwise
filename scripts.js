@@ -279,62 +279,71 @@ sortedUlbData.forEach(item => {
 
 
 // Plot Boundaries
-const boundarySelects = {
-  front: document.getElementById('front_boundary_type'),
-  left: document.getElementById('left_boundary_type'),
-  right: document.getElementById('right_boundary_type'),
-  rear: document.getElementById('rear_boundary_type')
-};
+const sides = ['front', 'left', 'right', 'rear'];
 
+// Toggle element visibility
+function toggleElement(id, show) {
+  const element = document.getElementById(id);
+  if (element) {
+    element.style.display = show ? 'block' : 'none';
+  }
+}
+
+// Setup boundary listeners
 function setupBoundaryListeners() {
-  Object.entries(boundarySelects).forEach(([side, select]) => {
-    const roadContainer = document.getElementById(`road_container_${side}`);
-    const roadTypeSelect = document.getElementById(`road_details_${side}`);
+  sides.forEach(side => {
+    const select = document.getElementById(`${side}_boundary_type`);
     const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
 
     select.addEventListener('change', function() {
-      roadContainer.style.display = this.value === 'Road' ? 'block' : 'none';
+      toggleElement(`road_container_${side}`, this.value === 'Road');
 
+      // Enable/disable other selects based on front boundary
       if (side === 'front') {
         const isSelected = this.value !== '';
-        ['left', 'right', 'rear'].forEach(otherSide => {
-          boundarySelects[otherSide].disabled = !isSelected;
+        sides.slice(1).forEach(otherSide => {
+          document.getElementById(`${otherSide}_boundary_type`).disabled = !isSelected;
         });
       }
     });
 
-    roadWidthInput.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9.]/g, '');
-    });
+    // Road width input validation
+    if (roadWidthInput) {
+      roadWidthInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9.]/g, '');
+      });
 
-    roadWidthInput.addEventListener('blur', function() {
-      const value = parseFloat(this.value);
-      if (!isNaN(value) && value > 0) {
-        this.value = value.toFixed(2);
-        this.classList.remove('error');
-      } else {
-        this.classList.add('error');
-      }
-    });
+      roadWidthInput.addEventListener('blur', function() {
+        const value = parseFloat(this.value);
+        if (!isNaN(value) && value > 0) {
+          this.value = value.toFixed(2);
+          this.classList.remove('error');
+        } else {
+          this.classList.add('error');
+        }
+      });
+    }
   });
 }
 
+// Initialize boundary selects
 function initializeBoundarySelects() {
-  ['left', 'right', 'rear'].forEach(side => {
-    boundarySelects[side].disabled = true;
+  sides.slice(1).forEach(side => {
+    document.getElementById(`${side}_boundary_type`).disabled = true;
   });
 }
 
+// Form submission
+document.querySelector('form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  // Add your form submission logic here
+  console.log('Form submitted');
+});
+
+// Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   setupBoundaryListeners();
   initializeBoundarySelects();
-  
-  // Trigger change event on front boundary select to properly initialize other selects
-  const frontBoundarySelect = document.getElementById('front_boundary_type');
-  if (frontBoundarySelect) {
-    frontBoundarySelect.dispatchEvent(new Event('change'));
-  }
-  
   console.log('Plot boundaries script loaded and executed.');
 });
 
