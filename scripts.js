@@ -296,10 +296,15 @@ function updateOtherBoundarySelects() {
   const isRoadSelected = frontBoundarySelect && frontBoundarySelect.value === 'Road';
   const isRoadTypeSelected = roadTypeSelect && roadTypeSelect.value !== '';
 
+  console.log('Updating other boundary selects:');
+  console.log('Is Road Selected:', isRoadSelected);
+  console.log('Is Road Type Selected:', isRoadTypeSelected);
+
   sides.slice(1).forEach(otherSide => {
     const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
     if (otherSelect) {
       otherSelect.disabled = !(isRoadSelected && isRoadTypeSelected);
+      console.log(`${otherSide} select disabled:`, otherSelect.disabled);
       if (!isRoadSelected || !isRoadTypeSelected) {
         otherSelect.value = '';
         toggleElement(`road_container_${otherSide}`, false);
@@ -317,6 +322,7 @@ function setupBoundaryListeners() {
     
     if (select) {
       select.addEventListener('change', function() {
+        console.log(`${side} boundary changed to:`, this.value);
         if (roadContainer) {
           toggleElement(`road_container_${side}`, this.value === 'Road');
         }
@@ -324,6 +330,7 @@ function setupBoundaryListeners() {
         if (side === 'front') {
           if (roadTypeSelect) {
             roadTypeSelect.disabled = this.value !== 'Road';
+            console.log('Road type select disabled:', roadTypeSelect.disabled);
             if (this.value !== 'Road') {
               roadTypeSelect.value = '';
             }
@@ -352,7 +359,10 @@ function setupBoundaryListeners() {
 
   // Road type select event listener
   if (roadTypeSelect) {
-    roadTypeSelect.addEventListener('change', updateOtherBoundarySelects);
+    roadTypeSelect.addEventListener('change', function() {
+      console.log('Road type changed to:', this.value);
+      updateOtherBoundarySelects();
+    });
   }
 }
 
@@ -362,15 +372,24 @@ function initializeBoundarySelects() {
     const select = document.getElementById(`${side}_boundary_type`);
     if (select) {
       select.disabled = true;
+      console.log(`${side} select initially disabled`);
     }
   });
 
   if (roadTypeSelect) {
     roadTypeSelect.disabled = true;
+    console.log('Road type select initially disabled');
   }
 
   updateOtherBoundarySelects();
 }
+
+// Call these functions to set up the functionality
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM fully loaded. Setting up boundary listeners.');
+  setupBoundaryListeners();
+  initializeBoundarySelects();
+});
 
 // Form submission
 document.querySelector('form').addEventListener('submit', async function(e) {
