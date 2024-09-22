@@ -319,3 +319,21 @@ textarea:disabled {
 .invalid-input {
   border-color: #d9534f;
 }
+
+input[type="number"],
+input[type="text"],
+input[type="email"] {
+    background-color: white; /* Ensure background color is white */
+    color: var(--input-color); /* Ensure text color is readable */
+    position: relative;
+    z-index: 1; /* Bring input above other elements */
+    padding: 10px; /* Add padding for better usability */
+    border-radius: 4px; /* Ensure rounded corners */
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+input[type="email"]:focus {
+    border-color: var(--focus-color); /* Highlight border on focus */
+    box-shadow: 0 0 5px rgba(51, 102, 255, 0.3); /* Add shadow for better visibility */
+}
