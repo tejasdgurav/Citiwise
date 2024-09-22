@@ -112,7 +112,15 @@ function handleRadioChange(name, elementToToggle) {
   const radioButtons = document.getElementsByName(name);
   radioButtons.forEach(radio => {
     radio.addEventListener('change', function() {
-      toggleElement(elementToToggle, this.value === 'Yes');
+      const show = this.value === 'Yes';
+      toggleElement(elementToToggle, show);
+      if (!show) {
+        const element = document.getElementById(elementToToggle);
+        if (element) {
+          element.value = '';
+          showFeedback(element, true, '');
+        }
+      }
     });
   });
 }
@@ -126,6 +134,34 @@ document.addEventListener('DOMContentLoaded', async function() {
   const zoneData = await loadJSONData('zone.json');
   const usesData = await loadJSONData('uses.json');
   const citySpecificAreaData = await loadJSONData('city_specific_area.json');
+
+
+  const dpRpRoadArea = document.getElementById('dp_rp_road_area_sqm');
+  if (dpRpRoadArea) {
+    dpRpRoadArea.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9.]/g, '');
+    });
+    dpRpRoadArea.addEventListener('blur', function() {
+      const { validate, format, errorMsg } = inputValidations.find(v => v.id === 'dp_rp_road_area_sqm');
+      format(this);
+      const isValid = validate(this.value);
+      showFeedback(this, isValid, isValid ? '' : errorMsg);
+    });
+  }
+
+  const reservationArea = document.getElementById('reservation_area_sqm');
+  if (reservationArea) {
+    reservationArea.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9.]/g, '');
+    });
+    reservationArea.addEventListener('blur', function() {
+      const { validate, format, errorMsg } = inputValidations.find(v => v.id === 'reservation_area_sqm');
+      format(this);
+      const isValid = validate(this.value);
+      showFeedback(this, isValid, isValid ? '' : errorMsg);
+    });
+  }
+});
 
   // Sort ULB/RP/Special Authority data alphabetically by talukaName
   const sortedUlbData = ulbData.ulb_rp_special_authority.sort((a, b) => 
@@ -169,12 +205,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     { id: 'project_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 100, format: restrictToTitleCase, errorMsg: 'Please enter a valid project name (max 100 characters)' },
     { id: 'site_address', validate: (value) => value.trim().length > 0 && value.trim().length <= 200, format: restrictToTitleCase, errorMsg: 'Please enter a valid site address (max 200 characters)' },
     { id: 'village_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 50, format: restrictToTitleCase, errorMsg: 'Please enter a valid village/mouje name (max 50 characters)' },
-    { id: 'reservation_area_sqm', validate: (value) => { const isVisible = document.getElementById('reservation_area_sqm').style.display !== 'none'; return !isVisible || (!isNaN(value) && parseFloat(value) > 0 && parseFloat(value) <= 999999.99); }, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+    { id: 'reservation_area_sqm', validate: (value) => {const input = document.getElementById('reservation_area_sqm'); const isVisible = input.offsetParent !== null; const numValue = parseFloat(value); return !isVisible || (!isNaN(numValue) && numValue > 0 && numValue <= 999999.99);}, format: (input) => {input.value = input.value.replace(/[^0-9.]/g, ''); const value = parseFloat(input.value); if (!isNaN(value)) {input.value = value.toFixed(2);}}, errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' }
     { id: 'area_plot_site_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
     { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
     { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
     { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value >= 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
-    { id: 'dp_rp_road_area_sqm', validate: (value) => { const isVisible = document.getElementById('dp_rp_road_area_sqm').style.display !== 'none'; return !isVisible || (!isNaN(value) && parseFloat(value) > 0 && parseFloat(value) <= 999999.99); }, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+    { id: 'dp_rp_road_area_sqm', validate: (value) => {const input = document.getElementById('dp_rp_road_area_sqm'); const isVisible = input.offsetParent !== null; const numValue = parseFloat(value); return !isVisible || (!isNaN(numValue) && numValue > 0 && numValue <= 999999.99);}, format: (input) => {input.value = input.value.replace(/[^0-9.]/g, ''); const value = parseFloat(input.value); if (!isNaN(value)) {input.value = value.toFixed(2);}}, errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' }
     { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
   ];
 
