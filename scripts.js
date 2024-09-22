@@ -179,11 +179,9 @@ async function initializeForm() {
     inputValidations.forEach(({ id, validate, format, errorMsg }) => {
       const input = document.getElementById(id);
       if (input) {
-        input.addEventListener('input', function() {
-          if (typeof format === 'function') {
-            format(this);
-          }
-        });
+        if (typeof format === 'function') {
+          format(input);
+        }
         input.addEventListener('blur', function() {
           if (typeof format === 'function') {
             format(this);
