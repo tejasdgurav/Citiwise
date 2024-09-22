@@ -15,12 +15,10 @@ function validatePhoneNumber(phone) {
   return re.test(phone);
 }
 
-
 function restrictToNumbers(input, allowDecimal = false) {
   let value = input.value;
   
   if (allowDecimal) {
-    // Allow one decimal point
     value = value.replace(/[^0-9.]/g, '');
     const parts = value.split('.');
     if (parts.length > 2) {
@@ -33,7 +31,6 @@ function restrictToNumbers(input, allowDecimal = false) {
   input.value = value;
 }
 
-// New function to format numbers
 function formatNumber(input, allowDecimal = false) {
   let value = input.value;
   if (allowDecimal) {
@@ -131,19 +128,19 @@ document.addEventListener('DOMContentLoaded', async function() {
   const citySpecificAreaData = await loadJSONData('city_specific_area.json');
 
   // Sort ULB/RP/Special Authority data alphabetically by talukaName
-const sortedUlbData = ulbData.ulb_rp_special_authority.sort((a, b) => 
-  a.talukaName.localeCompare(b.talukaName)
-);
+  const sortedUlbData = ulbData.ulb_rp_special_authority.sort((a, b) => 
+    a.talukaName.localeCompare(b.talukaName)
+  );
 
-// Populate ULB/RP/Special Authority dropdown with sorted data
-const ulbDropdown = document.getElementById('ulb_rp_special_authority');
-ulbDropdown.innerHTML = '<option value="">Select ULB/RP/Special Authority</option>';
-sortedUlbData.forEach(item => {
-  const option = document.createElement('option');
-  option.value = item.id;
-  option.textContent = item.talukaName;
-  ulbDropdown.appendChild(option);
-});
+  // Populate ULB/RP/Special Authority dropdown with sorted data
+  const ulbDropdown = document.getElementById('ulb_rp_special_authority');
+  ulbDropdown.innerHTML = '<option value="">Select ULB/RP/Special Authority</option>';
+  sortedUlbData.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.id;
+    option.textContent = item.talukaName;
+    ulbDropdown.appendChild(option);
+  });
 
   // Populate dropdowns from JSON
   populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
@@ -165,7 +162,7 @@ sortedUlbData.forEach(item => {
   handleRadioChange('dp_rp_road_affected', 'dp_rp_road_area_sqm');
 
   // Input formatting and validation
-    const inputValidations = [
+  const inputValidations = [
     { id: 'applicant_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 100, format: restrictToTitleCase, errorMsg: 'Please enter a valid name (max 100 characters)' },
     { id: 'contact_no', validate: validatePhoneNumber, format: (input) => restrictToNumbers(input), errorMsg: 'Please enter a valid 10-digit Indian mobile number' },
     { id: 'email', validate: (value) => validateEmail(value) && value.length <= 100, format: (input) => { input.value = input.value.toLowerCase(); }, errorMsg: 'Please enter a valid email address (max 100 characters)' },
@@ -181,25 +178,21 @@ sortedUlbData.forEach(item => {
     { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
   ];
 
-
   inputValidations.forEach(({ id, validate, format, errorMsg }) => {
-  const input = document.getElementById(id);
-  if (input) {
-    input.addEventListener('input', function() {
-      // Only remove non-numeric characters on input for number fields
-      if (format === restrictToNumbers) {
-        this.value = this.value.replace(/[^0-9.]/g, '');
-      }
-    });
-    input.addEventListener('blur', function() {
-      // Apply full formatting on blur
-      format(this);
-      const isValid = validate(this.value);
-      showFeedback(this, isValid, isValid ? '' : errorMsg);
-    });
-  }
-});
-
+    const input = document.getElementById(id);
+    if (input) {
+      input.addEventListener('input', function() {
+        if (format === restrictToNumbers) {
+          this.value = this.value.replace(/[^0-9.]/g, '');
+        }
+      });
+      input.addEventListener('blur', function() {
+        format(this);
+        const isValid = validate(this.value);
+        showFeedback(this, isValid, isValid ? '' : errorMsg);
+      });
+    }
+  });
 
   // File input validation
   ['dp_rp_part_plan', 'google_image'].forEach(id => {
@@ -277,99 +270,67 @@ sortedUlbData.forEach(item => {
     buildingSubtypeSelect.disabled = false;
   });
 
+  // Plot Boundaries
+  const sides = ['front', 'left', 'right', 'rear'];
 
-// Plot Boundaries
-const sides = ['front', 'left', 'right', 'rear'];
+  // Setup boundary listeners
+  function setupBoundaryListeners() {
+    sides.forEach(side => {
+      const select = document.getElementById(`${side}_boundary_type`);
+      const roadContainer = document.getElementById(`road_container_${side}`);
+      const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
 
-// Toggle element visibility
-function toggleElement(id, show) {
-  const element = document.getElementById(id);
-  if (element) {
-    element.style.display = show ? 'block' : 'none';
-  }
-}
+      if (select) {
+        select.addEventListener('change', function() {
+          if (roadContainer) {
+            toggleElement(`road_container_${side}`, this.value === 'Road');
+          }
 
-// Setup boundary listeners
-function setupBoundaryListeners() {
-  sides.forEach(side => {
-    const select = document.getElementById(`${side}_boundary_type`);
-    const roadContainer = document.getElementById(`road_container_${side}`);
-    const roadWidthInput = document.getElementById(`road_details_${side}_meters`);
-
-    if (select) {
-      select.addEventListener('change', function() {
-        if (roadContainer) {
-          toggleElement(`road_container_${side}`, this.value === 'Road');
-        }
-
-        // Enable/disable other selects based on front boundary
-        if (side === 'front') {
-          const isRoadSelected = this.value === 'Road';
-          sides.slice(1).forEach(otherSide => {
-            const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-            if (otherSelect) {
-              otherSelect.disabled = !isRoadSelected;
-              if (!isRoadSelected) {
-                otherSelect.value = '';
+          // Enable/disable other selects based on front boundary
+          if (side === 'front') {
+            const isRoadSelected = this.value === 'Road';
+            sides.slice(1).forEach(otherSide => {
+              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
+              if (otherSelect) {
+                otherSelect.disabled = !isRoadSelected;
+                if (!isRoadSelected) {
+                  otherSelect.value = '';
                   toggleElement(`road_container_${otherSide}`, false);
-              }
-            }
-          });
-        }
-
-        if (side === 'front' && roadTypeSelect) {
-          roadTypeSelect.addEventListener('change', function() {
-            sides.slice(1).forEach(otherSide => {
-              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-              if (otherSelect) {
-                otherSelect.disabled = false;
+                }
               }
             });
-          });
-        }
+          }
+        });
+      }
 
-        if (side === 'front' && roadWidthInput) {
-          roadWidthInput.addEventListener('blur', function() {
-            const value = parseFloat(this.value);
-            sides.slice(1).forEach(otherSide => {
-              const otherSelect = document.getElementById(`${otherSide}_boundary_type`);
-              if (otherSelect) {
-                otherSelect.disabled = !(value > 0);
-              }
-            });
-          });
-        }
-      });
-    }
+      // Road width input validation
+      if (roadWidthInput) {
+        roadWidthInput.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9.]/g, '');
+        });
 
-    // Road width input validation
-    if (roadWidthInput) {
-      roadWidthInput.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9.]/g, '');
-      });
+        roadWidthInput.addEventListener('blur', function() {
+          const value = parseFloat(this.value);
+          if (!isNaN(value) && value > 0) {
+            this.value = value.toFixed(2);
+            this.classList.remove('error');
+          } else {
+            this.classList.add('error');
+          }
+        });
+      }
+    });
+  }
 
-      roadWidthInput.addEventListener('blur', function() {
-        const value = parseFloat(this.value);
-        if (!isNaN(value) && value > 0) {
-          this.value = value.toFixed(2);
-          this.classList.remove('error');
-        } else {
-          this.classList.add('error');
-        }
-      });
-    }
-  });
-}
-
-// Initialize boundary selects
-function initializeBoundarySelects() {
-  sides.slice(1).forEach(side => {
-    const select = document.getElementById(`${side}_boundary_type`);
-    if (select) {
-      select.disabled = true;
-    }
-  });
-}
+  // Initialize boundary selects
+  function initializeBoundarySelects() {
+    sides.slice(1).forEach(side => {
+      const select = document.getElementById(`${side}_boundary_type`);
+      if (select) {
+        select.disabled = true;
+      }
+    });
+  }
 
   // Form submission
   document.querySelector('form').addEventListener('submit', async function(e) {
@@ -395,13 +356,17 @@ function initializeBoundarySelects() {
     const jsonData = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbynB6fDE5eeREzi0X9Y1Ik110IIIptevHe9VZ_dFKYfXHAmeQcnyEJNcucQgxFfAwOS/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbyXnG5oN6oABEGfCoNYzIk_11JkLywkGeQrX3H3VtH1fnPy_KLn51dYNq4E77X1DLZs/exec', {
         method: 'POST',
         body: JSON.stringify(jsonData),
         headers: {
           'Content-Type': 'application/json'
         }
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       const result = await response.json();
       if (result.status === 'success') {
@@ -411,15 +376,15 @@ function initializeBoundarySelects() {
         document.querySelectorAll('.feedback').forEach(el => el.textContent = '');
         document.querySelectorAll('.invalid-input').forEach(el => el.classList.remove('invalid-input'));
       } else {
-        alert('Error submitting form. Please try again.');
+        throw new Error(result.message || 'Unknown error occurred');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred. Please try again later.');
+      alert(`An error occurred: ${error.message}. Please try again later.`);
     }
   });
 
-    // Setup plot boundary listeners and initialize selects
+  // Setup plot boundary listeners and initialize selects
   setupBoundaryListeners();
   initializeBoundarySelects();
 });
