@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const jsonData = Object.fromEntries(formData.entries());
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbz1h9pD0ncnaJIClof6H4F0G7mNQaGpaCXKr5j1ly-IUfOJ4Jdy2grW2dZzO-9ucCg6/exec', {
+      const response = await fetch('https://script.google.com/macros/s/AKfycbyaBF9CxzlsTqU9anHAyEpU8d-odIdshVZOze4EF1MEY0wHtwCF9neBI0UWmzR_q50/exec', {
         method: 'POST',
         mode: 'cors',
         credentials: 'omit',
