@@ -105,7 +105,26 @@ function handleRadioChange(name, elementToToggle) {
     radio.addEventListener('change', function() {
       const show = this.value === 'Yes';
       toggleElement(elementToToggle, show);
-      if (!show) {
+      if (show) {
+        const element = document.getElementById(elementToToggle);
+        if (element) {
+          // Find the validation for this element
+          const validation = inputValidations.find(v => v.id === elementToToggle);
+          if (validation) {
+            // Set up the validation event listener
+            element.addEventListener('blur', function() {
+              console.log(`Before format: ${this.value}`);
+              if (typeof validation.format === 'function') {
+                validation.format(this);
+              }
+              console.log(`After format: ${this.value}`);
+              const isValid = validation.validate(this.value);
+              console.log(`Validation result for ${elementToToggle}: ${isValid}`);
+              showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
+            });
+          }
+        }
+      } else {
         const element = document.getElementById(elementToToggle);
         if (element) {
           element.value = '';
@@ -177,21 +196,28 @@ async function initializeForm() {
     ];
 
 
-    inputValidations.forEach(({ id, validate, format, errorMsg }) => {
-      const input = document.getElementById(id);
-      if (input) {
-        input.addEventListener('blur', function() {
+    // Define a function to set up validation for a single input
+    function setupInputValidation(element, validation) {
+      if (element) {
+        element.addEventListener('blur', function() {
           console.log(`Before format: ${this.value}`);
-          if (typeof format === 'function') {
-            format(this);
+          if (typeof validation.format === 'function') {
+            validation.format(this);
           }
           console.log(`After format: ${this.value}`);
-          const isValid = validate(this.value);
-          console.log(`Validation result for ${id}: ${isValid}`);
-          showFeedback(this, isValid, isValid ? '' : errorMsg);
+          const isValid = validation.validate(this.value);
+          console.log(`Validation result for ${validation.id}: ${isValid}`);
+        showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
         });
       }
+    }
+
+    // Use this function in the initial setup
+    inputValidations.forEach((validation) => {
+      const element = document.getElementById(validation.id);
+      setupInputValidation(element, validation);
     });
+
 
     // File input validation
     ['dp_rp_part_plan', 'google_image'].forEach(id => {
