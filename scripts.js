@@ -180,6 +180,7 @@ async function initializeForm() {
 
     // Input validations
     const inputValidations = [
+      { id: 'applicant_type', validate: (value) => value !== "", errorMsg: 'Please select an option' },
       { id: 'applicant_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 100, format: restrictToTitleCase, errorMsg: 'Please enter a valid name (max 100 characters)' },
       { id: 'contact_no', validate: validatePhoneNumber, format: (input) => restrictToNumbers(input), errorMsg: 'Please enter a valid 10-digit Indian mobile number' },
       { id: 'email', validate: (value) => validateEmail(value) && value.length <= 100, format: (input) => { input.value = input.value.toLowerCase(); }, errorMsg: 'Please enter a valid email address (max 100 characters)' },
@@ -199,7 +200,7 @@ async function initializeForm() {
     // Define a function to set up validation for a single input
     function setupInputValidation(element, validation) {
       if (element) {
-        element.addEventListener('blur', function() {
+        const validateAndShowFeedback = function() {
           console.log(`Before format: ${this.value}`);
           if (typeof validation.format === 'function') {
             validation.format(this);
@@ -207,8 +208,14 @@ async function initializeForm() {
           console.log(`After format: ${this.value}`);
           const isValid = validation.validate(this.value);
           console.log(`Validation result for ${validation.id}: ${isValid}`);
-        showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
-        });
+          showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
+        };
+
+        if (element.tagName.toLowerCase() === 'select') {
+          element.addEventListener('change', validateAndShowFeedback);
+        } else {
+          element.addEventListener('blur', validateAndShowFeedback);
+        }
       }
     }
 

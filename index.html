@@ -20,6 +20,17 @@
                 <legend>Applicant Information</legend>
                 
                 <div class="form-group">
+                  <label for="applicant_type">I'm a</label>
+                  <select id="applicant_type" name="applicant_type" required>
+                    <option value="">Select an option</option>
+                    <option value="real_estate_developer">Real estate developer</option>
+                    <option value="architect">Architect</option>
+                    <option value="engineer">Engineer</option>
+                    <option value="land_owner">Land owner</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
                     <label for="applicant_name">Applicant Name</label>
                     <input type="text" id="applicant_name" name="applicant_name" required maxlength="100">
                     <div class="feedback"></div>
