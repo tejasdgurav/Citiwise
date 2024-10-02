@@ -6,6 +6,7 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; connect-src https: http: data:;">
     <title>Project Input Form</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="loading-indicator" style="display: none;">Loading...</div>
@@ -67,6 +68,13 @@
                     <label for="ulb_rp_special_authority">ULB/RP/Special Authority</label>
                     <select id="ulb_rp_special_authority" name="ulb_rp_special_authority" required>
                         <option value="">Select ULB/RP/Special Authority</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="city_specific_area">City Specific Area (Optional)</label>
+                    <select id="city_specific_area" name="city_specific_area">
+                        <!-- Options will be populated by JavaScript -->
                     </select>
                 </div>
                 
@@ -311,13 +319,6 @@
                     <label for="dp_rp_road_area_sqm">DP/RP road affected (Sq.M.)</label>
                     <input type="number" id="dp_rp_road_area_sqm" name="dp_rp_road_area_sqm" step="0.01" min="0" max="999999.99">
                     <div class="feedback"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="city_specific_area">City Specific Area (Optional)</label>
-                    <select id="city_specific_area" name="city_specific_area">
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
                 </div>
                 
                 <div class="form-group">
