@@ -98,6 +98,13 @@ function toggleElement(elementId, show) {
   }
 }
 
+// Define validation rules for reservation_area_sqm and dp_rp_road_area_sqm
+const inputValidations = [
+    { id: 'reservation_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for Reservation Area Affected' },
+    { id: 'dp_rp_road_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' }
+];
+
+
 // Handle radio button changes
 function handleRadioChange(name, elementToToggle) {
   const radioButtons = document.getElementsByName(name);
