@@ -17,7 +17,7 @@ function validatePhoneNumber(phone) {
 
 function restrictToNumbers(input, allowDecimal = false) {
   let value = input.value;
-  
+
   if (allowDecimal) {
     value = value.replace(/[^0-9.]/g, '');
     const parts = value.split('.');
@@ -27,7 +27,7 @@ function restrictToNumbers(input, allowDecimal = false) {
   } else {
     value = value.replace(/[^0-9]/g, '');
   }
-  
+
   input.value = value;
 }
 
@@ -53,15 +53,14 @@ function restrictToTitleCase(input) {
 // Feedback Functions
 function showFeedback(input, isValid, message) {
   console.log(`Showing feedback for ${input.id}: isValid=${isValid}, message="${message}"`);
-  const feedbackEl = input.nextElementSibling;
+  let feedbackEl = input.nextElementSibling;
   if (!feedbackEl || !feedbackEl.classList.contains('feedback')) {
-    const newFeedbackEl = document.createElement('div');
-    newFeedbackEl.classList.add('feedback');
-    input.parentNode.insertBefore(newFeedbackEl, input.nextSibling);
+    feedbackEl = document.createElement('div');
+    feedbackEl.classList.add('feedback');
+    input.parentNode.insertBefore(feedbackEl, input.nextSibling);
   }
-  const feedbackDiv = input.nextElementSibling;
-  feedbackDiv.textContent = message;
-  feedbackDiv.className = 'feedback ' + (isValid ? 'valid' : 'invalid');
+  feedbackEl.textContent = message;
+  feedbackEl.className = 'feedback ' + (isValid ? 'valid' : 'invalid');
   input.classList.toggle('invalid-input', !isValid);
 }
 
@@ -95,57 +94,8 @@ function toggleElement(elementId, show) {
   const element = document.getElementById(elementId);
   if (element) {
     element.style.display = show ? 'block' : 'none';
+    element.disabled = !show;
   }
-}
-
-function validateInputField(input) {
-  const value = input.value.trim();
-  // Check if the value is not empty
-  return value !== '';
-}
-
-
-// Define validation rules for reservation_area_sqm and dp_rp_road_area_sqm
-const inputValidations = [
-    { id: 'reservation_area_sqm', validate: (value) => { if (typeof value !== 'string' || value.trim() === '') return true; const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for Reservation Area Affected' },
-    { id: 'dp_rp_road_area_sqm', validate: (value) => { if (typeof value !== 'string' || value.trim() === '') return true; const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' }
-];
-
-// Handle radio button changes
-function handleRadioChange(name, elementToToggle) {
-  const radioButtons = document.getElementsByName(name);
-  radioButtons.forEach(radio => {
-    radio.addEventListener('change', function() {
-      const show = this.value === 'Yes';
-      toggleElement(elementToToggle, show);
-      if (show) {
-        const element = document.getElementById(elementToToggle);
-        if (element) {
-          // Find the validation for this element
-          const validation = inputValidations.find(v => v.id === elementToToggle);
-          if (validation) {
-            // Set up the validation event listener
-            element.addEventListener('blur', function() {
-              console.log(`Before format: ${this.value}`);
-              if (typeof validation.format === 'function') {
-                validation.format(this);
-              }
-              console.log(`After format: ${this.value}`);
-              const isValid = validateInputField(this) && validation.validate(this.value);
-              console.log(`Validation result for ${elementToToggle}: ${isValid}`);
-              showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
-            });
-          }
-        }
-      } else {
-        const element = document.getElementById(elementToToggle);
-        if (element) {
-          element.value = '';
-          showFeedback(element, true, '');
-        }
-      }
-    });
-  });
 }
 
 // Main function
@@ -164,7 +114,7 @@ async function initializeForm() {
     }
 
     // Sort ULB/RP/Special Authority data alphabetically by talukaName
-    const sortedUlbData = ulbData.ulb_rp_special_authority.sort((a, b) => 
+    const sortedUlbData = ulbData.ulb_rp_special_authority.sort((a, b) =>
       a.talukaName.localeCompare(b.talukaName)
     );
 
@@ -185,12 +135,6 @@ async function initializeForm() {
       toggleElement(`road_container_${side}`, false);
     });
 
-    // Setup conditional elements
-    handleRadioChange('incentive_fsi', 'incentive_fsi_rating');
-    handleRadioChange('electrical_line', 'electrical_line_voltage');
-    handleRadioChange('reservation_area_affected', 'reservation_area_sqm');
-    handleRadioChange('dp_rp_road_affected', 'dp_rp_road_area_sqm');
-
     // Input validations
     const inputValidations = [
       { id: 'applicant_type', validate: (value) => value !== "", errorMsg: 'Please select an option' },
@@ -200,27 +144,61 @@ async function initializeForm() {
       { id: 'project_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 100, format: restrictToTitleCase, errorMsg: 'Please enter a valid project name (max 100 characters)' },
       { id: 'site_address', validate: (value) => value.trim().length > 0 && value.trim().length <= 200, format: restrictToTitleCase, errorMsg: 'Please enter a valid site address (max 200 characters)' },
       { id: 'village_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 50, format: restrictToTitleCase, errorMsg: 'Please enter a valid village/mouje name (max 50 characters)' },
-      { id: 'reservation_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for Reservation Area Affected' },
-      { id: 'area_plot_site_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
-      { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
-      { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
-      { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value >= 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
-      { id: 'dp_rp_road_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' },
-      { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
+      { id: 'reservation_area_sqm', validate: (value) => { if (value.trim() === '') return true; const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid positive number for Reservation Area Affected' },
+      { id: 'dp_rp_road_area_sqm', validate: (value) => { if (value.trim() === '') return true; const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' },
+      { id: 'area_plot_site_sqm', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+      { id: 'area_plot_ownership_sqm', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+      { id: 'area_plot_measurement_sqm', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
+      { id: 'pro_rata_fsi', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue >= 0 && numValue <= 999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
+      { id: 'plot_width', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
     ];
 
+    // Handle radio button changes
+    function handleRadioChange(name, elementToToggle) {
+      const radioButtons = document.getElementsByName(name);
+      radioButtons.forEach(radio => {
+        radio.addEventListener('change', function() {
+          const show = this.value === 'Yes';
+          toggleElement(elementToToggle, show);
+          const element = document.getElementById(elementToToggle);
+          if (element) {
+            element.disabled = !show;
+            if (show) {
+              // Find the validation for this element
+              const validation = inputValidations.find(v => v.id === elementToToggle);
+              if (validation) {
+                // Set up the validation event listener
+                element.addEventListener('blur', function() {
+                  if (typeof validation.format === 'function') {
+                    validation.format(this);
+                  }
+                  const isValid = validation.validate(this.value);
+                  showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
+                });
+              }
+            } else {
+              element.value = '';
+              showFeedback(element, true, '');
+            }
+          }
+        });
+      });
+    }
+
+    // Setup conditional elements
+    handleRadioChange('incentive_fsi', 'incentive_fsi_rating');
+    handleRadioChange('electrical_line', 'electrical_line_voltage');
+    handleRadioChange('reservation_area_affected', 'reservation_area_sqm');
+    handleRadioChange('dp_rp_road_affected', 'dp_rp_road_area_sqm');
 
     // Define a function to set up validation for a single input
     function setupInputValidation(element, validation) {
       if (element) {
         const validateAndShowFeedback = function() {
-          console.log(`Before format: ${this.value}`);
           if (typeof validation.format === 'function') {
             validation.format(this);
           }
-          console.log(`After format: ${this.value}`);
-          const isValid = validateInputField(this) && validation.validate(this.value);
-          console.log(`Validation result for ${validation.id}: ${isValid}`);
+          const isValid = validation.validate(this.value);
           showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
         };
 
@@ -238,28 +216,31 @@ async function initializeForm() {
       setupInputValidation(element, validation);
     });
 
-
     // File input validation
     ['dp_rp_part_plan', 'google_image'].forEach(id => {
       const fileInput = document.getElementById(id);
-      fileInput.addEventListener('change', function() {
-        const file = this.files[0];
-        const fileSize = file.size / 1024 / 1024; // in MB
-        const allowedFormats = ['image/jpeg', 'image/png', 'image/gif'];
-        let isValid = true;
-        let errorMsg = '';
+      if (fileInput) {
+        fileInput.addEventListener('change', function() {
+          const file = this.files[0];
+          if (file) {
+            const fileSize = file.size / 1024 / 1024; // in MB
+            const allowedFormats = ['image/jpeg', 'image/png', 'image/gif'];
+            let isValid = true;
+            let errorMsg = '';
 
-        if (fileSize > 5) {
-          isValid = false;
-          errorMsg = 'File size should not exceed 5MB';
-        } else if (!allowedFormats.includes(file.type)) {
-          isValid = false;
-          errorMsg = 'Please upload an image file (JPEG, PNG, or GIF)';
-        }
+            if (fileSize > 5) {
+              isValid = false;
+              errorMsg = 'File size should not exceed 5MB';
+            } else if (!allowedFormats.includes(file.type)) {
+              isValid = false;
+              errorMsg = 'Please upload an image file (JPEG, PNG, or GIF)';
+            }
 
-        showFeedback(this, isValid, errorMsg);
-        if (!isValid) this.value = '';
-      });
+            showFeedback(this, isValid, errorMsg);
+            if (!isValid) this.value = '';
+          }
+        });
+      }
     });
 
     // Road Width inputs
@@ -267,8 +248,18 @@ async function initializeForm() {
     roadWidthInputs.forEach(input => {
       input.addEventListener('input', function() {
         restrictToNumbers(this, true);
-        const isValid = !isNaN(this.value) && parseFloat(this.value) > 0;
-        showFeedback(this, isValid, isValid ? '' : 'Please enter a valid positive number');
+      });
+
+      input.addEventListener('blur', function() {
+        const value = parseFloat(this.value);
+        if (!isNaN(value) && value > 0) {
+          this.value = value.toFixed(2);
+          this.classList.remove('invalid-input');
+          showFeedback(this, true, '');
+        } else {
+          this.classList.add('invalid-input');
+          showFeedback(this, false, 'Please enter a valid positive number');
+        }
       });
     });
 
@@ -289,10 +280,10 @@ async function initializeForm() {
     document.getElementById('ulb_rp_special_authority').addEventListener('change', function() {
       const selectedUlbId = parseInt(this.value);
       const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === selectedUlbId);
-      
+
       if (selectedUlb) {
         const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
-        
+
         if (filteredAreas.length > 0) {
           populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
           citySpecificAreaSelect.disabled = false;
@@ -351,16 +342,18 @@ async function initializeForm() {
         // Road width input validation
         if (roadWidthInput) {
           roadWidthInput.addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9.]/g, '');
+            restrictToNumbers(this, true);
           });
 
           roadWidthInput.addEventListener('blur', function() {
             const value = parseFloat(this.value);
             if (!isNaN(value) && value > 0) {
               this.value = value.toFixed(2);
-              this.classList.remove('error');
+              this.classList.remove('invalid-input');
+              showFeedback(this, true, '');
             } else {
-              this.classList.add('error');
+              this.classList.add('invalid-input');
+              showFeedback(this, false, 'Please enter a valid positive number');
             }
           });
         }
@@ -389,9 +382,15 @@ async function initializeForm() {
       let isValid = true;
       inputValidations.forEach(({ id, validate, errorMsg }) => {
         const input = document.getElementById(id);
-        if (input && !validate(input.value)) {
-          showFeedback(input, false, errorMsg);
-          isValid = false;
+        if (input) {
+          if (typeof validate === 'function') {
+            if (!validate(input.value)) {
+              showFeedback(input, false, errorMsg);
+              isValid = false;
+            } else {
+              showFeedback(input, true, '');
+            }
+          }
         }
       });
 
@@ -426,6 +425,8 @@ async function initializeForm() {
           // Clear all feedback
           document.querySelectorAll('.feedback').forEach(el => el.textContent = '');
           document.querySelectorAll('.invalid-input').forEach(el => el.classList.remove('invalid-input'));
+          // Reset disabled states and hide conditional elements
+          initializeForm();
         } else {
           throw new Error(result.message || 'Unknown error occurred');
         }
@@ -443,62 +444,3 @@ async function initializeForm() {
 
 // Call the initialization function when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
-
-
-document.addEventListener("DOMContentLoaded", function() {
-    const reservationAreaAffectedInputs = document.getElementsByName("reservation_area_affected");
-    const reservationAreaSqmInputContainer = document.getElementById("reservation_area_sqm");
-    const reservationAreaSqmInput = reservationAreaSqmInputContainer?.querySelector("input");
-
-    const dpRpRoadAffectedInputs = document.getElementsByName("dp_rp_road_affected");
-    const dpRpRoadAreaSqmInputContainer = document.getElementById("dp_rp_road_area_sqm");
-    const dpRpRoadAreaSqmInput = dpRpRoadAreaSqmInputContainer?.querySelector("input");
-
-    if (reservationAreaSqmInput) {
-      reservationAreaSqmInput.disabled = true;
-    }
-    if (dpRpRoadAreaSqmInput) {
-      dpRpRoadAreaSqmInput.disabled = true;
-    }
-
-
-    // Function to handle visibility and enabling of Reservation Area Affected input
-    function handleReservationAreaChange() {
-        const selectedValue = [...reservationAreaAffectedInputs].find(input => input.checked)?.value;
-        if (selectedValue === "Yes") {
-            reservationAreaSqmInput.disabled = false; // Enable the input
-            reservationAreaSqmInputContainer.classList.remove("hidden");
-        } else {
-            reservationAreaSqmInput.disabled = true; // Disable the input
-            reservationAreaSqmInputContainer.classList.add("hidden");
-            reservationAreaSqmInput.value = ''; // Clear the input value when hidden
-        }
-    }
-
-    // Function to handle visibility and enabling of DP/RP Road Affected input
-    function handleDpRpRoadChange() {
-        const selectedValue = [...dpRpRoadAffectedInputs].find(input => input.checked)?.value;
-        if (selectedValue === "Yes") {
-            dpRpRoadAreaSqmInput.disabled = false; // Enable the input
-            dpRpRoadAreaSqmInputContainer.classList.remove("hidden");
-        } else {
-            dpRpRoadAreaSqmInput.disabled = true; // Disable the input
-            dpRpRoadAreaSqmInputContainer.classList.add("hidden");
-            dpRpRoadAreaSqmInput.value = ''; // Clear the input value when hidden
-        }
-    }
-
-    // Attach event listeners to each radio button for Reservation Area Affected
-    reservationAreaAffectedInputs.forEach(input => {
-        input.addEventListener("change", handleReservationAreaChange);
-    });
-
-    // Attach event listeners to each radio button for DP/RP Road Affected
-    dpRpRoadAffectedInputs.forEach(input => {
-        input.addEventListener("change", handleDpRpRoadChange);
-    });
-
-    // Initialize the state of the fields on page load
-    handleReservationAreaChange();
-    handleDpRpRoadChange();
-});
