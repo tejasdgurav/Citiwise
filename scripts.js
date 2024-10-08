@@ -430,3 +430,51 @@ async function initializeForm() {
 
 // Call the initialization function when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
+
+document.addEventListener("DOMContentLoaded", function() {
+    const reservationAreaAffectedInputs = document.getElementsByName("reservation_area_affected");
+    const reservationAreaSqmInputContainer = document.getElementById("reservation_area_sqm");
+    const reservationAreaSqmInput = reservationAreaSqmInputContainer.querySelector("input");
+
+    const dpRpRoadAffectedInputs = document.getElementsByName("dp_rp_road_affected");
+    const dpRpRoadAreaSqmInputContainer = document.getElementById("dp_rp_road_area_sqm");
+    const dpRpRoadAreaSqmInput = dpRpRoadAreaSqmInputContainer.querySelector("input");
+
+    // Function to handle visibility and enabling of Reservation Area Affected input
+    function handleReservationAreaChange() {
+        const selectedValue = [...reservationAreaAffectedInputs].find(input => input.checked)?.value;
+        if (selectedValue === "Yes") {
+            reservationAreaSqmInput.disabled = false;
+            reservationAreaSqmInputContainer.classList.remove("hidden");
+        } else {
+            reservationAreaSqmInput.disabled = true;
+            reservationAreaSqmInputContainer.classList.add("hidden");
+        }
+    }
+
+    // Function to handle visibility and enabling of DP/RP Road Affected input
+    function handleDpRpRoadChange() {
+        const selectedValue = [...dpRpRoadAffectedInputs].find(input => input.checked)?.value;
+        if (selectedValue === "Yes") {
+            dpRpRoadAreaSqmInput.disabled = false;
+            dpRpRoadAreaSqmInputContainer.classList.remove("hidden");
+        } else {
+            dpRpRoadAreaSqmInput.disabled = true;
+            dpRpRoadAreaSqmInputContainer.classList.add("hidden");
+        }
+    }
+
+    // Attach event listeners to each radio button for Reservation Area Affected
+    reservationAreaAffectedInputs.forEach(input => {
+        input.addEventListener("change", handleReservationAreaChange);
+    });
+
+    // Attach event listeners to each radio button for DP/RP Road Affected
+    dpRpRoadAffectedInputs.forEach(input => {
+        input.addEventListener("change", handleDpRpRoadChange);
+    });
+
+    // Initialize the state of the fields on page load
+    handleReservationAreaChange();
+    handleDpRpRoadChange();
+});
