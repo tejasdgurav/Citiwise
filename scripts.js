@@ -431,6 +431,13 @@ async function initializeForm() {
 // Call the initialization function when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
 
+// Define validation rules
+const inputValidations = [
+    { id: 'reservation_area_sqm', rules: ['required', 'positiveNumber'], message: 'Please enter a valid positive number for Reservation Area Affected' },
+    { id: 'dp_rp_road_area_sqm', rules: ['required', 'positiveNumber'], message: 'Please enter a valid positive number for DP/RP Road Area Affected' },
+    // Add more as needed
+];
+
 document.addEventListener("DOMContentLoaded", function() {
     const reservationAreaAffectedInputs = document.getElementsByName("reservation_area_affected");
     const reservationAreaSqmInputContainer = document.getElementById("reservation_area_sqm");
