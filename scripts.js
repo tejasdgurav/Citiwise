@@ -98,10 +98,19 @@ function toggleElement(elementId, show) {
   }
 }
 
+function validateInputField(input) {
+  const value = input.value;
+  // Check if the value is not empty and is a valid number
+  if (!value || isNaN(parseFloat(value))) {
+    return false;
+  }
+  return true;
+}
+
 // Define validation rules for reservation_area_sqm and dp_rp_road_area_sqm
 const inputValidations = [
-    { id: 'reservation_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for Reservation Area Affected' },
-    { id: 'dp_rp_road_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' }
+    { id: 'reservation_area_sqm', validate: (value) => { if (typeof value !== 'string' || value.trim() === '') return true; const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for Reservation Area Affected' },
+    { id: 'dp_rp_road_area_sqm', validate: (value) => { if (typeof value !== 'string' || value.trim() === '') return true; const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' }
 ];
 
 // Handle radio button changes
@@ -124,7 +133,7 @@ function handleRadioChange(name, elementToToggle) {
                 validation.format(this);
               }
               console.log(`After format: ${this.value}`);
-              const isValid = validation.validate(this.value);
+              const isValid = validateInputField(this) && validation.validate(this.value);
               console.log(`Validation result for ${elementToToggle}: ${isValid}`);
               showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
             });
@@ -212,7 +221,7 @@ async function initializeForm() {
             validation.format(this);
           }
           console.log(`After format: ${this.value}`);
-          const isValid = validation.validate(this.value);
+          const isValid = validateInputField(this) && validation.validate(this.value);
           console.log(`Validation result for ${validation.id}: ${isValid}`);
           showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
         };
@@ -447,15 +456,24 @@ document.addEventListener("DOMContentLoaded", function() {
     const dpRpRoadAreaSqmInputContainer = document.getElementById("dp_rp_road_area_sqm");
     const dpRpRoadAreaSqmInput = dpRpRoadAreaSqmInputContainer?.querySelector("input");
 
+    if (reservationAreaSqmInput) {
+      reservationAreaSqmInput.disabled = true;
+    }
+    if (dpRpRoadAreaSqmInput) {
+      dpRpRoadAreaSqmInput.disabled = true;
+    }
+
+
     // Function to handle visibility and enabling of Reservation Area Affected input
     function handleReservationAreaChange() {
         const selectedValue = [...reservationAreaAffectedInputs].find(input => input.checked)?.value;
         if (selectedValue === "Yes") {
-            reservationAreaSqmInput.disabled = false;
+            reservationAreaSqmInput.disabled = false; // Enable the input
             reservationAreaSqmInputContainer.classList.remove("hidden");
         } else {
-            reservationAreaSqmInput.disabled = true;
+            reservationAreaSqmInput.disabled = true; // Disable the input
             reservationAreaSqmInputContainer.classList.add("hidden");
+            reservationAreaSqmInput.value = ''; // Clear the input value when hidden
         }
     }
 
@@ -463,11 +481,12 @@ document.addEventListener("DOMContentLoaded", function() {
     function handleDpRpRoadChange() {
         const selectedValue = [...dpRpRoadAffectedInputs].find(input => input.checked)?.value;
         if (selectedValue === "Yes") {
-            dpRpRoadAreaSqmInput.disabled = false;
+            dpRpRoadAreaSqmInput.disabled = false; // Enable the input
             dpRpRoadAreaSqmInputContainer.classList.remove("hidden");
         } else {
-            dpRpRoadAreaSqmInput.disabled = true;
+            dpRpRoadAreaSqmInput.disabled = true; // Disable the input
             dpRpRoadAreaSqmInputContainer.classList.add("hidden");
+            dpRpRoadAreaSqmInput.value = ''; // Clear the input value when hidden
         }
     }
 
