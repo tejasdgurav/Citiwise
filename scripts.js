@@ -99,13 +99,11 @@ function toggleElement(elementId, show) {
 }
 
 function validateInputField(input) {
-  const value = input.value;
-  // Check if the value is not empty and is a valid number
-  if (!value || isNaN(parseFloat(value))) {
-    return false;
-  }
-  return true;
+  const value = input.value.trim();
+  // Check if the value is not empty
+  return value !== '';
 }
+
 
 // Define validation rules for reservation_area_sqm and dp_rp_road_area_sqm
 const inputValidations = [
