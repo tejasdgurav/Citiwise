@@ -94,7 +94,7 @@ function toggleElement(elementId, show) {
   const element = document.getElementById(elementId);
   if (element) {
     element.style.display = show ? 'block' : 'none';
-    element.disabled = !show;
+    // Removed element.disabled to prevent disabling the container
   }
 }
 
@@ -149,7 +149,7 @@ async function initializeForm() {
       { id: 'area_plot_site_sqm', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
       { id: 'area_plot_ownership_sqm', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
       { id: 'area_plot_measurement_sqm', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
-      { id: 'pro_rata_fsi', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue >= 0 && numValue <= 999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
+      { id: 'pro_rata_fsi', validate: (value) => { if (value.trim() === '') return true; const numValue = parseFloat(value); return !isNaN(numValue) && numValue >= 0 && numValue <= 999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
       { id: 'plot_width', validate: (value) => { const numValue = parseFloat(value); return !isNaN(numValue) && numValue > 0 && numValue <= 999.99; }, format: (input) => formatNumber(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
     ];
 
@@ -162,23 +162,26 @@ async function initializeForm() {
           toggleElement(elementToToggle, show);
           const element = document.getElementById(elementToToggle);
           if (element) {
-            element.disabled = !show;
-            if (show) {
-              // Find the validation for this element
-              const validation = inputValidations.find(v => v.id === elementToToggle);
-              if (validation) {
-                // Set up the validation event listener
-                element.addEventListener('blur', function() {
-                  if (typeof validation.format === 'function') {
-                    validation.format(this);
-                  }
-                  const isValid = validation.validate(this.value);
-                  showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
-                });
+            const inputField = element.querySelector('input, select, textarea');
+            if (inputField) {
+              inputField.disabled = !show;
+              if (show) {
+                // Find the validation for this element
+                const validation = inputValidations.find(v => v.id === inputField.id);
+                if (validation) {
+                  // Set up the validation event listener
+                  inputField.addEventListener('blur', function() {
+                    if (typeof validation.format === 'function') {
+                      validation.format(this);
+                    }
+                    const isValid = validation.validate(this.value);
+                    showFeedback(this, isValid, isValid ? '' : validation.errorMsg);
+                  });
+                }
+              } else {
+                inputField.value = '';
+                showFeedback(inputField, true, '');
               }
-            } else {
-              element.value = '';
-              showFeedback(element, true, '');
             }
           }
         });
