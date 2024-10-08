@@ -104,10 +104,6 @@ const inputValidations = [
     { id: 'dp_rp_road_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' }
 ];
 
-console.log("Checking inputValidations:", inputValidations);
-const validation = inputValidations.find(v => v.id === elementToToggle);
-
-
 // Handle radio button changes
 function handleRadioChange(name, elementToToggle) {
   const radioButtons = document.getElementsByName(name);
