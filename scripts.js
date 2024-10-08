@@ -434,11 +434,11 @@ document.addEventListener('DOMContentLoaded', initializeForm);
 document.addEventListener("DOMContentLoaded", function() {
     const reservationAreaAffectedInputs = document.getElementsByName("reservation_area_affected");
     const reservationAreaSqmInputContainer = document.getElementById("reservation_area_sqm");
-    const reservationAreaSqmInput = reservationAreaSqmInputContainer.querySelector("input");
+    const reservationAreaSqmInput = reservationAreaSqmInputContainer?.querySelector("input");
 
     const dpRpRoadAffectedInputs = document.getElementsByName("dp_rp_road_affected");
     const dpRpRoadAreaSqmInputContainer = document.getElementById("dp_rp_road_area_sqm");
-    const dpRpRoadAreaSqmInput = dpRpRoadAreaSqmInputContainer.querySelector("input");
+    const dpRpRoadAreaSqmInput = dpRpRoadAreaSqmInputContainer?.querySelector("input");
 
     // Function to handle visibility and enabling of Reservation Area Affected input
     function handleReservationAreaChange() {
