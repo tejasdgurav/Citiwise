@@ -187,12 +187,12 @@ async function initializeForm() {
       { id: 'project_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 100, format: restrictToTitleCase, errorMsg: 'Please enter a valid project name (max 100 characters)' },
       { id: 'site_address', validate: (value) => value.trim().length > 0 && value.trim().length <= 200, format: restrictToTitleCase, errorMsg: 'Please enter a valid site address (max 200 characters)' },
       { id: 'village_name', validate: (value) => value.trim().length > 0 && value.trim().length <= 50, format: restrictToTitleCase, errorMsg: 'Please enter a valid village/mouje name (max 50 characters)' },
-      { id: 'reservation_area_sqm', validate: (value) => { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; }, format: (input) => { if (input.value) { input.value = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()).toFixed(2); } }, errorMsg: 'Please enter a valid positive number' },
+      { id: 'reservation_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for Reservation Area Affected' },
       { id: 'area_plot_site_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
       { id: 'area_plot_ownership_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
       { id: 'area_plot_measurement_sqm', validate: (value) => !isNaN(value) && value > 0 && value <= 999999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999,999.99' },
       { id: 'pro_rata_fsi', validate: (value) => !isNaN(value) && value >= 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0 and 999.99' },
-      { id: 'dp_rp_road_area_sqm', validate: (value) => { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; }, format: (input) => { if (input.value) { input.value = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()).toFixed(2); } }, errorMsg: 'Please enter a valid positive number' },
+      { id: 'dp_rp_road_area_sqm', validate: (value) => { if (typeof value === 'string' && value.trim() !== '') { const numValue = parseFloat(value.replace(/[^0-9.]/g, '').trim()); return !isNaN(numValue) && numValue > 0; } return false; }, format: (input) => { if (input && typeof input.value === 'string' && input.value.trim() !== '') { const numValue = parseFloat(input.value.replace(/[^0-9.]/g, '').trim()); if (!isNaN(numValue)) { input.value = numValue.toFixed(2); } } }, errorMsg: 'Please enter a valid positive number for DP/RP Road Area Affected' },
       { id: 'plot_width', validate: (value) => !isNaN(value) && value > 0 && value <= 999.99, format: (input) => restrictToNumbers(input, true), errorMsg: 'Please enter a valid number between 0.01 and 999.99' }
     ];
 
@@ -431,12 +431,6 @@ async function initializeForm() {
 // Call the initialization function when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
 
-// Define validation rules
-const inputValidations = [
-    { id: 'reservation_area_sqm', rules: ['required', 'positiveNumber'], message: 'Please enter a valid positive number for Reservation Area Affected' },
-    { id: 'dp_rp_road_area_sqm', rules: ['required', 'positiveNumber'], message: 'Please enter a valid positive number for DP/RP Road Area Affected' },
-    // Add more as needed
-];
 
 document.addEventListener("DOMContentLoaded", function() {
     const reservationAreaAffectedInputs = document.getElementsByName("reservation_area_affected");
