@@ -407,7 +407,7 @@ async function initializeForm() {
       const jsonData = Object.fromEntries(formData.entries());
 
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbyn9xWTUFHIVNBhlIVIdtZD5SSyUWHqjZol3dIcoJefVtPCMWkksElAhGCCEjZ_fVz2/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbzugghJTiVSbxoURY_BcHBmHRNF7RRJod9_569Lhm8V7hlR3DsqipTaqS30UbJ2ndF6/exec', {
           method: 'POST',
           mode: 'cors',
           credentials: 'omit',
