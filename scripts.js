@@ -376,6 +376,11 @@ async function initializeForm() {
     setupBoundaryListeners();
     initializeBoundarySelects();
 
+  } catch (error) {
+    console.error('Error during form initialization:', error);
+  }
+}
+
 // Form submission
 document.querySelector('form').addEventListener('submit', async function (e) {
   e.preventDefault(); // Prevent default form submission
