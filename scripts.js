@@ -407,7 +407,7 @@ async function initializeForm() {
 
       try {
         const response = await fetch(
-          'https://script.google.com/macros/s/AKfycbx6hP4QSWNwq0X6inDhhXNEKXQXrFl2vuWkN1omK3z358EQmgtM0_VEQ29z1dzlpifx/exec',
+          'https://script.google.com/macros/s/AKfycbyPQxC54ajcHJ16w7hMOS5o8f7Tktj-b3Uw0bbtOOcyOYCUcOJ3N-VhRjhZ9svkQNG9/exec',
           {
             method: 'POST',
             mode: 'cors', // Enable CORS mode
