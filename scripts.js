@@ -407,7 +407,7 @@ document.querySelector('form').addEventListener('submit', async function (e) {
 
   try {
     const response = await fetch(
-      'https://script.google.com/macros/s/AKfycbw147NV465fB5i0caBItK3J7U0IYS2m-CWXkFrcQkX3IogP5ctvWprBVBKPlpf4Nc-3/exec',
+      'https://script.google.com/macros/s/AKfycbw22cz6_wqQyNDrphdGJORLFCu0d7njxTbYZHf77z8TJT78uIO6AmF6GOYX6BXOeYk/exec',
       {
         method: 'POST',
         mode: 'cors', // Enable CORS mode
