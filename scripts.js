@@ -94,6 +94,7 @@ function toggleElement(elementId, show) {
   const element = document.getElementById(elementId);
   if (element) {
     element.style.display = show ? 'block' : 'none';
+    // Removed element.disabled to prevent disabling the container
   }
 }
 
@@ -376,11 +377,6 @@ async function initializeForm() {
     setupBoundaryListeners();
     initializeBoundarySelects();
 
-  } catch (error) {
-    console.error('Error during form initialization:', error);
-  }
-}
-
 // Form submission
 document.querySelector('form').addEventListener('submit', async function (e) {
   e.preventDefault(); // Prevent default form submission
@@ -411,7 +407,7 @@ document.querySelector('form').addEventListener('submit', async function (e) {
 
   try {
     const response = await fetch(
-      'https://script.google.com/macros/s/AKfycbw22cz6_wqQyNDrphdGJORLFCu0d7njxTbYZHf77z8TJT78uIO6AmF6GOYX6BXOeYk/exec',
+      'https://script.google.com/macros/s/AKfycby-zx9B9GipbJCgMtTXk7Bm8v6UDaujPCBme42_EwrKKZl2dEujoGZaCkkl1JBKF3Oo/exec',
       {
         method: 'POST',
         mode: 'cors', // Enable CORS mode
