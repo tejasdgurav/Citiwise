@@ -94,7 +94,6 @@ function toggleElement(elementId, show) {
   const element = document.getElementById(elementId);
   if (element) {
     element.style.display = show ? 'block' : 'none';
-    // Removed element.disabled to prevent disabling the container
   }
 }
 
