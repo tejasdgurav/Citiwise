@@ -94,7 +94,6 @@ function toggleElement(elementId, show) {
   const element = document.getElementById(elementId);
   if (element) {
     element.style.display = show ? 'block' : 'none';
-    // Removed element.disabled to prevent disabling the container
   }
 }
 
@@ -377,68 +376,74 @@ async function initializeForm() {
     setupBoundaryListeners();
     initializeBoundarySelects();
 
-// Form submission
-document.querySelector('form').addEventListener('submit', async function (e) {
-  e.preventDefault(); // Prevent default form submission
+    // Form submission
+    document.querySelector('form').addEventListener('submit', async function (e) {
+      e.preventDefault(); // Prevent default form submission
 
-  // Perform final validations
-  let isValid = true;
-  inputValidations.forEach(({ id, validate, errorMsg }) => {
-    const input = document.getElementById(id);
-    if (input) {
-      if (typeof validate === 'function') {
-        if (!validate(input.value)) {
-          showFeedback(input, false, errorMsg);
-          isValid = false;
-        } else {
-          showFeedback(input, true, '');
+      // Perform final validations
+      let isValid = true;
+      inputValidations.forEach(({ id, validate, errorMsg }) => {
+        const input = document.getElementById(id);
+        if (input) {
+          if (typeof validate === 'function') {
+            if (!validate(input.value)) {
+              showFeedback(input, false, errorMsg);
+              isValid = false;
+            } else {
+              showFeedback(input, true, '');
+            }
+          }
         }
+      });
+
+      if (!isValid) {
+        alert('Please correct the errors in the form before submitting.');
+        return;
       }
-    }
-  });
 
-  if (!isValid) {
-    alert('Please correct the errors in the form before submitting.');
-    return;
-  }
+      // If validation passes, prepare FormData
+      const formData = new FormData(this); // Collect form data
 
-  // If validation passes, prepare FormData
-  const formData = new FormData(this); // Collect form data
+      try {
+        const response = await fetch(
+          'https://script.google.com/macros/s/AKfycbwgQmUq1euOiAUGNXHq0ZZndveSsVZBE9OvsAxOn-iz-XgEKfbAVwr9V7Lqv-_FsGl5/exec',
+          {
+            method: 'POST',
+            mode: 'cors', // Enable CORS mode
+            credentials: 'omit', // Avoid sending cookies or credentials
+            body: formData, // Send FormData directly
+          }
+        );
 
-  try {
-    const response = await fetch(
-      'https://script.google.com/macros/s/AKfycbwgQmUq1euOiAUGNXHq0ZZndveSsVZBE9OvsAxOn-iz-XgEKfbAVwr9V7Lqv-_FsGl5/exec',
-      {
-        method: 'POST',
-        mode: 'cors', // Enable CORS mode
-        credentials: 'omit', // Avoid sending cookies or credentials
-        body: formData, // Send FormData directly
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.status === 'success') {
+          alert('Form submitted successfully!');
+          this.reset();
+          // Clear all feedback
+          document.querySelectorAll('.feedback').forEach((el) => (el.textContent = ''));
+          document.querySelectorAll('.invalid-input').forEach((el) =>
+            el.classList.remove('invalid-input')
+          );
+          // Reset disabled states and hide conditional elements
+          initializeForm();
+        } else {
+          throw new Error(result.message || 'Unknown error occurred');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert(`An error occurred: ${error.message}. Please try again later.`);
       }
-    );
+    });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    if (result.status === 'success') {
-      alert('Form submitted successfully!');
-      this.reset();
-      // Clear all feedback
-      document.querySelectorAll('.feedback').forEach((el) => (el.textContent = ''));
-      document.querySelectorAll('.invalid-input').forEach((el) =>
-        el.classList.remove('invalid-input')
-      );
-      // Reset disabled states and hide conditional elements
-      initializeForm();
-    } else {
-      throw new Error(result.message || 'Unknown error occurred');
-    }
+    // Call the initialization function when the DOM is ready
+    document.addEventListener('DOMContentLoaded', initializeForm);
   } catch (error) {
-    console.error('Error:', error);
-    alert(`An error occurred: ${error.message}. Please try again later.`);
+    console.error('Initialization failed:', error);
   }
-});
+}
 
-// Call the initialization function when the DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
