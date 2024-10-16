@@ -67,7 +67,7 @@ function showFeedback(input, isValid, message) {
 // Load JSON data
 async function loadJSONData(filename) {
   try {
-    const response = await fetch(`data/${filename}`);
+    const response = await fetch(`static/data/${filename}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
