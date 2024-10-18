@@ -119,7 +119,7 @@ async function initializeForm() {
 
     // Populate ULB/RP/Special Authority dropdown with sorted data
     const ulbDropdown = document.getElementById('ulb_rp_special_authority');
-    populateDropdown(ulbDropdown, sortedUlbData, 'talukaName', 'talukaName');
+    populateDropdown(ulbDropdown, sortedUlbData, 'id', 'talukaName');
 
     // Populate dropdowns from JSON
     populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
@@ -280,8 +280,9 @@ async function initializeForm() {
     citySpecificAreaSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority first</option>';
 
     document.getElementById('ulb_rp_special_authority').addEventListener('change', function() {
-      const selectedUlbId = parseInt(this.value);
-      const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.id === selectedUlbId);
+      const selectedTalukaName = this.value;  // Get the selected talukaName
+      const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.talukaName === selectedTalukaName);
+
 
       if (selectedUlb) {
         const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
