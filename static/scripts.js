@@ -415,11 +415,18 @@ async function initializeForm() {
 
       // Get talukaName value from the form data
       const selectedTalukaName = formData.get('ulb_rp_special_authority'); 
+
+
+      // Ensure the ulb_type is included in FormData explicitly
+      const ulbTypeValue = document.getElementById('ulb_type').value;
+      formData.append('ulb_type', ulbTypeValue); // Explicitly append ulb_type
+
+      console.log('ulb_type explicitly appended:', ulbTypeValue); // Debugging
       
 
       try {
         const response = await fetch(
-          'https://script.google.com/macros/s/AKfycbwgQmUq1euOiAUGNXHq0ZZndveSsVZBE9OvsAxOn-iz-XgEKfbAVwr9V7Lqv-_FsGl5/exec',
+          'https://script.google.com/macros/s/AKfycbwM8k6qucOzebfvOmTEp3AKlcbo8QnS3tpqf5SEysC3hd9YGQP1JM1gAuc5aY27miS1/exec',
           {
             method: 'POST',
             mode: 'cors', // Enable CORS mode
