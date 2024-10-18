@@ -119,7 +119,7 @@ async function initializeForm() {
 
     // Populate ULB/RP/Special Authority dropdown with sorted data
     const ulbDropdown = document.getElementById('ulb_rp_special_authority');
-    populateDropdown(ulbDropdown, sortedUlbData, 'id', 'talukaName');
+    populateDropdown(ulbDropdown, sortedUlbData, 'talukaName', 'talukaName');
 
     // Populate dropdowns from JSON
     populateDropdown(document.getElementById('zone'), zoneData.zone, 'id', 'name');
