@@ -405,6 +405,10 @@ async function initializeForm() {
       // If validation passes, prepare FormData
       const formData = new FormData(this); // Collect form data
 
+      // Get talukaName value from the form data
+      const selectedTalukaName = formData.get('ulb_rp_special_authority'); 
+      
+
       try {
         const response = await fetch(
           'https://script.google.com/macros/s/AKfycbwgQmUq1euOiAUGNXHq0ZZndveSsVZBE9OvsAxOn-iz-XgEKfbAVwr9V7Lqv-_FsGl5/exec',
