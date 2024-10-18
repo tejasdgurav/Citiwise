@@ -280,7 +280,7 @@ async function initializeForm() {
     citySpecificAreaSelect.innerHTML = '<option value="">Select ULB/RP/Special Authority first</option>';
 
     document.getElementById('ulb_rp_special_authority').addEventListener('change', function() {
-      const selectedTalukaName = this.value;  // Get the selected talukaName
+      const selectedTalukaName = this.selectedOptions[0].textContent;
       const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.talukaName === selectedTalukaName);
 
 
