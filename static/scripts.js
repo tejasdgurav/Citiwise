@@ -283,10 +283,18 @@ async function initializeForm() {
       const selectedTalukaName = this.selectedOptions[0].textContent;
       const selectedUlb = ulbData.ulb_rp_special_authority.find(ulb => ulb.talukaName === selectedTalukaName);
 
-
       if (selectedUlb) {
-        const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
+        // Extract councilName
+        const councilName = selectedUlb.councilName; // Assuming councilName exists in the ulbData structure
+    
+        // Populate the hidden field for councilName (ulb_type)
+        const councilNameInput = document.getElementById('ulb_type');
+        if (councilNameInput) {
+          councilNameInput.value = councilName;
+        }
 
+        // Update city-specific areas dropdown
+        const filteredAreas = citySpecificAreaData.city_specific_area.filter(area => area.councilId === selectedUlb.councilId);
         if (filteredAreas.length > 0) {
           populateDropdown(citySpecificAreaSelect, filteredAreas, 'id', 'name');
           citySpecificAreaSelect.disabled = false;
