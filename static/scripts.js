@@ -80,6 +80,7 @@ async function loadJSONData(filename) {
   }
 }
 
+
 // Populate dropdowns
 function populateDropdown(
   selectElement,
@@ -96,6 +97,7 @@ function populateDropdown(
     // If the select element is 'zone', use the 'name' (textKey) for both value and text content
     if (selectElement.id === 'zone') {
       option.value = item[textKey]; // Use 'name' (text) as value for zone dropdown
+      option.setAttribute('data-zone-id', item.id); // Attach zone_id as data attribute for 'zone' dropdown
     } else {
       option.value = item[valueKey]; // Use 'id' for other dropdowns
     }
@@ -108,14 +110,10 @@ function populateDropdown(
       option.setAttribute('data-council-id', item[councilIdKey]);
     }
 
-    // Attach landuser_id as data attribute for 'zone' dropdown
-    if (selectElement.id === 'zone') {
-      option.setAttribute('data-landuser-id', item.landuserId); // This is 'landuserId' in JSON for 'zone_landuser_id'
-    }
-
     selectElement.appendChild(option);
   });
 }
+
 
 // Show/hide element
 function toggleElement(elementId, show) {
