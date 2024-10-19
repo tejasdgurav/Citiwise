@@ -693,7 +693,7 @@ async function initializeForm() {
     setupBoundaryListeners();
     initializeBoundarySelects();
 
-    // Form submission
+// Form submission
 const form = document.querySelector('form');
 if (form) {
   form.addEventListener('submit', async function (e) {
@@ -745,9 +745,9 @@ if (form) {
     const zoneLanduserId = selectedZone.getAttribute('data-landuser-id'); // zone_landuser_id
 
     // Append zone_id, zone_name, and zone_landuser_id to FormData
-    formData.append('zone_id', zoneId || '');
-    formData.append('zone', zoneName || '');
-    formData.append('zone_landuser_id', zoneLanduserId || '');
+    formData.append('zone_id', zoneId || ''); // Capture zone_id from data attribute
+    formData.append('zone', zoneName || '');  // This should store the zone name in the 'zone' column
+    formData.append('zone_landuser_id', zoneLanduserId || ''); // Capture the correct landuser_id
 
     // Ensure ulb_type is included in FormData
     const ulbTypeInput = document.getElementById('ulb_type');
@@ -804,9 +804,6 @@ if (form) {
 } else {
   console.error('Form element not found.');
 }
-
-console.log('Form initialized successfully.');
-
 
 // Call initialization when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
