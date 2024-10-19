@@ -481,6 +481,3 @@ document.querySelector('form').addEventListener('submit', async function (e) {
 
 // Call initialization when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
-
-
-document.addEventListener('DOMContentLoaded', initializeForm);
