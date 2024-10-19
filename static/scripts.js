@@ -505,19 +505,26 @@ async function initializeForm() {
     if (zoneSelect) {
       zoneSelect.addEventListener('change', function () {
         const usesSelect = document.getElementById('uses');
-        const selectedZone = this.value;
-        if (!selectedZone) {
+        const selectedZoneId = this.options[this.selectedIndex].getAttribute('data-zone-id'); // Get zone ID from option attribute
+
+    // If no zone is selected, reset the uses dropdown and disable it
+        if (!selectedZoneId) {
           usesSelect.innerHTML = '<option value="">Select Zone first</option>';
           usesSelect.disabled = true;
           return;
         }
+
+        // Filter the uses based on the selected zone ID
         const filteredUses = usesData.uses.filter(
-          (use) => use.zoneId === parseInt(selectedZone, 10)
+          (use) => use.zoneId === parseInt(selectedZoneId, 10) // Matching use.zoneId with selected zoneId
         );
+
+        // Populate the uses dropdown with filtered data
         populateDropdown(usesSelect, filteredUses, 'id', 'name');
-        usesSelect.disabled = false;
+        usesSelect.disabled = false; // Enable the dropdown
       });
     }
+
 
     // ULB and City Specific Area
     const citySpecificAreaSelect = document.getElementById(
