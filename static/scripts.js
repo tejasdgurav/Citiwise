@@ -92,8 +92,8 @@ function populateDropdown(
   selectElement.innerHTML = '<option value="">Select an option</option>';
   data.forEach((item) => {
     const option = document.createElement('option');
-    option.value = item[valueKey];
-    option.textContent = item[textKey];
+    option.value = item[valueKey]; // This is 'id' in JSON for 'zone_id'
+    option.textContent = item[textKey]; // This is 'name' in JSON
 
     // Attach taluka_id and council_id as data attributes if provided
     if (idKey && councilIdKey) {
@@ -101,14 +101,15 @@ function populateDropdown(
       option.setAttribute('data-council-id', item[councilIdKey]);
     }
 
-    // **Added Code: Attach landuser_id as data attribute for 'zone' dropdown**
+    // Attach landuser_id as data attribute for 'zone' dropdown
     if (selectElement.id === 'zone') {
-      option.setAttribute('data-landuser-id', item.landuserId);
+      option.setAttribute('data-landuser-id', item.landuserId); // This is 'landuserId' in JSON for 'zone_landuser_id'
     }
 
     selectElement.appendChild(option);
   });
 }
+
 
 // Show/hide element
 function toggleElement(elementId, show) {
