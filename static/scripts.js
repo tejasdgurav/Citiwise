@@ -92,7 +92,14 @@ function populateDropdown(
   selectElement.innerHTML = '<option value="">Select an option</option>';
   data.forEach((item) => {
     const option = document.createElement('option');
-    option.value = item[valueKey]; // This is 'id' in JSON for 'zone_id'
+
+    // If the select element is 'zone', use the 'name' (textKey) for both value and text content
+    if (selectElement.id === 'zone') {
+      option.value = item[textKey]; // Use 'name' (text) as value for zone dropdown
+    } else {
+      option.value = item[valueKey]; // Use 'id' for other dropdowns
+    }
+
     option.textContent = item[textKey]; // This is 'name' in JSON
 
     // Attach taluka_id and council_id as data attributes if provided
@@ -109,6 +116,7 @@ function populateDropdown(
     selectElement.appendChild(option);
   });
 }
+
 
 
 // Show/hide element
