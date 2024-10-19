@@ -97,7 +97,6 @@ function populateDropdown(selectElement, data, valueKey, textKey, idKey = null, 
 }
 
 
-
 // Show/hide element
 function toggleElement(elementId, show) {
   const element = document.getElementById(elementId);
@@ -127,8 +126,8 @@ async function initializeForm() {
     );
 
     // Populate ULB/RP/Special Authority dropdown with sorted data
-    const ulbDropdown = document.getElementById('ulb_rp_special_authority');
-    populateDropdown(ulbDropdown, sortedUlbData, 'talukaName', 'talukaName', 'id', 'councilId');
+    populateDropdown(document.getElementById('ulb_rp_special_authority'), ulbData.ulb_rp_special_authority, 'talukaName', 'talukaName', 'id', 'councilId');
+
 
 
     // Populate dropdowns from JSON
@@ -395,6 +394,7 @@ async function initializeForm() {
     setupBoundaryListeners();
     initializeBoundarySelects();
 
+
     // Form submission
 document.querySelector('form').addEventListener('submit', async function (e) {
   e.preventDefault(); // Prevent default form submission
@@ -424,8 +424,14 @@ document.querySelector('form').addEventListener('submit', async function (e) {
   // Extract taluka_id and council_id from selected dropdown option
   const ulbDropdown = document.getElementById('ulb_rp_special_authority');
   const selectedOption = ulbDropdown.options[ulbDropdown.selectedIndex];
+  
+  // Retrieve taluka_id and council_id from data attributes
   const talukaId = selectedOption.getAttribute('data-taluka-id');
   const councilId = selectedOption.getAttribute('data-council-id');
+
+  // Log these values for debugging
+  console.log('Selected talukaId:', talukaId);  
+  console.log('Selected councilId:', councilId);  
 
   // Append taluka_id and council_id to FormData
   formData.append('taluka_id', talukaId);
@@ -435,30 +441,39 @@ document.querySelector('form').addEventListener('submit', async function (e) {
   const ulbTypeValue = document.getElementById('ulb_type').value;
   formData.append('ulb_type', ulbTypeValue);
 
+  // Log the entire form data for verification
+  console.log('Form Data:', Object.fromEntries(formData));
+
   try {
+    // Submit form data via a POST request to the Google Apps Script endpoint
     const response = await fetch(
       'https://script.google.com/macros/s/AKfycbxJ14ZLenhE6mY6oKrUpO-6SZDwSPpUiqlf4RpliWmy_MYy5BD2R28sbCr-HujLH_0Y/exec',
       {
         method: 'POST',
-        mode: 'cors', // Enable CORS
-        credentials: 'omit', // No cookies/credentials
-        body: formData,
+        mode: 'cors',  // Enable CORS for cross-origin requests
+        credentials: 'omit',  // No cookies/credentials
+        body: formData,  // Pass FormData object
       }
     );
 
+    // Check if the response is successful
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     const result = await response.json();
+    
+    // Handle the success case
     if (result.status === 'success') {
       alert('Form submitted successfully!');
-      this.reset();
+      this.reset();  // Reset the form fields
       document.querySelectorAll('.feedback').forEach(el => (el.textContent = ''));
       document.querySelectorAll('.invalid-input').forEach(el => el.classList.remove('invalid-input'));
-      initializeForm(); // Reset form fields and state
+      initializeForm();  // Reset form state
     } else {
+      // Handle any errors returned from the server
       throw new Error(result.message || 'Unknown error occurred');
     }
   } catch (error) {
+    // Log and show an error message to the user
     console.error('Error:', error);
     alert(`An error occurred: ${error.message}. Please try again later.`);
   }
