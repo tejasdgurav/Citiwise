@@ -94,17 +94,16 @@ function populateDropdown(
   data.forEach((item) => {
     const option = document.createElement('option');
 
-    // If the select element is 'zone', use the 'name' (textKey) for both value and text content
     if (selectElement.id === 'zone') {
-      option.value = item[textKey]; // Use 'name' (text) as value for zone dropdown
-      option.setAttribute('data-zone-id', item.id); // Attach zone_id as data attribute for 'zone' dropdown
+      option.value = item[textKey]; // Use 'name' as value
+      option.setAttribute('data-zone-id', item.id); // Set zone_id
+      option.setAttribute('data-landuser-id', item.landuserId); // Set landuserId
     } else {
       option.value = item[valueKey]; // Use 'id' for other dropdowns
     }
 
-    option.textContent = item[textKey]; // This is 'name' in JSON
+    option.textContent = item[textKey]; // Display 'name'
 
-    // Attach taluka_id and council_id as data attributes if provided
     if (idKey && councilIdKey) {
       option.setAttribute('data-taluka-id', item[idKey]);
       option.setAttribute('data-council-id', item[councilIdKey]);
@@ -113,6 +112,7 @@ function populateDropdown(
     selectElement.appendChild(option);
   });
 }
+
 
 
 // Show/hide element
@@ -694,123 +694,119 @@ async function initializeForm() {
     initializeBoundarySelects();
 
     // Form submission
-    const form = document.querySelector('form');
-    if (form) {
-      form.addEventListener('submit', async function (e) {
-        e.preventDefault(); // Prevent default form submission
+const form = document.querySelector('form');
+if (form) {
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault(); // Prevent default form submission
 
-        console.log('Form submission initiated.');
+    console.log('Form submission initiated.');
 
-        // Perform final validations
-        let isValid = true;
-        inputValidations.forEach(({ id, validate, errorMsg }) => {
-          const input = document.getElementById(id);
-          if (input && typeof validate === 'function') {
-            if (!validate(input.value)) {
-              showFeedback(input, false, errorMsg);
-              isValid = false;
-            } else {
-              showFeedback(input, true, '');
-            }
-          }
-        });
-
-        if (!isValid) {
-          alert('Please correct the errors in the form before submitting.');
-          console.warn('Form validation failed.');
-          return;
+    // Perform final validations
+    let isValid = true;
+    inputValidations.forEach(({ id, validate, errorMsg }) => {
+      const input = document.getElementById(id);
+      if (input && typeof validate === 'function') {
+        if (!validate(input.value)) {
+          showFeedback(input, false, errorMsg);
+          isValid = false;
+        } else {
+          showFeedback(input, true, '');
         }
+      }
+    });
 
-        // Prepare FormData
-        const formData = new FormData(this);
-
-        // Extract taluka_id and council_id from selected dropdown option
-        const selectedOption = ulbDropdown.options[ulbDropdown.selectedIndex];
-        const talukaId = selectedOption.getAttribute('data-taluka-id');
-        const councilId = selectedOption.getAttribute('data-council-id');
-
-        // Log these values for debugging
-        console.log('Selected talukaId:', talukaId);
-        console.log('Selected councilId:', councilId);
-
-        // Append taluka_id and council_id to FormData
-        formData.append('taluka_id', talukaId || '');
-        formData.append('council_id', councilId || '');
-
-        // Capture zone_id, zone_name, and zone_landuser_id from selected zone
-        const zoneSelect = document.getElementById('zone');
-        const selectedZone = zoneSelect.options[zoneSelect.selectedIndex];
-        const zoneId = selectedZone.value; // zone_id
-        const zoneName = selectedZone.textContent; // zone (name)
-        const zoneLanduserId = selectedZone.getAttribute('data-landuser-id'); // zone_landuser_id
-
-        // Append zone_id, zone_name, and zone_landuser_id to FormData
-        formData.append('zone_id', zoneId || '');
-        formData.append('zone', zoneName || '');
-        formData.append('zone_landuser_id', zoneLanduserId || '');
-
-        // Ensure ulb_type is included in FormData
-        const ulbTypeInput = document.getElementById('ulb_type');
-        const ulbTypeValue = ulbTypeInput ? ulbTypeInput.value : '';
-        formData.append('ulb_type', ulbTypeValue);
-
-        // Log the entire form data for verification
-        const formEntries = {};
-        formData.forEach((value, key) => {
-          formEntries[key] = value;
-        });
-        console.log('Form Data:', formEntries);
-
-        try {
-          // Submit form data via a POST request to the Google Apps Script endpoint
-          const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbwJV8gUKBBOlaCE7opM2vYLB7OCbvgMkWQKv8xqoAVkJCfUypFvf2VPud3wcscKFrm9/exec',
-            {
-              method: 'POST',
-              mode: 'cors', // Enable CORS for cross-origin requests
-              credentials: 'omit', // No cookies/credentials
-              body: formData, // Pass FormData object
-            }
-          );
-
-          // Check if the response is successful
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-          const result = await response.json();
-
-          // Handle the success case
-          if (result.status === 'success') {
-            alert('Form submitted successfully!');
-            this.reset(); // Reset the form fields
-            document.querySelectorAll('.feedback').forEach((el) => {
-              el.textContent = '';
-              el.className = 'feedback';
-            });
-            document.querySelectorAll('.invalid-input').forEach((el) =>
-              el.classList.remove('invalid-input')
-            );
-            initializeForm(); // Reset form state
-            console.log('Form submitted and reset successfully.');
-          } else {
-            // Handle any errors returned from the server
-            throw new Error(result.message || 'Unknown error occurred');
-          }
-        } catch (error) {
-          // Log and show an error message to the user
-          console.error('Error:', error);
-          alert(`An error occurred: ${error.message}. Please try again later.`);
-        }
-      });
-    } else {
-      console.error('Form element not found.');
+    if (!isValid) {
+      alert('Please correct the errors in the form before submitting.');
+      console.warn('Form validation failed.');
+      return;
     }
 
-    console.log('Form initialized successfully.');
+    // Prepare FormData
+    const formData = new FormData(this);
 
-  } catch (error) {
-    console.error('Initialization error:', error);
-  }
+    // Extract taluka_id and council_id from selected dropdown option
+    const selectedOption = ulbDropdown.options[ulbDropdown.selectedIndex];
+    const talukaId = selectedOption.getAttribute('data-taluka-id');
+    const councilId = selectedOption.getAttribute('data-council-id');
+
+    // Log these values for debugging
+    console.log('Selected talukaId:', talukaId);
+    console.log('Selected councilId:', councilId);
+
+    // Append taluka_id and council_id to FormData
+    formData.append('taluka_id', talukaId || '');
+    formData.append('council_id', councilId || '');
+
+    // Capture zone_id, zone_name, and zone_landuser_id from selected zone
+    const zoneSelect = document.getElementById('zone');
+    const selectedZone = zoneSelect.options[zoneSelect.selectedIndex];
+    const zoneId = selectedZone.getAttribute('data-zone-id'); // zone_id
+    const zoneName = selectedZone.value; // zone (name)
+    const zoneLanduserId = selectedZone.getAttribute('data-landuser-id'); // zone_landuser_id
+
+    // Append zone_id, zone_name, and zone_landuser_id to FormData
+    formData.append('zone_id', zoneId || '');
+    formData.append('zone', zoneName || '');
+    formData.append('zone_landuser_id', zoneLanduserId || '');
+
+    // Ensure ulb_type is included in FormData
+    const ulbTypeInput = document.getElementById('ulb_type');
+    const ulbTypeValue = ulbTypeInput ? ulbTypeInput.value : '';
+    formData.append('ulb_type', ulbTypeValue);
+
+    // Log the entire form data for verification
+    const formEntries = {};
+    formData.forEach((value, key) => {
+      formEntries[key] = value;
+    });
+    console.log('Form Data:', formEntries);
+
+    try {
+      // Submit form data via a POST request to the Google Apps Script endpoint
+      const response = await fetch(
+        'https://script.google.com/macros/s/AKfycbwJV8gUKBBOlaCE7opM2vYLB7OCbvgMkWQKv8xqoAVkJCfUypFvf2VPud3wcscKFrm9/exec',
+        {
+          method: 'POST',
+          mode: 'cors', // Enable CORS for cross-origin requests
+          credentials: 'omit', // No cookies/credentials
+          body: formData, // Pass FormData object
+        }
+      );
+
+      // Check if the response is successful
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const result = await response.json();
+
+      // Handle the success case
+      if (result.status === 'success') {
+        alert('Form submitted successfully!');
+        this.reset(); // Reset the form fields
+        document.querySelectorAll('.feedback').forEach((el) => {
+          el.textContent = '';
+          el.className = 'feedback';
+        });
+        document.querySelectorAll('.invalid-input').forEach((el) =>
+          el.classList.remove('invalid-input')
+        );
+        initializeForm(); // Reset form state
+        console.log('Form submitted and reset successfully.');
+      } else {
+        // Handle any errors returned from the server
+        throw new Error(result.message || 'Unknown error occurred');
+      }
+    } catch (error) {
+      // Log and show an error message to the user
+      console.error('Error:', error);
+      alert(`An error occurred: ${error.message}. Please try again later.`);
+    }
+  });
+} else {
+  console.error('Form element not found.');
 }
+
+console.log('Form initialized successfully.');
+
 
 // Call initialization when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
