@@ -101,6 +101,11 @@ function populateDropdown(
       option.setAttribute('data-council-id', item[councilIdKey]);
     }
 
+    // **Added Code: Attach landuser_id as data attribute for 'zone' dropdown**
+    if (selectElement.id === 'zone') {
+      option.setAttribute('data-landuser-id', item.landuserId);
+    }
+
     selectElement.appendChild(option);
   });
 }
@@ -714,6 +719,16 @@ async function initializeForm() {
         formData.append('taluka_id', talukaId || '');
         formData.append('council_id', councilId || '');
 
+        // **Added Code: Capture zone_id and zone_landuser_id from selected zone**
+        const zoneSelect = document.getElementById('zone');
+        const selectedZone = zoneSelect.options[zoneSelect.selectedIndex];
+        const zoneId = selectedZone.value; // zone_id
+        const zoneLanduserId = selectedZone.getAttribute('data-landuser-id'); // zone_landuser_id
+
+        // Append zone_id and zone_landuser_id to FormData
+        formData.append('zone_id', zoneId || '');
+        formData.append('zone_landuser_id', zoneLanduserId || '');
+
         // Ensure ulb_type is included in FormData
         const ulbTypeInput = document.getElementById('ulb_type');
         const ulbTypeValue = ulbTypeInput ? ulbTypeInput.value : '';
@@ -729,7 +744,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbxJ14ZLenhE6mY6oKrUpO-6SZDwSPpUiqlf4RpliWmy_MYy5BD2R28sbCr-HujLH_0Y/exec',
+            'https://script.google.com/macros/s/AKfycbwJV8gUKBBOlaCE7opM2vYLB7OCbvgMkWQKv8xqoAVkJCfUypFvf2VPud3wcscKFrm9/exec',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests
