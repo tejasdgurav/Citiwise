@@ -500,30 +500,36 @@ async function initializeForm() {
       });
     });
 
+
     // Zone and Uses
     const zoneSelect = document.getElementById('zone');
     if (zoneSelect) {
       zoneSelect.addEventListener('change', function () {
         const usesSelect = document.getElementById('uses');
-        const selectedZoneId = this.options[this.selectedIndex].getAttribute('data-zone-id'); // Get zone ID from option attribute
-
-    // If no zone is selected, reset the uses dropdown and disable it
+    
+    // Get the selected zone ID from the selected option's data attribute
+        const selectedZoneId = this.options[this.selectedIndex].getAttribute('data-zone-id');
+    
+    // If no zone is selected, reset and disable the uses dropdown
         if (!selectedZoneId) {
           usesSelect.innerHTML = '<option value="">Select Zone first</option>';
           usesSelect.disabled = true;
           return;
         }
 
-        // Filter the uses based on the selected zone ID
+    // Filter the uses based on the selected zone ID
         const filteredUses = usesData.uses.filter(
-          (use) => use.zoneId === parseInt(selectedZoneId, 10) // Matching use.zoneId with selected zoneId
+          (use) => use.zoneId === parseInt(selectedZoneId, 10) // Ensure proper matching of zoneId
         );
 
-        // Populate the uses dropdown with filtered data
+    // Populate the uses dropdown with the filtered uses data
         populateDropdown(usesSelect, filteredUses, 'id', 'name');
-        usesSelect.disabled = false; // Enable the dropdown
+
+    // Enable the uses dropdown
+        usesSelect.disabled = false;
       });
     }
+
 
 
     // ULB and City Specific Area
