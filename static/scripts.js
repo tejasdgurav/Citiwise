@@ -805,5 +805,5 @@ if (form) {
   console.error('Form element not found.');
 }
 
-// Call initialization when DOM is ready
+ // Call initialization when DOM is ready
 document.addEventListener('DOMContentLoaded', initializeForm);
