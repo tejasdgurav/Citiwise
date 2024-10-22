@@ -97,6 +97,11 @@ function populateDropdown(
       option.value = item[textKey]; // Use 'name' as value
       option.setAttribute('data-zone-id', item.id); // Set zone_id
       option.setAttribute('data-landuser-id', item.landuserId); // Set landuserId
+    } else if (selectElement.id === 'building_type') {
+      option.value = item[valueKey]; // Use 'id' as value
+      // **Newly Added Attributes for building_type**
+      option.setAttribute('data-name', item.name);
+      option.setAttribute('data-proposal-id', item.proposalId);
     } else {
       option.value = item[valueKey]; // Use 'id' for other dropdowns
     }
@@ -787,6 +792,18 @@ async function initializeForm() {
         formData.append('city_specific_area_areaCode', citySpecificAreaAreaCode || '');
         formData.append('city_specific_area_councilId', citySpecificAreaCouncilId || '');
 
+        // **Newly Added Section: Capture Building Type Details**
+        const buildingTypeSelect = document.getElementById('building_type');
+        const selectedBuildingTypeOption = buildingTypeSelect.options[buildingTypeSelect.selectedIndex];
+        const buildingTypeId = selectedBuildingTypeOption.value;
+        const buildingTypeName = selectedBuildingTypeOption.getAttribute('data-name');
+        const buildingTypeProposalId = selectedBuildingTypeOption.getAttribute('data-proposal-id');
+
+        // Append building_type details to FormData
+        formData.append('building_type_id', buildingTypeId || '');
+        formData.append('building_type_name', buildingTypeName || '');
+        formData.append('building_type_proposalId', buildingTypeProposalId || '');
+
         // Log the entire form data for verification
         const formEntries = {};
         formData.forEach((value, key) => {
@@ -797,7 +814,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbxMuzYLrZu-QG2OPDBpEPdVU6KW6J9tB7HiQsyW-NDte8N_FIKzW7N3LsGokerKoYCA/exec',
+            'https://script.google.com/macros/s/AKfycbywKOwvHrpBbtnUYqAtymoqMyo3W3NcH4jIqX0npAnd2hRSRdJTcF3qdi-LLhRXdmJa/exec',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests
