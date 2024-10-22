@@ -102,11 +102,12 @@ function populateDropdown(
       // **Newly Added Attributes for building_type**
       option.setAttribute('data-name', item.name);
       option.setAttribute('data-proposal-id', item.proposalId);
-    }
-    // **Newly Added Condition for building_subtype**
+    } 
+    // **Newly Added Handling for building_subtype**
     else if (selectElement.id === 'building_subtype') {
       option.value = item[valueKey]; // Use 'id' as value
-      option.setAttribute('data-bldgtype-id', item.bldgtypeID); // Set bldgtypeID
+      option.setAttribute('data-name', item.name);
+      option.setAttribute('data-bldgtypeID', item.bldgtypeID);
     } else {
       option.value = item[valueKey]; // Use 'id' for other dropdowns
     }
@@ -192,12 +193,11 @@ async function initializeForm() {
       'id',
       'name'
     );
-    populateDropdown(
-      document.getElementById('building_subtype'),
-      buildingSubtypeData.building_subtype,
-      'id',
-      'name'
-    ); // **Ensure building_subtype is populated**
+
+    // **Populate building_subtype dropdown initially as disabled**
+    const buildingSubtypeSelect = document.getElementById('building_subtype');
+    buildingSubtypeSelect.innerHTML = '<option value="">Select Building Type first</option>';
+    buildingSubtypeSelect.disabled = true;
 
     // Hide conditional elements initially
     toggleElement('incentive_fsi_rating', false);
@@ -804,8 +804,8 @@ async function initializeForm() {
         formData.append('city_specific_area_councilId', citySpecificAreaCouncilId || '');
 
         // **Newly Added Section: Capture Building Type Details**
-        const buildingTypeSelect = document.getElementById('building_type');
-        const selectedBuildingTypeOption = buildingTypeSelect.options[buildingTypeSelect.selectedIndex];
+        const buildingTypeSelectElement = document.getElementById('building_type');
+        const selectedBuildingTypeOption = buildingTypeSelectElement.options[buildingTypeSelectElement.selectedIndex];
         const buildingTypeId = selectedBuildingTypeOption.value;
         const buildingTypeName = selectedBuildingTypeOption.getAttribute('data-name');
         const buildingTypeProposalId = selectedBuildingTypeOption.getAttribute('data-proposal-id');
@@ -816,11 +816,11 @@ async function initializeForm() {
         formData.append('building_type_proposalId', buildingTypeProposalId || '');
 
         // **Newly Added Section: Capture Building Subtype Details**
-        const buildingSubtypeSelect = document.getElementById('building_subtype');
-        const selectedBuildingSubtypeOption = buildingSubtypeSelect.options[buildingSubtypeSelect.selectedIndex];
+        const buildingSubtypeSelectElement = document.getElementById('building_subtype');
+        const selectedBuildingSubtypeOption = buildingSubtypeSelectElement.options[buildingSubtypeSelectElement.selectedIndex];
         const buildingSubtypeId = selectedBuildingSubtypeOption.value;
-        const buildingSubtypeName = selectedBuildingSubtypeOption.textContent;
-        const buildingSubtypeBldgtypeID = selectedBuildingSubtypeOption.getAttribute('data-bldgtype-id');
+        const buildingSubtypeName = selectedBuildingSubtypeOption.getAttribute('data-name');
+        const buildingSubtypeBldgtypeID = selectedBuildingSubtypeOption.getAttribute('data-bldgtypeID');
 
         // Append building_subtype details to FormData
         formData.append('building_subtype_id', buildingSubtypeId || '');
@@ -837,7 +837,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbxqNp_CGqZTddBhlpU--y7u3uNb1qGUOO5PUoYaFcJLQ9Fs1LxhVkrtM-0PCEW-Ugq6/exec',
+            'https://script.google.com/macros/s/AKfycbxAHO8e42CAnHyqFPn2m5Hsml5CJ0Hw2wjILBmqG4SETe6iMV0MV3ubqLH4A7XHtDon/exec',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests
