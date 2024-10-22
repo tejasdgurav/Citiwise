@@ -562,18 +562,17 @@ async function initializeForm() {
             (area) => area.councilId === selectedUlb.councilId
           );
           if (filteredAreas.length > 0) {
-            populateDropdown(
-              citySpecificAreaSelect,
-              filteredAreas,
-              'id',
-              'name',
-              'id',
-              'councilId' // Pass 'councilIdKey' to set data-council-id
-            );
+            // Clear existing options
+            citySpecificAreaSelect.innerHTML = '<option value="">Select City Specific Area</option>';
 
-            // Set data-area-code for each option
-            Array.from(citySpecificAreaSelect.options).forEach((option, index) => {
-              option.setAttribute('data-area-code', filteredAreas[index].areaCode);
+            // Populate with filtered areas and set data attributes
+            filteredAreas.forEach((area) => {
+              const option = document.createElement('option');
+              option.value = area.id;
+              option.textContent = area.name;
+              option.setAttribute('data-area-code', area.areaCode);
+              option.setAttribute('data-council-id', area.councilId);
+              citySpecificAreaSelect.appendChild(option);
             });
 
             citySpecificAreaSelect.disabled = false;
@@ -798,7 +797,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbwetmr6xGC1qkEUUfD0lha4CmcMf4upf1HBpKuiyu1UGfaYWQAL6axfgqDL3Xw6pjB3/exec',
+            'https://script.google.com/macros/s/AKfycbzl7RAKSUxl_NdNn2qPGUr0brWJ0ZarPogUekTpcBUQDrKnh7Wjxg8xWjlWbZy13HOa/exec',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests
