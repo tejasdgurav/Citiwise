@@ -754,6 +754,18 @@ async function initializeForm() {
         const ulbTypeValue = ulbTypeInput ? ulbTypeInput.value : '';
         formData.append('ulb_type', ulbTypeValue);
 
+        // **Newly Added Section: Capture Uses Details**
+        const usesSelect = document.getElementById('uses');
+        const selectedUsesOption = usesSelect.options[usesSelect.selectedIndex];
+        const usesId = selectedUsesOption.value;
+        const usesName = selectedUsesOption.textContent;
+        const usesZoneId = zoneId; // Same as zone_id
+
+        // Append uses details to FormData
+        formData.append('uses_id', usesId || '');
+        formData.append('uses_name', usesName || '');
+        formData.append('uses_zone_id', usesZoneId || '');
+
         // Log the entire form data for verification
         const formEntries = {};
         formData.forEach((value, key) => {
@@ -764,7 +776,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbwJV8gUKBBOlaCE7opM2vYLB7OCbvgMkWQKv8xqoAVkJCfUypFvf2VPud3wcscKFrm9/exec',
+            'https://script.google.com/macros/s/AKfycbzl7RAKSUxl_NdNn2qPGUr0brWJ0ZarPogUekTpcBUQDrKnh7Wjxg8xWjlWbZy13HOa/exec',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests
