@@ -102,6 +102,11 @@ function populateDropdown(
       // **Newly Added Attributes for building_type**
       option.setAttribute('data-name', item.name);
       option.setAttribute('data-proposal-id', item.proposalId);
+    }
+    // **Newly Added Condition for building_subtype**
+    else if (selectElement.id === 'building_subtype') {
+      option.value = item[valueKey]; // Use 'id' as value
+      option.setAttribute('data-bldgtype-id', item.bldgtypeID); // Set bldgtypeID
     } else {
       option.value = item[valueKey]; // Use 'id' for other dropdowns
     }
@@ -187,6 +192,12 @@ async function initializeForm() {
       'id',
       'name'
     );
+    populateDropdown(
+      document.getElementById('building_subtype'),
+      buildingSubtypeData.building_subtype,
+      'id',
+      'name'
+    ); // **Ensure building_subtype is populated**
 
     // Hide conditional elements initially
     toggleElement('incentive_fsi_rating', false);
@@ -804,6 +815,18 @@ async function initializeForm() {
         formData.append('building_type_name', buildingTypeName || '');
         formData.append('building_type_proposalId', buildingTypeProposalId || '');
 
+        // **Newly Added Section: Capture Building Subtype Details**
+        const buildingSubtypeSelect = document.getElementById('building_subtype');
+        const selectedBuildingSubtypeOption = buildingSubtypeSelect.options[buildingSubtypeSelect.selectedIndex];
+        const buildingSubtypeId = selectedBuildingSubtypeOption.value;
+        const buildingSubtypeName = selectedBuildingSubtypeOption.textContent;
+        const buildingSubtypeBldgtypeID = selectedBuildingSubtypeOption.getAttribute('data-bldgtype-id');
+
+        // Append building_subtype details to FormData
+        formData.append('building_subtype_id', buildingSubtypeId || '');
+        formData.append('building_subtype_name', buildingSubtypeName || '');
+        formData.append('building_subtype_bldgtypeID', buildingSubtypeBldgtypeID || '');
+
         // Log the entire form data for verification
         const formEntries = {};
         formData.forEach((value, key) => {
@@ -814,7 +837,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbywKOwvHrpBbtnUYqAtymoqMyo3W3NcH4jIqX0npAnd2hRSRdJTcF3qdi-LLhRXdmJa/exec',
+            'https://script.google.com/macros/s/AKfycbxqNp_CGqZTddBhlpU--y7u3uNb1qGUOO5PUoYaFcJLQ9Fs1LxhVkrtM-0PCEW-Ugq6/exec',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests
