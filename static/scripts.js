@@ -566,8 +566,16 @@ async function initializeForm() {
               citySpecificAreaSelect,
               filteredAreas,
               'id',
-              'name'
+              'name',
+              'id',
+              'councilId' // Pass 'councilIdKey' to set data-council-id
             );
+
+            // Set data-area-code for each option
+            Array.from(citySpecificAreaSelect.options).forEach((option, index) => {
+              option.setAttribute('data-area-code', filteredAreas[index].areaCode);
+            });
+
             citySpecificAreaSelect.disabled = false;
           } else {
             citySpecificAreaSelect.innerHTML =
@@ -766,6 +774,20 @@ async function initializeForm() {
         formData.append('uses_name', usesName || '');
         formData.append('uses_zone_id', usesZoneId || '');
 
+        // **Newly Added Section: Capture City Specific Area Details**
+        const citySpecificAreaSelect = document.getElementById('city_specific_area');
+        const selectedCityAreaOption = citySpecificAreaSelect.options[citySpecificAreaSelect.selectedIndex];
+        const citySpecificAreaId = selectedCityAreaOption.value;
+        const citySpecificAreaName = selectedCityAreaOption.textContent;
+        const citySpecificAreaAreaCode = selectedCityAreaOption.getAttribute('data-area-code');
+        const citySpecificAreaCouncilId = selectedCityAreaOption.getAttribute('data-council-id');
+
+        // Append city_specific_area details to FormData
+        formData.append('city_specific_area_id', citySpecificAreaId || '');
+        formData.append('city_specific_area_name', citySpecificAreaName || '');
+        formData.append('city_specific_area_areaCode', citySpecificAreaAreaCode || '');
+        formData.append('city_specific_area_councilId', citySpecificAreaCouncilId || '');
+
         // Log the entire form data for verification
         const formEntries = {};
         formData.forEach((value, key) => {
@@ -776,7 +798,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbzl7RAKSUxl_NdNn2qPGUr0brWJ0ZarPogUekTpcBUQDrKnh7Wjxg8xWjlWbZy13HOa/exec',
+            'https://script.google.com/macros/s/AKfycbyxAjPTM96yLGcGPy0mJtxhd-5Cmi-1WfO3optFk0cJh2a6kVYIWOX-Tjrsw092baAa/exec',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests
