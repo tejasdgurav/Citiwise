@@ -837,7 +837,7 @@ async function initializeForm() {
         try {
           // Submit form data via a POST request to the Google Apps Script endpoint
           const response = await fetch(
-            'https://script.google.com/macros/s/AKfycbxAHO8e42CAnHyqFPn2m5Hsml5CJ0Hw2wjILBmqG4SETe6iMV0MV3ubqLH4A7XHtDon/exec',
+            'http://127.0.0.1:5000/submit',
             {
               method: 'POST',
               mode: 'cors', // Enable CORS for cross-origin requests

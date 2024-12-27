@@ -1,0 +1,19 @@
+DELIMITER $$
+
+CREATE TRIGGER before_insert_project_id
+BEFORE INSERT ON project_details_test2
+FOR EACH ROW
+BEGIN
+    DECLARE next_id INT;
+
+    -- Get the next auto-increment value from the table
+    SELECT AUTO_INCREMENT INTO next_id
+    FROM information_schema.tables
+    WHERE table_name = 'project_details_test2'
+    AND table_schema = DATABASE();
+
+    -- Generate the project_id based on next_id
+    SET NEW.project_id = CONCAT('CW', YEAR(CURDATE()), LPAD(next_id, 6, '0'));
+END$$
+
+DELIMITER ;
