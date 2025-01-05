@@ -1,31 +1,56 @@
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 import mysql.connector
-from required_ids import fetch_required_ids  # **Import the function from required_ids.py**
-from area_statement_calculator import calculate_area_statement
 import os
 import logging
 import uuid
+from dotenv import load_dotenv
+from backend.calculators.fsi_calculator import FSICalculator
+from backend.calculators.area_statement_calculator import calculate_area_statement
+from backend.utils.required_ids import fetch_required_ids
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # Set a secret key for session management
+# Load environment variables
+load_dotenv()
+
+app = Flask(__name__, 
+    template_folder='../frontend/templates',
+    static_folder='../frontend/static'
+)
+app.config.update(
+    SECRET_KEY=os.getenv('SECRET_KEY'),
+    UPLOAD_FOLDER=os.getenv('UPLOAD_FOLDER'),
+    MAX_CONTENT_LENGTH=int(os.getenv('MAX_CONTENT_LENGTH')),
+)
 
 # Set up logging configuration
 logging.basicConfig(level=logging.DEBUG)
 
+# Database configuration from environment variables
+DB_CONFIG = {
+    "host": os.getenv('DB_HOST'),
+    "user": os.getenv('DB_USER'),
+    "password": os.getenv('DB_PASSWORD'),
+    "database": os.getenv('DB_NAME')
+}
+
+# Initialize FSICalculator
+fsi_calculator = FSICalculator(DB_CONFIG)
+
+def get_float_value(value):
+    """Helper function to convert values to float"""
+    try:
+        return float(value) if value else 0.0
+    except (ValueError, TypeError):
+        return 0.0
+
+
 # Function to connect to the database
 def connect_to_database():
     try:
-        return mysql.connector.connect(
-            host="127.0.0.1",
-            user="root",
-            password="MySQL@123",
-            database="citiwise_test"
-        )
+        return mysql.connector.connect(**DB_CONFIG)
     except mysql.connector.Error as e:
         app.logger.error(f"Error connecting to the database: {e}")
         flash(f"Database connection error: {e}")
         return None
-
 
 # Helper function to insert data into the database
 def insert_project_details_basic(data):
@@ -34,7 +59,7 @@ def insert_project_details_basic(data):
         connection = connect_to_database()
         if connection is None:
             flash("Failed to connect to the database.")
-            return
+            return None
             
         cursor = connection.cursor()
 
@@ -70,6 +95,7 @@ def insert_project_details_basic(data):
     except mysql.connector.Error as e:
         app.logger.error(f"Error inserting project details: {e}")
         flash(f"Error inserting project details: {e}")
+        return None
     finally:
         if connection and connection.is_connected():
             cursor.close()
@@ -82,7 +108,7 @@ def update_project_details_with_ids(project_id, fsi_group):
         connection = connect_to_database()
         if connection is None:
             flash("Failed to connect to the database.")
-            return
+            return False
 
         cursor = connection.cursor()
 
@@ -94,10 +120,12 @@ def update_project_details_with_ids(project_id, fsi_group):
         """
         cursor.execute(update_query, (fsi_group, project_id))
         connection.commit()
+        return True
 
     except mysql.connector.Error as e:
         app.logger.error(f"Error updating project details with required IDs: {e}")
         flash(f"Error updating project details with required IDs: {e}")
+        return False
     finally:
         if connection and connection.is_connected():
             cursor.close()
@@ -110,7 +138,7 @@ def update_area_statement(project_id, area_statement):
         connection = connect_to_database()
         if connection is None:
             flash("Failed to connect to the database.")
-            return
+            return False
 
         cursor = connection.cursor()
 
@@ -162,10 +190,64 @@ def update_area_statement(project_id, area_statement):
         ))
         connection.commit()
         app.logger.info(f"Area statement updated for project ID {project_id}")
+        return True
 
     except mysql.connector.Error as e:
         app.logger.error(f"Error updating area statement: {e}")
         flash(f"Error updating area statement: {e}")
+        return False
+    finally:
+        if connection and connection.is_connected():
+            cursor.close()
+            connection.close()
+
+# Helper function to update FSI details in the database
+def update_fsi_details(project_id, fsi_results):
+    connection = None
+    try:
+        connection = connect_to_database()
+        if connection is None:
+            app.logger.error("Failed to connect to database in update_fsi_details")
+            flash("Failed to connect to the database.")
+            return False
+
+        cursor = connection.cursor()
+        app.logger.info(f"Updating FSI details for project {project_id}: {fsi_results}")
+
+
+        # SQL Update Query for FSI details
+        update_query = """
+        UPDATE project_details_test2 
+        SET 
+            basic_fsi = %s,
+            premium_fsi = %s,
+            tdr = %s,
+            remarks_fsi = %s
+        WHERE id = %s
+        """
+        
+        values = (
+            float(fsi_results.get('basic_fsi', 0)) if fsi_results.get('basic_fsi') is not None else None,
+            float(fsi_results.get('premium_fsi', 0)) if fsi_results.get('premium_fsi') is not None else None,
+            float(fsi_results.get('tdr', 0)) if fsi_results.get('tdr') is not None else None,
+            str(fsi_results.get('remarks_fsi', 'NA')),
+            project_id
+        )
+        
+        cursor.execute(update_query, values)
+        connection.commit()
+        
+        # Verify the update
+        cursor.execute("SELECT basic_fsi, premium_fsi, tdr FROM project_details_test2 WHERE id = %s", (project_id,))
+        result = cursor.fetchone()
+        app.logger.info(f"Verification after FSI update: {result}")
+        
+        return True
+
+    except mysql.connector.Error as e:
+        app.logger.error(f"Database error in update_fsi_details: {e}")
+        flash(f"Error updating FSI details: {e}")
+        return False
     finally:
         if connection and connection.is_connected():
             cursor.close()
@@ -341,9 +423,32 @@ def index():
                     zone_landuser_id, uses_name, uses_zone_id, city_specific_area_name, city_specific_area_areaCode, 
                     city_specific_area_councilId, building_type_name, building_type_proposalId, building_subtype_name, 
                     building_subtype_bldgtypeID)
+            
+
+            # Create a project_details dictionary for FSI calculation
+            project_details = {
+                'council_id': int(council_id) if council_id else None,
+                'city_specific_area': city_specific_area_id,
+                'city_specific_area_areaCode': city_specific_area_areaCode,
+                'type_of_proposal': type_of_proposal,
+                'crz_status': crz_status,
+                'tod': tod,
+                'location': location,
+                'plot_layout_type': plot_layout_type,
+                'area_plot_site_sqm': get_float_value(area_plot_site_sqm),
+                'zone': zone,
+                'zone_id': zone_id,
+                'road_details_front_meters': get_float_value(road_details_front_meters),
+                'road_details_left_meters': get_float_value(road_details_left_meters),
+                'road_details_right_meters': get_float_value(road_details_right_meters),
+                'road_details_rear_meters': get_float_value(road_details_rear_meters)
+            }
 
             # Insert basic project details into database
             project_id = insert_project_details_basic(data)
+            if not project_id:
+                flash("Failed to insert basic project details")
+                return redirect(url_for('index'))
                 
             # After the data is inserted, fetch `fsi_group` using the `ulb_rp_special_autho    
             if project_id:
@@ -364,18 +469,37 @@ def index():
                     flash("Project details and area statement updated successfully.")
                 else:
                     flash("Failed to calculate area statement.")
-                
-                return redirect(url_for('index'))
+            
 
+            try:
+                app.logger.info(f"Calculating FSI with project details: {project_details}")
+                fsi_results = fsi_calculator.calculate_fsi(project_details)
+                
+                if fsi_results:
+                    app.logger.info(f"FSI calculation results: {fsi_results}")
+                    
+                    if not fsi_results.get('error'):
+                        if update_fsi_details(project_id, fsi_results):
+                            app.logger.info(f"FSI calculation successful for project ID {project_id}")
+                            flash("FSI calculation completed successfully")
+                        else:
+                            flash("Failed to update FSI details in database")
+                    else:
+                        flash(f"FSI calculation failed: {fsi_results.get('remarks_fsi')}")
+                else:
+                    flash("No FSI results returned from calculator")
+                    
+            except Exception as e:
+                app.logger.error(f"Error during FSI calculation: {e}")
+                flash(f"Error during FSI calculation: {str(e)}")
+
+            return redirect(url_for('index'))        
+                
         except Exception as e:
             app.logger.error(f"Error during form submission: {e}")
             return jsonify({"success": False, "message": str(e)}), 500
 
     return render_template('index.html')
-
-@app.route('/')
-def home():
-    return redirect(url_for('index'))
 
 if __name__ == '__main__':
     app.run(debug=True)

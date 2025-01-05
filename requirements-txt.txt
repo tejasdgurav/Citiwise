@@ -1,0 +1,39 @@
+# Web Framework
+Flask==3.0.0
+Werkzeug==3.0.1
+
+# Database
+mysql-connector-python==8.2.0
+SQLAlchemy==2.0.23
+
+# Environment and Configuration
+python-dotenv==1.0.0
+
+# Security
+PyJWT==2.8.0
+bcrypt==4.1.1
+cryptography==41.0.7
+
+# File Handling
+Pillow==10.1.0  # For image processing
+python-magic==0.4.27  # For file type detection
+
+# Utilities
+uuid==1.30
+python-dateutil==2.8.2
+
+# Form Handling and Validation
+WTForms==3.1.1
+Flask-WTF==1.2.1
+email-validator==2.1.0.post1
+
+# Logging
+logging==0.4.9.6
+
+# Testing
+pytest==7.4.3
+pytest-flask==1.3.0
+
+# Development Tools
+black==23.11.0  # Code formatting
+flake8==6.1.0   # Code linting
