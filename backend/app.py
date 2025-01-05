@@ -12,8 +12,8 @@ from backend.utils.required_ids import fetch_required_ids
 load_dotenv()
 
 app = Flask(__name__, 
-    template_folder='/frontend/templates',
-    static_folder='/frontend/static'
+    template_folder='../frontend/templates',
+    static_folder='../frontend/static'
 )
 app.config.update(
     SECRET_KEY=os.getenv('SECRET_KEY'),
@@ -35,13 +35,20 @@ DB_CONFIG = {
 # Initialize FSICalculator
 fsi_calculator = FSICalculator(DB_CONFIG)
 
-@app.route('/', endpoint='health_check')
+@app.route('/')
 def health_check():
     return jsonify({"status": "Citiwise API is running"}), 200
 
-@app.route('/submit', methods=['GET', 'POST'], endpoint='submit_form')
+@app.route('/submit', methods=['GET', 'POST'])
 def submit_form():
-    # Your logic here
+    if request.method == 'POST':
+        try:
+            applicant_type = request.form.get('applicant_type', '').strip()
+            # Add form processing logic here
+            return jsonify({"success": True, "message": "Form submitted successfully"}), 200
+        except Exception as e:
+            app.logger.error(f"Error during form submission: {e}")
+            abort(500, description="An unexpected error occurred during form submission.")
     return render_template('index.html')
 
 def get_float_value(value):
