@@ -35,6 +35,12 @@ DB_CONFIG = {
 # Initialize FSICalculator
 fsi_calculator = FSICalculator(DB_CONFIG)
 
+@app.route('/')
+def health_check():
+    """Health check endpoint to confirm the service is running."""
+    return jsonify({"status": "Citiwise API is running"}), 200
+
+
 def get_float_value(value):
     """Helper function to convert values to float"""
     try:
