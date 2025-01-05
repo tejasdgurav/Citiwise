@@ -12,8 +12,8 @@ from backend.utils.required_ids import fetch_required_ids
 load_dotenv()
 
 app = Flask(__name__, 
-    template_folder='../frontend/templates',
-    static_folder='../frontend/static'
+    template_folder='/frontend/templates',
+    static_folder='/frontend/static'
 )
 app.config.update(
     SECRET_KEY=os.getenv('SECRET_KEY'),
@@ -36,9 +36,9 @@ DB_CONFIG = {
 fsi_calculator = FSICalculator(DB_CONFIG)
 
 @app.route('/')
-def health_check():
-    """Health check endpoint to confirm the service is running."""
-    return jsonify({"status": "Citiwise API is running"}), 200
+def index():
+    """Serve the main frontend page."""
+    return render_template('index.html')
 
 
 def get_float_value(value):
