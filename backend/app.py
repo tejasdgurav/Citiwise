@@ -35,11 +35,14 @@ DB_CONFIG = {
 # Initialize FSICalculator
 fsi_calculator = FSICalculator(DB_CONFIG)
 
-@app.route('/')
-def index():
-    """Serve the main frontend page."""
-    return render_template('index.html')
+@app.route('/', endpoint='health_check')
+def health_check():
+    return jsonify({"status": "Citiwise API is running"}), 200
 
+@app.route('/submit', methods=['GET', 'POST'], endpoint='submit_form')
+def submit_form():
+    # Your logic here
+    return render_template('index.html')
 
 def get_float_value(value):
     """Helper function to convert values to float"""
